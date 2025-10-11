@@ -5,6 +5,7 @@ import { FAQ } from "../faq/FAQ";
 import { Services } from "../services/Services";
 import { Products } from "../electronics/Products";
 import { UpcomingElectronics } from "../../components/features/NewUpcoming";
+import { Team } from "../../components/team/Team";
 
 export const Home = () => {
   useEffect(() => {
@@ -20,6 +21,7 @@ export const Home = () => {
       <Services />
       <Products />
       <UpcomingElectronics />
+      <Team />
     </div>
   );
 };

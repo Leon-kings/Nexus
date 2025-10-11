@@ -43,7 +43,7 @@ const SuccessModal = ({ isOpen, onClose }) => {
 
             <button
               onClick={onClose}
-              className="w-full bg-gradient-to-br from-green-500 to-green-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200"
+              className="w-full bg-gradient-to-br from-red-500 to-red-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200"
             >
               Close
             </button>
@@ -96,7 +96,7 @@ const ErrorModal = ({ isOpen, onClose, errorMessage }) => {
             <div className="flex gap-3">
               <button
                 onClick={onClose}
-                className="flex-1 bg-gradient-to-br from-gray-500 to-gray-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-gray-600 hover:to-gray-700 transition-all duration-200"
+                className="flex-1 bg-gradient-to-br from-blue-500 to-green-600 py-3 px-6 rounded-xl font-semibold hover:from-gray-600 hover:to-gray-700 transition-all duration-200"
               >
                 Try Again
               </button>
@@ -105,7 +105,7 @@ const ErrorModal = ({ isOpen, onClose, errorMessage }) => {
                   onClose();
                   // You can add direct contact action here
                 }}
-                className="flex-1 bg-gradient-to-br from-blue-500 to-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
+                className="flex-1 bg-gradient-to-br from-blue-500 to-blue-600 py-3 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
               >
                 Contact Directly
               </button>
@@ -129,52 +129,6 @@ const ModalOverlay = ({ children, onClose }) => (
     <div onClick={(e) => e.stopPropagation()}>{children}</div>
   </motion.div>
 );
-
-// Enhanced Gradient Button Component
-const button = ({
-  children,
-  onClick,
-  gradient = "from-blue-500 to-blue-600",
-  className = "",
-  size = "md",
-  disabled = false,
-  type = "button",
-  ...props
-}) => {
-  const sizeClasses = {
-    sm: "px-4 py-2 text-sm rounded-lg",
-    md: "px-6 py-3 text-base rounded-xl",
-    lg: "px-8 py-4 text-lg rounded-2xl",
-  };
-
-  return (
-    <motion.button
-      type={type}
-      whileHover={{ scale: disabled ? 1 : 1.05, y: disabled ? 0 : -2 }}
-      whileTap={{ scale: disabled ? 1 : 0.98 }}
-      onClick={onClick}
-      disabled={disabled}
-      className={`
-        bg-gradient-to-br ${gradient} 
-        text-white font-semibold 
-        ${sizeClasses[size]}
-        shadow-lg hover:shadow-xl
-        transition-all duration-200
-        transform hover:translate-y-[-1px]
-        border border-white/20
-        relative overflow-hidden
-        disabled:opacity-50 disabled:cursor-not-allowed
-        ${className}
-      `}
-      {...props}
-    >
-      <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-200" />
-      <span className="relative z-10 flex items-center justify-center gap-2">
-        {children}
-      </span>
-    </motion.button>
-  );
-};
 
 // FAQ Item Component
 const FAQItem = ({ item, isOpen, onClick, categoryGradient }) => {
@@ -381,7 +335,7 @@ const ContactForm = () => {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-blue-600 to-indigo-400 rounded-3xl p-8 text-white shadow-2xl"
+        className="bg-gradient-to-br bg-gray-500 rounded-3xl p-8 text-black shadow-2xl"
       >
         <div className="text-center mb-8">
           <h3 className="text-3xl text-white font-bold mb-3">
@@ -395,7 +349,7 @@ const ContactForm = () => {
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-6 text-black overflow-y-auto"
+          className="space-y-6 text-white bg-black p-3 rounded-2xl overflow-y-auto"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -408,7 +362,7 @@ const ContactForm = () => {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent backdrop-blur-sm transition-all duration-200"
+                className="w-full px-4 py-4 rounded-xl bg-white border  text-black placeholder-black focus:outline-none focus:ring-2 focus:border-transparent backdrop-blur-sm transition-all duration-200"
                 placeholder="Enter your name"
               />
             </div>
@@ -423,7 +377,7 @@ const ContactForm = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent backdrop-blur-sm transition-all duration-200"
+                className="w-full px-4 py-4 rounded-xl bg-white border text-black placeholder-black focus:outline-none focus:ring-2 focus:border-transparent backdrop-blur-sm transition-all duration-200"
                 placeholder="Enter your email"
               />
             </div>
@@ -437,7 +391,7 @@ const ContactForm = () => {
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent backdrop-blur-sm transition-all duration-200"
+              className="w-full px-4 py-4 rounded-xl bg-white border text-black focus:outline-none focus:ring-2 focus:border-transparent backdrop-blur-sm transition-all duration-200"
             >
               <option value="general" className="text-black">
                 General Inquiry
@@ -470,7 +424,7 @@ const ContactForm = () => {
               value={formData.subject}
               onChange={handleChange}
               required
-              className="w-full px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent backdrop-blur-sm transition-all duration-200"
+              className="w-full px-4 py-4 rounded-xl bg-white  text-black placeholder-black focus:outline-none focus:ring-2 focus:border-transparent backdrop-blur-sm transition-all duration-200"
               placeholder="Brief subject of your question"
             />
           </div>
@@ -485,7 +439,7 @@ const ContactForm = () => {
               onChange={handleChange}
               required
               rows={4}
-              className="w-full px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent backdrop-blur-sm resize-none transition-all duration-200"
+              className="w-full px-4 py-4 rounded-xl bg-white text-black placeholder-black focus:outline-none focus:ring-2 focus:border-transparent backdrop-blur-sm resize-none transition-all duration-200"
               placeholder="Please describe your question in detail..."
             ></textarea>
           </div>  
@@ -493,10 +447,10 @@ const ContactForm = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full text-lg py-5 from-blue-400 to-indigo-500"
+            className="w-full text-lg py-5 bg-gradient-to-tl from-blue-400 to-indigo-500"
           >
             {isSubmitting ? (
-              <div className="flex items-center bg-gradient-to-tr from-blue-400 to-indigo-400 justify-center space-x-3">
+              <div className="flex items-center justify-center space-x-3">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
                 <span>Submitting...</span>
               </div>
@@ -676,8 +630,8 @@ export const FAQ = () => {
                   onClick={() => setActiveCategory(key)}
                   className={
                     activeCategory === key
-                      ? "text-white bg-blue-700 "
-                      : "bg-graient-to-l from-blue-300 to-blue-400"
+                      ? "bg-gradient-to-r from-blue-600 to-blue-700"
+                      : "bg-gradient-to-l from-blue-300 to-blue-400"
                   }
                 >
                   {section.title}

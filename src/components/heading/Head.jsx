@@ -31,14 +31,14 @@ const ImageModal = ({ image, isOpen, onClose }) => {
           >
             <button
               onClick={onClose}
-              className="absolute -top-12 right-0 text-white text-2xl hover:text-gray-300 transition-colors z-10"
+              className="absolute -top-12 right-0 bg-gradient-to-bl from-red-500 to-red-600 transition-colors z-10"
             >
               ✕
             </button>
             <div className="bg-white rounded-2xl overflow-hidden">
               <img
                 src={image.image}
-                alt={image.alt}
+                alt=""
                 className="w-full h-auto max-h-[70vh] object-cover"
               />
               <div className="p-6">
@@ -151,9 +151,13 @@ export default function Head() {
                     className="space-y-6"
                   >
                     <h1 className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-gray-900 leading-tight">
-                      LD Tech is{" "}
+                      Nexus{" "}
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">
+                        {" "}
+                        Tech{" "}
+                      </span>{" "}
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                        Finally Here
+                        is Finally Here
                       </span>
                     </h1>
 
@@ -277,31 +281,6 @@ export default function Head() {
                     ></motion.div>
                   </motion.div>
                 </div>
-
-                {/* CTA Section */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="text-center mt-12 lg:mt-16"
-                >
-                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl p-8 sm:p-12 border border-blue-100">
-                    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                      Ready to Upgrade Your Tech?
-                    </h3>
-                    <p className="text-gray-600 text-lg sm:text-xl mb-6 max-w-2xl mx-auto">
-                      Join thousands of satisfied customers who trust LD Tech
-                      for their computing needs.
-                    </p>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      Shop Now & Get 10% Off
-                    </motion.button>
-                  </div>
-                </motion.div>
               </div>
             </div>
           </div>

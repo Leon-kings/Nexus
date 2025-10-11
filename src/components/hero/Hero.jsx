@@ -6,6 +6,7 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import hero from "../../assets/videos/head.mp4";
+import { companyData, galleryImages, productCategories } from "../../assets/images/images";
 
 // SVG Icons
 const CompanyIcon = () => (
@@ -120,7 +121,7 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
                 </h2>
                 <button
                   onClick={onClose}
-                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                  className="bg-gradient-to-tl from-red-500 to-red-700 transition-colors"
                 >
                   <CloseIcon />
                 </button>
@@ -131,7 +132,7 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
                 <div className="space-y-4">
                   <img
                     src={product.image}
-                    alt={product.name}
+                    alt=""
                     className="w-full h-64 object-cover rounded-xl shadow-lg"
                   />
                   <div className="grid grid-cols-2 gap-4">
@@ -163,8 +164,13 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
                     </h3>
                     <div className="space-y-2">
                       {product.specifications?.map((spec, index) => (
-                        <div key={index} className="flex justify-between border-b border-gray-200 pb-2">
-                          <span className="text-gray-600 font-medium">{spec.name}:</span>
+                        <div
+                          key={index}
+                          className="flex justify-between border-b border-gray-200 pb-2"
+                        >
+                          <span className="text-gray-600 font-medium">
+                            {spec.name}:
+                          </span>
                           <span className="text-gray-800">{spec.value}</span>
                         </div>
                       ))}
@@ -186,29 +192,15 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
                     </h3>
                     <ul className="space-y-2">
                       {product.features?.map((feature, index) => (
-                        <li key={index} className="flex items-center text-gray-600">
+                        <li
+                          key={index}
+                          className="flex items-center text-gray-600"
+                        >
                           <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                           {feature}
                         </li>
                       ))}
                     </ul>
-                  </div>
-
-                  <div className="flex gap-4 pt-4">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`flex-1 bg-gradient-to-r ${product.gradient} text-white py-3 px-6 rounded-xl font-semibold text-lg`}
-                    >
-                      Get Quote
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-3 px-6 rounded-xl font-semibold text-lg"
-                    >
-                      Contact Sales
-                    </motion.button>
                   </div>
                 </div>
               </div>
@@ -224,207 +216,6 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
 const ProductsModal = ({ isOpen, onClose }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-
-  const productCategories = [
-    {
-      id: 1,
-      name: "Gaming Computers",
-      description: "High-performance gaming rigs with top-tier components",
-      products: [
-        "Gaming PCs with RTX 4090",
-        "RGB Gaming Setups",
-        "Custom Water Cooling",
-        "High Refresh Rate Monitors"
-      ],
-      priceRange: "$1,500 - $5,000+",
-      image: "https://images.pexels.com/photos/129208/pexels-photo-129208.jpeg?auto=compress&cs=tinysrgb&w=600",
-      gradient: "from-purple-500 to-pink-500",
-      fullDescription: "Experience unparalleled gaming performance with our custom-built gaming computers. Featuring the latest NVIDIA RTX graphics cards, high-speed DDR5 memory, and lightning-fast SSDs for seamless gameplay and stunning visuals.",
-      specifications: [
-        { name: "Processor", value: "Intel Core i9 / AMD Ryzen 9" },
-        { name: "Graphics", value: "NVIDIA RTX 4070/4080/4090" },
-        { name: "Memory", value: "32GB - 64GB DDR5" },
-        { name: "Storage", value: "1TB - 4TB NVMe SSD" },
-        { name: "Cooling", value: "Liquid Cooling System" }
-      ],
-      features: [
-        "4K Gaming Ready",
-        "Ray Tracing Support",
-        "High FPS Performance",
-        "RGB Lighting",
-        "VR Ready"
-      ],
-      additionalImages: [
-        "https://images.pexels.com/photos/177598/pexels-photo-177598.jpeg?auto=compress&cs=tinysrgb&w=600",
-        "https://images.pexels.com/photos/1714208/pexels-photo-1714208.jpeg?auto=compress&cs=tinysrgb&w=600"
-      ]
-    },
-    {
-      id: 2,
-      name: "Business Workstations",
-      description: "Reliable computers for professional use",
-      products: [
-        "Enterprise Desktops",
-        "Business Laptops",
-        "Docking Stations",
-        "Multiple Monitor Setups"
-      ],
-      priceRange: "$800 - $3,000",
-      image: "https://images.pexels.com/photos/2047905/pexels-photo-2047905.jpeg?auto=compress&cs=tinysrgb&w=600",
-      gradient: "from-blue-500 to-cyan-500",
-      fullDescription: "Boost productivity with our enterprise-grade business workstations. Designed for reliability and performance, these systems ensure smooth operation for all your business applications and multitasking needs.",
-      specifications: [
-        { name: "Processor", value: "Intel Core i7 / Xeon" },
-        { name: "Graphics", value: "NVIDIA Quadro / AMD Radeon Pro" },
-        { name: "Memory", value: "16GB - 128GB ECC RAM" },
-        { name: "Storage", value: "512GB - 2TB SSD + HDD" },
-        { name: "Security", value: "TPM 2.0, BIOS Protection" }
-      ],
-      features: [
-        "24/7 Reliability",
-        "Enterprise Security",
-        "Multiple Display Support",
-        "Quiet Operation",
-        "Easy Maintenance"
-      ],
-      additionalImages: [
-        "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=600",
-        "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=600"
-      ]
-    },
-    {
-      id: 3,
-      name: "Creative Workstations",
-      description: "Powerful machines for video editing and design",
-      products: [
-        "4K Video Editing Rigs",
-        "3D Modeling Workstations",
-        "Graphic Design Computers",
-        "Color-Accurate Monitors"
-      ],
-      priceRange: "$2,000 - $8,000",
-      image: "https://images.pexels.com/photos/1334597/pexels-photo-1334597.jpeg?auto=compress&cs=tinysrgb&w=600",
-      gradient: "from-orange-500 to-red-500",
-      fullDescription: "Unleash your creativity with our professional creative workstations. Optimized for demanding applications like Adobe Creative Suite, 3D modeling software, and 4K video editing with real-time rendering capabilities.",
-      specifications: [
-        { name: "Processor", value: "AMD Threadripper / Intel Xeon" },
-        { name: "Graphics", value: "Dual NVIDIA RTX A6000" },
-        { name: "Memory", value: "64GB - 256GB DDR4" },
-        { name: "Storage", value: "2TB NVMe + 8TB HDD RAID" },
-        { name: "Display", value: "4K/8K Monitor Support" }
-      ],
-      features: [
-        "Real-time 4K Editing",
-        "3D Rendering Optimized",
-        "Color Calibrated",
-        "Multiple GPU Support",
-        "High-speed Storage"
-      ],
-      additionalImages: [
-        "https://images.pexels.com/photos/270637/pexels-photo-270637.jpeg?auto=compress&cs=tinysrgb&w=600",
-        "https://images.pexels.com/photos/1148820/pexels-photo-1148820.jpeg?auto=compress&cs=tinysrgb&w=600"
-      ]
-    },
-    {
-      id: 4,
-      name: "Budget Solutions",
-      description: "Affordable computers for everyday use",
-      products: [
-        "Basic Office Computers",
-        "Student Laptops",
-        "Home Entertainment PCs",
-        "All-in-One Computers"
-      ],
-      priceRange: "$400 - $1,000",
-      image: "https://images.pexels.com/photos/777001/pexels-photo-777001.jpeg?auto=compress&cs=tinysrgb&w=600",
-      gradient: "from-green-500 to-emerald-500",
-      fullDescription: "Get reliable computing power without breaking the bank. Our budget solutions are perfect for everyday tasks, office work, student use, and home entertainment with excellent value for money.",
-      specifications: [
-        { name: "Processor", value: "Intel Core i3/i5 / AMD Ryzen 3/5" },
-        { name: "Graphics", value: "Integrated / Entry-level GPU" },
-        { name: "Memory", value: "8GB - 16GB DDR4" },
-        { name: "Storage", value: "256GB - 1TB SSD" },
-        { name: "Connectivity", value: "Wi-Fi 6, Bluetooth 5.0" }
-      ],
-      features: [
-        "Energy Efficient",
-        "Compact Design",
-        "Easy to Use",
-        "Reliable Performance",
-        "Great Value"
-      ],
-      additionalImages: [
-        "https://images.pexels.com/photos/1229861/pexels-photo-1229861.jpeg?auto=compress&cs=tinysrgb&w=600",
-        "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=600"
-      ]
-    },
-    {
-      id: 5,
-      name: "Server Solutions",
-      description: "Enterprise-grade server infrastructure",
-      products: [
-        "Rack Servers",
-        "Network Storage",
-        "Data Center Solutions",
-        "Backup Systems"
-      ],
-      priceRange: "$3,000 - $20,000+",
-      image: "https://images.pexels.com/photos/325229/pexels-photo-325229.jpeg?auto=compress&cs=tinysrgb&w=600",
-      gradient: "from-indigo-500 to-purple-500",
-      fullDescription: "Build robust IT infrastructure with our enterprise server solutions. From small business servers to large data center deployments, we provide scalable and reliable server systems with comprehensive support.",
-      specifications: [
-        { name: "Processor", value: "Dual Xeon / EPYC" },
-        { name: "Memory", value: "64GB - 2TB ECC RAM" },
-        { name: "Storage", value: "Multi-bay SAS/SATA/SSD" },
-        { name: "RAID", value: "Hardware RAID Controller" },
-        { name: "Redundancy", value: "Dual PSU, Hot-swap" }
-      ],
-      features: [
-        "24/7 Operation",
-        "Remote Management",
-        "High Availability",
-        "Scalable Architecture",
-        "Enterprise Support"
-      ],
-      additionalImages: [
-        "https://images.pexels.com/photos/1148820/pexels-photo-1148820.jpeg?auto=compress&cs=tinysrgb&w=600",
-        "https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?auto=compress&cs=tinysrgb&w=600"
-      ]
-    },
-    {
-      id: 6,
-      name: "Accessories & Peripherals",
-      description: "Complete your setup with premium accessories",
-      products: [
-        "Mechanical Keyboards",
-        "Gaming Mice",
-        "Headsets",
-        "Webcams & Microphones"
-      ],
-      priceRange: "$50 - $500",
-      image: "https://images.pexels.com/photos/2115256/pexels-photo-2115256.jpeg?auto=compress&cs=tinysrgb&w=600",
-      gradient: "from-yellow-500 to-orange-500",
-      fullDescription: "Enhance your computing experience with our premium accessories and peripherals. From high-precision gaming gear to professional audio equipment, we have everything to complete your perfect setup.",
-      specifications: [
-        { name: "Keyboards", value: "Mechanical, RGB, Wireless" },
-        { name: "Mice", value: "High DPI, Programmable" },
-        { name: "Audio", value: "7.1 Surround, Noise Cancel" },
-        { name: "Monitors", value: "144Hz, 4K, IPS Panels" },
-        { name: "Connectivity", value: "USB-C, Wireless, Bluetooth" }
-      ],
-      features: [
-        "Premium Build Quality",
-        "Enhanced Productivity",
-        "Gaming Optimized",
-        "Ergonomic Design",
-        "Warranty Included"
-      ],
-      additionalImages: [
-        "https://images.pexels.com/photos/3393379/pexels-photo-3393379.jpeg?auto=compress&cs=tinysrgb&w=600",
-        "https://images.pexels.com/photos/3945657/pexels-photo-3945657.jpeg?auto=compress&cs=tinysrgb&w=600"
-      ]
-    }
-  ];
 
   const handleViewDetails = (product) => {
     setSelectedProduct(product);
@@ -454,14 +245,15 @@ const ProductsModal = ({ isOpen, onClose }) => {
                   </h2>
                   <button
                     onClick={onClose}
-                    className="text-gray-500 hover:text-gray-700 transition-colors"
+                    className="bg-gradient-to-br from-red-600 to-red-700 transition-colors"
                   >
                     <CloseIcon />
                   </button>
                 </div>
 
                 <p className="text-gray-600 text-lg mb-8 text-center">
-                  Discover our wide range of premium computing solutions tailored to your needs
+                  Discover our wide range of premium computing solutions
+                  tailored to your needs
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -471,27 +263,31 @@ const ProductsModal = ({ isOpen, onClose }) => {
                       whileHover={{ scale: 1.05 }}
                       className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden shadow-lg border border-gray-200"
                     >
-                      <div className={`h-2 bg-gradient-to-r ${category.gradient}`}></div>
+                      <div
+                        className={`h-2 bg-gradient-to-r ${category.gradient}`}
+                      ></div>
                       <div className="p-4">
                         <div className="flex items-center justify-between mb-3">
                           <h3 className="text-xl font-bold text-gray-800">
                             {category.name}
                           </h3>
-                          <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${category.gradient} flex items-center justify-center`}>
+                          <div
+                            className={`w-8 h-8 rounded-lg bg-gradient-to-r ${category.gradient} flex items-center justify-center`}
+                          >
                             <ProductIcon />
                           </div>
                         </div>
-                        
+
                         <img
                           src={category.image}
                           alt={category.name}
                           className="w-full h-32 object-cover rounded-lg mb-3"
                         />
-                        
+
                         <p className="text-gray-600 text-sm mb-3">
                           {category.description}
                         </p>
-                        
+
                         <div className="mb-3">
                           <h4 className="font-semibold text-gray-800 text-sm mb-1">
                             Products Include:
@@ -499,13 +295,15 @@ const ProductsModal = ({ isOpen, onClose }) => {
                           <ul className="text-xs text-gray-600 space-y-1">
                             {category.products.map((product, index) => (
                               <li key={index} className="flex items-center">
-                                <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${category.gradient} mr-2`}></div>
+                                <div
+                                  className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${category.gradient} mr-2`}
+                                ></div>
                                 {product}
                               </li>
                             ))}
                           </ul>
                         </div>
-                        
+
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-semibold text-gray-700">
                             {category.priceRange}
@@ -526,15 +324,9 @@ const ProductsModal = ({ isOpen, onClose }) => {
 
                 <div className="mt-8 text-center">
                   <p className="text-gray-600 mb-4">
-                    Can't find what you're looking for? We offer custom solutions!
+                    Can't find what you're looking for? We offer custom
+                    solutions!
                   </p>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold"
-                  >
-                    Request Custom Quote
-                  </motion.button>
                 </div>
               </div>
             </motion.div>
@@ -554,28 +346,7 @@ const ProductsModal = ({ isOpen, onClose }) => {
 
 // Company Info Modal Component
 const CompanyInfoModal = ({ isOpen, onClose }) => {
-  const companyData = {
-    about:
-      "LD Computer Store Rwanda Limited is a Full-Service Technology Services Provider and the leading IT Consulting Company in Kigali, Rwanda. We specialize in providing cutting-edge computing solutions for businesses and individuals.",
-    mission:
-      "To empower businesses and individuals with reliable, high-performance computing solutions that drive productivity and innovation.",
-    vision:
-      "To be East Africa's premier technology solutions provider, known for excellence and innovation.",
-    services: [
-      "Enterprise Computing Solutions",
-      "Professional IT Consulting",
-      "Hardware Sales & Support",
-      "Network Infrastructure",
-      "Custom PC Building",
-      "IT Maintenance & Support",
-    ],
-    achievements: [
-      "5000+ Satisfied Customers",
-      "15+ Years Industry Experience",
-      "24/7 Customer Support",
-      "ISO 9001 Certified",
-    ],
-  };
+
 
   return (
     <AnimatePresence>
@@ -594,7 +365,7 @@ const CompanyInfoModal = ({ isOpen, onClose }) => {
                 </h2>
                 <button
                   onClick={onClose}
-                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                  className="bg-gradient-to-bl from-red-600 to-red-700 transition-colors"
                 >
                   <CloseIcon />
                 </button>
@@ -677,50 +448,7 @@ const CompanyInfoModal = ({ isOpen, onClose }) => {
 
 // Gallery Modal Component
 const GalleryModal = ({ isOpen, onClose }) => {
-  const galleryImages = [
-    {
-      id: 1,
-      title: "Enterprise Solutions",
-      description: "High-performance workstations for business",
-      image:
-        "https://images.pexels.com/photos/777001/pexels-photo-777001.jpeg?auto=compress&cs=tinysrgb&w=600",
-    },
-    {
-      id: 2,
-      title: "Gaming Systems",
-      description: "Custom-built gaming computers",
-      image:
-        "https://images.pexels.com/photos/129208/pexels-photo-129208.jpeg?auto=compress&cs=tinysrgb&w=600",
-    },
-    {
-      id: 3,
-      title: "Professional Support",
-      description: "24/7 customer service and support",
-      image:
-        "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=600",
-    },
-    {
-      id: 4,
-      title: "Business Laptops",
-      description: "Enterprise-grade mobile solutions",
-      image:
-        "https://images.pexels.com/photos/2047905/pexels-photo-2047905.jpeg?auto=compress&cs=tinysrgb&w=600",
-    },
-    {
-      id: 5,
-      title: "Creative Workstations",
-      description: "Powerful machines for creators",
-      image:
-        "https://images.pexels.com/photos/1334597/pexels-photo-1334597.jpeg?auto=compress&cs=tinysrgb&w=600",
-    },
-    {
-      id: 6,
-      title: "IT Infrastructure",
-      description: "Complete technology solutions",
-      image:
-        "https://images.pexels.com/photos/325229/pexels-photo-325229.jpeg?auto=compress&cs=tinysrgb&w=600",
-    },
-  ];
+
 
   return (
     <AnimatePresence>
@@ -739,7 +467,7 @@ const GalleryModal = ({ isOpen, onClose }) => {
                 </h2>
                 <button
                   onClick={onClose}
-                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                  className="bg-gradient-to-l from-red-500 to-red-700 transition-colors"
                 >
                   <CloseIcon />
                 </button>
@@ -754,7 +482,7 @@ const GalleryModal = ({ isOpen, onClose }) => {
                   >
                     <img
                       src={item.image}
-                      alt={item.title}
+                      alt=''
                       className="w-full h-48 object-cover"
                     />
                     <div className="p-4">
@@ -839,20 +567,20 @@ const ContactModal = ({ isOpen, onClose }) => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            className="bg-white text-black rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
           >
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-3xl font-bold text-gray-800">Contact Us</h2>
                 <button
                   onClick={onClose}
-                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                  className="bg-gradient-to-b from-red-600 to-red-700 transition-colors"
                 >
                   <CloseIcon />
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4 text-black">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1016,7 +744,7 @@ const ModalOverlay = ({ children, onClose }) => (
   </motion.div>
 );
 
-// Hover Info Board Component
+// Hover Info Board Component 
 const HoverInfoBoard = () => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
@@ -1024,7 +752,7 @@ const HoverInfoBoard = () => (
     className="absolute top-20 right-4 bg-white/95 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20 max-w-xs z-20"
   >
     <h3 className="text-lg font-bold text-blue-400 mb-3">
-      Why Choose LD Computers?
+      Why Choose Nexus Computers?
     </h3>
     <ul className="space-y-2 text-sm text-gray-600">
       <li className="flex items-center">
@@ -1059,7 +787,7 @@ export const Hero = () => {
     <>
       <ToastContainer position="top-right" autoClose={5000} />
 
-      <div className="w-full mt-4 h-screen rounded-2xl mb-2 relative">
+      <div className="w-full mt-2 h-screen rounded-2xl mb-2 relative">
         {/* Video Background */}
         <div className="relative h-screen w-full overflow-hidden">
           <video
@@ -1154,8 +882,8 @@ export const Hero = () => {
                 className="bg-white/5 backdrop-blur-lg border mb-10 border-white/10 rounded-2xl p-6 max-w-4xl mx-auto"
               >
                 <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
-                  LD Computer Store Rwanda Limited is a Full-Service Technology
-                  Services Provider also called the Top IT Consulting Company in
+                  Nexus Computer store Rwanda Limited is a full service Technology
+                  services provider also called the top IT consulting company in
                   Kigali, Rwanda.
                 </p>
 

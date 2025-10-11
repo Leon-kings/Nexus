@@ -862,3 +862,530 @@ export const faqData = {
     ],
   },
 };
+
+  export const productCategories = [
+    {
+      id: 1,
+      name: "Gaming Computers",
+      description: "High-performance gaming rigs with top-tier components",
+      products: [
+        "Gaming PCs with RTX 4090",
+        "RGB Gaming Setups",
+        "Custom Water Cooling",
+        "High Refresh Rate Monitors",
+      ],
+      priceRange: "$1,500 - $5,000+",
+      image:
+        "https://images.pexels.com/photos/129208/pexels-photo-129208.jpeg?auto=compress&cs=tinysrgb&w=600",
+      gradient: "from-purple-500 to-pink-500",
+      fullDescription:
+        "Experience unparalleled gaming performance with our custom-built gaming computers. Featuring the latest NVIDIA RTX graphics cards, high-speed DDR5 memory, and lightning-fast SSDs for seamless gameplay and stunning visuals.",
+      specifications: [
+        { name: "Processor", value: "Intel Core i9 / AMD Ryzen 9" },
+        { name: "Graphics", value: "NVIDIA RTX 4070/4080/4090" },
+        { name: "Memory", value: "32GB - 64GB DDR5" },
+        { name: "Storage", value: "1TB - 4TB NVMe SSD" },
+        { name: "Cooling", value: "Liquid Cooling System" },
+      ],
+      features: [
+        "4K Gaming Ready",
+        "Ray Tracing Support",
+        "High FPS Performance",
+        "RGB Lighting",
+        "VR Ready",
+      ],
+      additionalImages: [
+        "https://images.pexels.com/photos/177598/pexels-photo-177598.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "https://images.pexels.com/photos/1714208/pexels-photo-1714208.jpeg?auto=compress&cs=tinysrgb&w=600",
+      ],
+    },
+    {
+      id: 2,
+      name: "Business Workstations",
+      description: "Reliable computers for professional use",
+      products: [
+        "Enterprise Desktops",
+        "Business Laptops",
+        "Docking Stations",
+        "Multiple Monitor Setups",
+      ],
+      priceRange: "$800 - $3,000",
+      image:
+        "https://images.pexels.com/photos/2047905/pexels-photo-2047905.jpeg?auto=compress&cs=tinysrgb&w=600",
+      gradient: "from-blue-500 to-cyan-500",
+      fullDescription:
+        "Boost productivity with our enterprise-grade business workstations. Designed for reliability and performance, these systems ensure smooth operation for all your business applications and multitasking needs.",
+      specifications: [
+        { name: "Processor", value: "Intel Core i7 / Xeon" },
+        { name: "Graphics", value: "NVIDIA Quadro / AMD Radeon Pro" },
+        { name: "Memory", value: "16GB - 128GB ECC RAM" },
+        { name: "Storage", value: "512GB - 2TB SSD + HDD" },
+        { name: "Security", value: "TPM 2.0, BIOS Protection" },
+      ],
+      features: [
+        "24/7 Reliability",
+        "Enterprise Security",
+        "Multiple Display Support",
+        "Quiet Operation",
+        "Easy Maintenance",
+      ],
+      additionalImages: [
+        "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=600",
+      ],
+    },
+    {
+      id: 3,
+      name: "Creative Workstations",
+      description: "Powerful machines for video editing and design",
+      products: [
+        "4K Video Editing Rigs",
+        "3D Modeling Workstations",
+        "Graphic Design Computers",
+        "Color-Accurate Monitors",
+      ],
+      priceRange: "$2,000 - $8,000",
+      image:
+        "https://images.pexels.com/photos/1334597/pexels-photo-1334597.jpeg?auto=compress&cs=tinysrgb&w=600",
+      gradient: "from-orange-500 to-red-500",
+      fullDescription:
+        "Unleash your creativity with our professional creative workstations. Optimized for demanding applications like Adobe Creative Suite, 3D modeling software, and 4K video editing with real-time rendering capabilities.",
+      specifications: [
+        { name: "Processor", value: "AMD Threadripper / Intel Xeon" },
+        { name: "Graphics", value: "Dual NVIDIA RTX A6000" },
+        { name: "Memory", value: "64GB - 256GB DDR4" },
+        { name: "Storage", value: "2TB NVMe + 8TB HDD RAID" },
+        { name: "Display", value: "4K/8K Monitor Support" },
+      ],
+      features: [
+        "Real-time 4K Editing",
+        "3D Rendering Optimized",
+        "Color Calibrated",
+        "Multiple GPU Support",
+        "High-speed Storage",
+      ],
+      additionalImages: [
+        "https://images.pexels.com/photos/270637/pexels-photo-270637.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "https://images.pexels.com/photos/1148820/pexels-photo-1148820.jpeg?auto=compress&cs=tinysrgb&w=600",
+      ],
+    },
+    {
+      id: 4,
+      name: "Budget Solutions",
+      description: "Affordable computers for everyday use",
+      products: [
+        "Basic Office Computers",
+        "Student Laptops",
+        "Home Entertainment PCs",
+        "All-in-One Computers",
+      ],
+      priceRange: "$400 - $1,000",
+      image:
+        "https://images.pexels.com/photos/777001/pexels-photo-777001.jpeg?auto=compress&cs=tinysrgb&w=600",
+      gradient: "from-green-500 to-emerald-500",
+      fullDescription:
+        "Get reliable computing power without breaking the bank. Our budget solutions are perfect for everyday tasks, office work, student use, and home entertainment with excellent value for money.",
+      specifications: [
+        { name: "Processor", value: "Intel Core i3/i5 / AMD Ryzen 3/5" },
+        { name: "Graphics", value: "Integrated / Entry-level GPU" },
+        { name: "Memory", value: "8GB - 16GB DDR4" },
+        { name: "Storage", value: "256GB - 1TB SSD" },
+        { name: "Connectivity", value: "Wi-Fi 6, Bluetooth 5.0" },
+      ],
+      features: [
+        "Energy Efficient",
+        "Compact Design",
+        "Easy to Use",
+        "Reliable Performance",
+        "Great Value",
+      ],
+      additionalImages: [
+        "https://images.pexels.com/photos/1229861/pexels-photo-1229861.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=600",
+      ],
+    },
+    {
+      id: 5,
+      name: "Server Solutions",
+      description: "Enterprise-grade server infrastructure",
+      products: [
+        "Rack Servers",
+        "Network Storage",
+        "Data Center Solutions",
+        "Backup Systems",
+      ],
+      priceRange: "$3,000 - $20,000+",
+      image:
+        "https://images.pexels.com/photos/325229/pexels-photo-325229.jpeg?auto=compress&cs=tinysrgb&w=600",
+      gradient: "from-indigo-500 to-purple-500",
+      fullDescription:
+        "Build robust IT infrastructure with our enterprise server solutions. From small business servers to large data center deployments, we provide scalable and reliable server systems with comprehensive support.",
+      specifications: [
+        { name: "Processor", value: "Dual Xeon / EPYC" },
+        { name: "Memory", value: "64GB - 2TB ECC RAM" },
+        { name: "Storage", value: "Multi-bay SAS/SATA/SSD" },
+        { name: "RAID", value: "Hardware RAID Controller" },
+        { name: "Redundancy", value: "Dual PSU, Hot-swap" },
+      ],
+      features: [
+        "24/7 Operation",
+        "Remote Management",
+        "High Availability",
+        "Scalable Architecture",
+        "Enterprise Support",
+      ],
+      additionalImages: [
+        "https://images.pexels.com/photos/1148820/pexels-photo-1148820.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?auto=compress&cs=tinysrgb&w=600",
+      ],
+    },
+    {
+      id: 6,
+      name: "Accessories & Peripherals",
+      description: "Complete your setup with premium accessories",
+      products: [
+        "Mechanical Keyboards",
+        "Gaming Mice",
+        "Headsets",
+        "Webcams & Microphones",
+      ],
+      priceRange: "$50 - $500",
+      image:
+        "https://images.pexels.com/photos/2115256/pexels-photo-2115256.jpeg?auto=compress&cs=tinysrgb&w=600",
+      gradient: "from-yellow-500 to-orange-500",
+      fullDescription:
+        "Enhance your computing experience with our premium accessories and peripherals. From high-precision gaming gear to professional audio equipment, we have everything to complete your perfect setup.",
+      specifications: [
+        { name: "Keyboards", value: "Mechanical, RGB, Wireless" },
+        { name: "Mice", value: "High DPI, Programmable" },
+        { name: "Audio", value: "7.1 Surround, Noise Cancel" },
+        { name: "Monitors", value: "144Hz, 4K, IPS Panels" },
+        { name: "Connectivity", value: "USB-C, Wireless, Bluetooth" },
+      ],
+      features: [
+        "Premium Build Quality",
+        "Enhanced Productivity",
+        "Gaming Optimized",
+        "Ergonomic Design",
+        "Warranty Included",
+      ],
+      additionalImages: [
+        "https://images.pexels.com/photos/3393379/pexels-photo-3393379.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "https://images.pexels.com/photos/3945657/pexels-photo-3945657.jpeg?auto=compress&cs=tinysrgb&w=600",
+      ],
+    },
+  ];
+
+  export const galleryImages = [
+      {
+        id: 1,
+        title: "Enterprise Solutions",
+        description: "High-performance workstations for business",
+        image:
+          "https://images.pexels.com/photos/777001/pexels-photo-777001.jpeg?auto=compress&cs=tinysrgb&w=600",
+      },
+      {
+        id: 2,
+        title: "Gaming Systems",
+        description: "Custom-built gaming computers",
+        image:
+          "https://images.pexels.com/photos/129208/pexels-photo-129208.jpeg?auto=compress&cs=tinysrgb&w=600",
+      },
+      {
+        id: 3,
+        title: "Professional Support",
+        description: "24/7 customer service and support",
+        image:
+          "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=600",
+      },
+      {
+        id: 4,
+        title: "Business Laptops",
+        description: "Enterprise-grade mobile solutions",
+        image:
+          "https://images.pexels.com/photos/2047905/pexels-photo-2047905.jpeg?auto=compress&cs=tinysrgb&w=600",
+      },
+      {
+        id: 5,
+        title: "Creative Workstations",
+        description: "Powerful machines for creators",
+        image:
+          "https://images.pexels.com/photos/1334597/pexels-photo-1334597.jpeg?auto=compress&cs=tinysrgb&w=600",
+      },
+      {
+        id: 6,
+        title: "IT Infrastructure",
+        description: "Complete technology solutions",
+        image:
+          "https://images.pexels.com/photos/325229/pexels-photo-325229.jpeg?auto=compress&cs=tinysrgb&w=600",
+      },
+    ];
+
+    export const companyData = {
+        about:
+          "  Computer store Rwanda Limited is a full service technology services provider and the leading IT Consulting Company in Kigali, Rwanda. We specialize in providing cutting-edge computing solutions for businesses and individuals.",
+        mission:
+          "To empower businesses and individuals with reliable, high-performance computing solutions that drive productivity and innovation.",
+        vision:
+          "To be East Africa's premier technology solutions provider, known for excellence and innovation.",
+        services: [
+          "Enterprise Computing Solutions",
+          "Professional IT Consulting",
+          "Hardware Sales & Support",
+          "Network Infrastructure",
+          "Custom PC Building",
+          "IT Maintenance & Support",
+        ],
+        achievements: [
+          "5000+ Satisfied Customers",
+          "15+ Years Industry Experience",
+          "24/7 Customer Support",
+          "ISO 9001 Certified",
+        ],
+      };
+
+      export const services = [
+          {
+            id: 1,
+            title: "Custom PC Building",
+            description:
+              "Tailor-made computers designed to your exact specifications and requirements",
+            fullDescription:
+              "Our expert technicians build custom PCs optimized for gaming, content creation, or business applications. Every component is carefully selected for compatibility and performance. We ensure optimal cooling, cable management, and future-proofing for your investment.",
+            icon: "🛠️",
+            color: "from-blue-500 to-cyan-500",
+            bgColor: "bg-blue-50",
+            gradient: "linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)",
+            features: [
+              "Component Selection Guidance",
+              "Cable Management Excellence",
+              "Performance Optimization",
+              "Quality Testing & Burn-in",
+              "1-Year Build Warranty",
+              "Future-Proofing Advice",
+            ],
+            process: [
+              "Consultation & Requirements Analysis",
+              "Component Selection & Quotation",
+              "Professional Assembly",
+              "Quality Testing & Optimization",
+              "Delivery & Setup Support",
+            ],
+            price: "$99",
+            duration: "2-5 Days",
+            image:
+              "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=600&h=400&fit=crop",
+            graphic: "🎮",
+            stats: { successRate: "99%", clients: "2K+", satisfaction: "4.9/5" },
+          },
+          {
+            id: 2,
+            title: "Enterprise IT Solutions",
+            description:
+              "Comprehensive technology infrastructure for businesses of all sizes",
+            fullDescription:
+              "End-to-end IT solutions including network setup, server configuration, and enterprise-grade hardware deployment with ongoing support. We design scalable solutions that grow with your business while maintaining security and reliability.",
+            icon: "🏢",
+            color: "from-purple-500 to-pink-500",
+            bgColor: "bg-purple-50",
+            gradient: "linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)",
+            features: [
+              "Network Infrastructure Setup",
+              "Server Configuration & Management",
+              "Data Security Implementation",
+              "24/7 Monitoring & Support",
+              "Scalable Solutions",
+              "Disaster Recovery Planning",
+            ],
+            process: [
+              "Business Needs Assessment",
+              "Infrastructure Planning",
+              "Hardware Deployment",
+              "System Integration",
+              "Ongoing Maintenance",
+            ],
+            price: "Custom Quote",
+            duration: "2-4 Weeks",
+            image:
+              "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop",
+            graphic: "💼",
+            stats: { successRate: "98%", clients: "500+", satisfaction: "4.8/5" },
+          },
+          {
+            id: 3,
+            title: "Device Repair & Maintenance",
+            description:
+              "Expert repair services for computers, laptops, and mobile devices",
+            fullDescription:
+              "Fast and reliable repair services with genuine parts and expert technicians. We fix everything from screen replacements to complex motherboard issues. Our diagnostic process ensures we identify the root cause and provide lasting solutions.",
+            icon: "🔧",
+            color: "from-green-500 to-emerald-500",
+            bgColor: "bg-green-50",
+            gradient: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+            features: [
+              "Hardware Diagnostics & Repair",
+              "Screen & Component Replacement",
+              "Data Recovery Services",
+              "Virus & Malware Removal",
+              "Preventive Maintenance",
+              "Warranty Repairs",
+            ],
+            process: [
+              "Diagnostic Assessment",
+              "Repair Quotation",
+              "Genuine Parts Replacement",
+              "Quality Testing",
+              "Final Inspection & Delivery",
+            ],
+            price: "$49",
+            duration: "1-3 Days",
+            image:
+              "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop",
+            graphic: "⚡",
+            stats: { successRate: "96%", clients: "5K+", satisfaction: "4.7/5" },
+          },
+          {
+            id: 4,
+            title: "IT Consultation",
+            description:
+              "Strategic technology guidance for optimal business performance",
+            fullDescription:
+              "Professional IT consulting to help you make informed technology decisions, optimize your infrastructure, and plan for future growth. We provide actionable insights and roadmaps that align technology with your business objectives.",
+            icon: "💡",
+            color: "from-orange-500 to-red-500",
+            bgColor: "bg-orange-50",
+            gradient: "linear-gradient(135deg, #F59E0B 0%, #EF4444 100%)",
+            features: [
+              "Technology Strategy Planning",
+              "Infrastructure Optimization",
+              "Cost-Benefit Analysis",
+              "Future-Proofing Solutions",
+              "Implementation Roadmaps",
+              "Vendor Management",
+            ],
+            process: [
+              "Current State Analysis",
+              "Gap Identification",
+              "Solution Recommendations",
+              "Implementation Planning",
+              "Performance Monitoring",
+            ],
+            price: "$150/hour",
+            duration: "Flexible",
+            image:
+              "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop",
+            graphic: "📊",
+            stats: { successRate: "97%", clients: "1K+", satisfaction: "4.9/5" },
+          },
+          {
+            id: 5,
+            title: "Data Recovery Services",
+            description:
+              "Professional data retrieval from damaged or corrupted storage devices",
+            fullDescription:
+              "Advanced data recovery services for hard drives, SSDs, and other storage media. High success rate with secure handling of your valuable data. We use state-of-the-art equipment in our certified clean room environment.",
+            icon: "💾",
+            color: "from-indigo-500 to-blue-500",
+            bgColor: "bg-indigo-50",
+            gradient: "linear-gradient(135deg, #6366F1 0%, #3B82F6 100%)",
+            features: [
+              "Hard Drive & SSD Recovery",
+              "RAID Array Reconstruction",
+              "Corrupted Data Retrieval",
+              "Secure Data Handling",
+              "Success-Based Pricing",
+              "Encrypted Drive Recovery",
+            ],
+            process: [
+              "Media Assessment",
+              "Recovery Method Selection",
+              "Data Extraction",
+              "Integrity Verification",
+              "Secure Delivery",
+            ],
+            price: "$199",
+            duration: "3-7 Days",
+            image:
+              "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop",
+            graphic: "🔐",
+            stats: { successRate: "95%", clients: "3K+", satisfaction: "4.8/5" },
+          },
+          {
+            id: 6,
+            title: "Network Setup & Security",
+            description: "Secure and efficient network infrastructure installation",
+            fullDescription:
+              "Complete network setup including wired and wireless solutions with enterprise-grade security measures to protect your business data. We implement robust security protocols and monitoring systems to keep your network safe.",
+            icon: "🌐",
+            color: "from-teal-500 to-cyan-500",
+            bgColor: "bg-teal-50",
+            gradient: "linear-gradient(135deg, #14B8A6 0%, #06B6D4 100%)",
+            features: [
+              "Wireless Network Deployment",
+              "Network Security Implementation",
+              "Firewall Configuration",
+              "VPN Setup",
+              "Ongoing Monitoring",
+              "Security Audits",
+            ],
+            process: [
+              "Site Survey & Planning",
+              "Hardware Installation",
+              "Security Configuration",
+              "Performance Testing",
+              "Documentation & Training",
+            ],
+            price: "$299",
+            duration: "1-2 Weeks",
+            image:
+              "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop",
+            graphic: "🛡️",
+            stats: { successRate: "98%", clients: "800+", satisfaction: "4.9/5" },
+          },
+        ];
+        export const testimonials = [
+            {
+              id: 1,
+              name: "Alex Johnson",
+              company: "Creative Studio Pro",
+              text: "The custom workstation they built transformed our video editing workflow. Incredible performance and reliability!",
+              rating: 5,
+              service: "Custom PC Building",
+              avatar: "👨‍💼",
+              image:
+                "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+            },
+            {
+              id: 2,
+              name: "Sarah Mitchell",
+              company: "TechStart Inc.",
+              text: "Their enterprise IT solution scaled perfectly with our growing business. Professional service from start to finish.",
+              rating: 5,
+              service: "Enterprise IT Solutions",
+              avatar: "👩‍💼",
+              image:
+                "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+            },
+            {
+              id: 3,
+              name: "Michael Chen",
+              company: "DataFlow Systems",
+              text: "Recovered critical business data we thought was lost forever. Exceptional expertise and service.",
+              rating: 5,
+              service: "Data Recovery Services",
+              avatar: "👨‍🔬",
+              image:
+                "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+            },
+            {
+              id: 4,
+              name: "Emily Rodriguez",
+              company: "Design Masters",
+              text: "Outstanding consultation services that helped us optimize our IT infrastructure and save costs.",
+              rating: 5,
+              service: "IT Consultation",
+              avatar: "👩‍🎨",
+              image:
+                "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+            },
+          ];

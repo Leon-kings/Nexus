@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { services, testimonials } from "../../assets/images/images";
 
 // API Base URL
 const API_BASE_URL = "http://localhost:5000/api";
@@ -38,205 +39,6 @@ export const Services = () => {
   });
 
   // Enhanced services data with graphics
-  const services = [
-    {
-      id: 1,
-      title: "Custom PC Building",
-      description:
-        "Tailor-made computers designed to your exact specifications and requirements",
-      fullDescription:
-        "Our expert technicians build custom PCs optimized for gaming, content creation, or business applications. Every component is carefully selected for compatibility and performance. We ensure optimal cooling, cable management, and future-proofing for your investment.",
-      icon: "🛠️",
-      color: "from-blue-500 to-cyan-500",
-      bgColor: "bg-blue-50",
-      gradient: "linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)",
-      features: [
-        "Component Selection Guidance",
-        "Cable Management Excellence",
-        "Performance Optimization",
-        "Quality Testing & Burn-in",
-        "1-Year Build Warranty",
-        "Future-Proofing Advice",
-      ],
-      process: [
-        "Consultation & Requirements Analysis",
-        "Component Selection & Quotation",
-        "Professional Assembly",
-        "Quality Testing & Optimization",
-        "Delivery & Setup Support",
-      ],
-      price: "$99",
-      duration: "2-5 Days",
-      image:
-        "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=600&h=400&fit=crop",
-      graphic: "🎮",
-      stats: { successRate: "99%", clients: "2K+", satisfaction: "4.9/5" },
-    },
-    {
-      id: 2,
-      title: "Enterprise IT Solutions",
-      description:
-        "Comprehensive technology infrastructure for businesses of all sizes",
-      fullDescription:
-        "End-to-end IT solutions including network setup, server configuration, and enterprise-grade hardware deployment with ongoing support. We design scalable solutions that grow with your business while maintaining security and reliability.",
-      icon: "🏢",
-      color: "from-purple-500 to-pink-500",
-      bgColor: "bg-purple-50",
-      gradient: "linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)",
-      features: [
-        "Network Infrastructure Setup",
-        "Server Configuration & Management",
-        "Data Security Implementation",
-        "24/7 Monitoring & Support",
-        "Scalable Solutions",
-        "Disaster Recovery Planning",
-      ],
-      process: [
-        "Business Needs Assessment",
-        "Infrastructure Planning",
-        "Hardware Deployment",
-        "System Integration",
-        "Ongoing Maintenance",
-      ],
-      price: "Custom Quote",
-      duration: "2-4 Weeks",
-      image:
-        "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop",
-      graphic: "💼",
-      stats: { successRate: "98%", clients: "500+", satisfaction: "4.8/5" },
-    },
-    {
-      id: 3,
-      title: "Device Repair & Maintenance",
-      description:
-        "Expert repair services for computers, laptops, and mobile devices",
-      fullDescription:
-        "Fast and reliable repair services with genuine parts and expert technicians. We fix everything from screen replacements to complex motherboard issues. Our diagnostic process ensures we identify the root cause and provide lasting solutions.",
-      icon: "🔧",
-      color: "from-green-500 to-emerald-500",
-      bgColor: "bg-green-50",
-      gradient: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
-      features: [
-        "Hardware Diagnostics & Repair",
-        "Screen & Component Replacement",
-        "Data Recovery Services",
-        "Virus & Malware Removal",
-        "Preventive Maintenance",
-        "Warranty Repairs",
-      ],
-      process: [
-        "Diagnostic Assessment",
-        "Repair Quotation",
-        "Genuine Parts Replacement",
-        "Quality Testing",
-        "Final Inspection & Delivery",
-      ],
-      price: "$49",
-      duration: "1-3 Days",
-      image:
-        "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop",
-      graphic: "⚡",
-      stats: { successRate: "96%", clients: "5K+", satisfaction: "4.7/5" },
-    },
-    {
-      id: 4,
-      title: "IT Consultation",
-      description:
-        "Strategic technology guidance for optimal business performance",
-      fullDescription:
-        "Professional IT consulting to help you make informed technology decisions, optimize your infrastructure, and plan for future growth. We provide actionable insights and roadmaps that align technology with your business objectives.",
-      icon: "💡",
-      color: "from-orange-500 to-red-500",
-      bgColor: "bg-orange-50",
-      gradient: "linear-gradient(135deg, #F59E0B 0%, #EF4444 100%)",
-      features: [
-        "Technology Strategy Planning",
-        "Infrastructure Optimization",
-        "Cost-Benefit Analysis",
-        "Future-Proofing Solutions",
-        "Implementation Roadmaps",
-        "Vendor Management",
-      ],
-      process: [
-        "Current State Analysis",
-        "Gap Identification",
-        "Solution Recommendations",
-        "Implementation Planning",
-        "Performance Monitoring",
-      ],
-      price: "$150/hour",
-      duration: "Flexible",
-      image:
-        "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop",
-      graphic: "📊",
-      stats: { successRate: "97%", clients: "1K+", satisfaction: "4.9/5" },
-    },
-    {
-      id: 5,
-      title: "Data Recovery Services",
-      description:
-        "Professional data retrieval from damaged or corrupted storage devices",
-      fullDescription:
-        "Advanced data recovery services for hard drives, SSDs, and other storage media. High success rate with secure handling of your valuable data. We use state-of-the-art equipment in our certified clean room environment.",
-      icon: "💾",
-      color: "from-indigo-500 to-blue-500",
-      bgColor: "bg-indigo-50",
-      gradient: "linear-gradient(135deg, #6366F1 0%, #3B82F6 100%)",
-      features: [
-        "Hard Drive & SSD Recovery",
-        "RAID Array Reconstruction",
-        "Corrupted Data Retrieval",
-        "Secure Data Handling",
-        "Success-Based Pricing",
-        "Encrypted Drive Recovery",
-      ],
-      process: [
-        "Media Assessment",
-        "Recovery Method Selection",
-        "Data Extraction",
-        "Integrity Verification",
-        "Secure Delivery",
-      ],
-      price: "$199",
-      duration: "3-7 Days",
-      image:
-        "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop",
-      graphic: "🔐",
-      stats: { successRate: "95%", clients: "3K+", satisfaction: "4.8/5" },
-    },
-    {
-      id: 6,
-      title: "Network Setup & Security",
-      description: "Secure and efficient network infrastructure installation",
-      fullDescription:
-        "Complete network setup including wired and wireless solutions with enterprise-grade security measures to protect your business data. We implement robust security protocols and monitoring systems to keep your network safe.",
-      icon: "🌐",
-      color: "from-teal-500 to-cyan-500",
-      bgColor: "bg-teal-50",
-      gradient: "linear-gradient(135deg, #14B8A6 0%, #06B6D4 100%)",
-      features: [
-        "Wireless Network Deployment",
-        "Network Security Implementation",
-        "Firewall Configuration",
-        "VPN Setup",
-        "Ongoing Monitoring",
-        "Security Audits",
-      ],
-      process: [
-        "Site Survey & Planning",
-        "Hardware Installation",
-        "Security Configuration",
-        "Performance Testing",
-        "Documentation & Training",
-      ],
-      price: "$299",
-      duration: "1-2 Weeks",
-      image:
-        "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop",
-      graphic: "🛡️",
-      stats: { successRate: "98%", clients: "800+", satisfaction: "4.9/5" },
-    },
-  ];
 
   const stats = [
     {
@@ -265,53 +67,6 @@ export const Services = () => {
     },
   ];
 
-  const testimonials = [
-    {
-      id: 1,
-      name: "Alex Johnson",
-      company: "Creative Studio Pro",
-      text: "The custom workstation they built transformed our video editing workflow. Incredible performance and reliability!",
-      rating: 5,
-      service: "Custom PC Building",
-      avatar: "👨‍💼",
-      image:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-    },
-    {
-      id: 2,
-      name: "Sarah Mitchell",
-      company: "TechStart Inc.",
-      text: "Their enterprise IT solution scaled perfectly with our growing business. Professional service from start to finish.",
-      rating: 5,
-      service: "Enterprise IT Solutions",
-      avatar: "👩‍💼",
-      image:
-        "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
-    },
-    {
-      id: 3,
-      name: "Michael Chen",
-      company: "DataFlow Systems",
-      text: "Recovered critical business data we thought was lost forever. Exceptional expertise and service.",
-      rating: 5,
-      service: "Data Recovery Services",
-      avatar: "👨‍🔬",
-      image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    },
-    {
-      id: 4,
-      name: "Emily Rodriguez",
-      company: "Design Masters",
-      text: "Outstanding consultation services that helped us optimize our IT infrastructure and save costs.",
-      rating: 5,
-      service: "IT Consultation",
-      avatar: "👩‍🎨",
-      image:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-    },
-  ];
-
   // Auto-rotate testimonials
   useEffect(() => {
     const interval = setInterval(() => {
@@ -320,6 +75,7 @@ export const Services = () => {
       );
     }, 5000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [testimonials.length]);
 
   // Handle booking form input changes
@@ -511,46 +267,6 @@ export const Services = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br mt-2 mb-1 rounded-2xl from-slate-50 via-blue-50 to-cyan-50 overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute top-1/4 left-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20"
-          animate={{
-            x: [0, 100, 0],
-            y: [0, -50, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute top-1/2 right-20 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20"
-          animate={{
-            x: [0, -80, 0],
-            y: [0, 60, 0],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute bottom-20 left-1/3 w-64 h-64 bg-cyan-200 rounded-full mix-blend-multiply filter blur-xl opacity-20"
-          animate={{
-            x: [0, 60, 0],
-            y: [0, -30, 0],
-          }}
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      </div>
-
       {/* Hero Section */}
       <section className="relative py-24 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/40"></div>
@@ -604,30 +320,8 @@ export const Services = () => {
               services. From custom builds to enterprise solutions, we deliver
               excellence.
             </p>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-block"
-            >
-              <Link
-                to="/contact"
-                className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl transition-all duration-300 shadow-lg flex items-center space-x-2"
-              >
-                <span>Get Started Today</span>
-                <span>✨</span>
-              </Link>
-            </motion.div>
           </motion.div>
         </div>
-
-        {/* Scroll Indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <div className="text-white text-2xl">⌄</div>
-        </motion.div>
       </section>
 
       {/* Stats Section */}
@@ -881,7 +575,7 @@ export const Services = () => {
                   {activeService.graphic}
                 </motion.div>
                 <button
-                  onClick={() => setActiveService(null)}
+                  onClick={() => setActiveService(true)}
                   className="absolute top-6 right-6 bg-gradient-to-tr from-red-500 to-red-700 text-2xl z-10"
                 >
                   ✕
