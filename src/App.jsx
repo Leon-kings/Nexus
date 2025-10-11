@@ -12,6 +12,9 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { NotFound } from "./pages/notfound/NotFound";
 import { Footer } from "./components/footer/Footer";
+import { CookiePolicy } from "./components/policy/CookiePolicy";
+import { PrivacyPolicy } from "./components/policy/PrivacyPolicy";
+import { Team } from "./components/team/Team";
 
 // API configuration
 const API_BASE_URL = "https://your-api-endpoint.com/api";
@@ -45,8 +48,7 @@ const BackToTop = () => {
       {isVisible && (
         <button
           onClick={scrollToTop}
-          className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110"
-          aria-label="Back to top"
+          className="bg-gradient-to-tr from-blue-400 to-indigo-400 p-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110"
         >
           <svg
             className="w-6 h-6"
@@ -106,6 +108,9 @@ export default function App() {
           <Route path="/services" element={<Services />} />
           <Route path="/products" element={<Products />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/cookies" element={<CookiePolicy />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/teams" element={<Team />} />
         </Routes>
         <ToastContainer
           position="top-right"

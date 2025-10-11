@@ -342,342 +342,271 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
   if (!isOpen) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
+    <>
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white rounded-3xl max-w-6xl w-full max-h-[95vh] overflow-hidden flex flex-col"
-        onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-3 md:p-4"
+        onClick={onClose}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Receipt className="text-blue-600" />
-            Invoice
-          </h2>
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={handleDownloadPDF}
-              disabled={isGenerating}
-              className="bg-gradient-to-l from-green-500 to-green-600"
-            >
-              {isGenerating ? "Generating..." : "Download PDF"}
-            </button>
-            <button
-              onClick={handlePrint}
-              className="bg-gradient-to-l from-blue-500 to-blue-600"
-            >
-              <Print className="w-4 h-4" />
-              Print
-            </button>
-            <button
-              onClick={onClose}
-              className="bg-gradient-to-l from-red-400 to-red-500 "
-            >
-              <Close className="w-4 h-4" />
-            </button>
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-6xl h-[95vh] sm:h-[90vh] flex flex-col mx-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header - Responsive */}
+          <div className=" sm:items-center justify-between p-4 sm:p-6 border-b border-gray-200 gap-3 sm:gap-0">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2 justify-center sm:justify-start">
+              <Receipt className="text-blue-600 w-5 h-5 sm:w-6 sm:h-6" />
+              Invoice
+            </h2>
+            <div className="flex items-center justify-center sm:justify-end space-x-2 sm:space-x-3 flex-wrap gap-2">
+              <button
+                onClick={handleDownloadPDF}
+                disabled={isGenerating}
+                className="bg-gradient-to-l from-green-500 to-green-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 min-w-[120px] sm:min-w-[140px] justify-center"
+              >
+                {isGenerating ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span className="hidden sm:inline">Generating...</span>
+                    <span className="inline sm:hidden">Loading...</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4" />
+                    <span className="hidden sm:inline">Download PDF</span>
+                    <span className="inline sm:hidden">PDF</span>
+                  </>
+                )}
+              </button>
+              <button
+                onClick={handlePrint}
+                className="bg-gradient-to-l from-blue-500 to-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center gap-2 min-w-[100px] sm:min-w-[120px] justify-center"
+              >
+                <Print className="w-4 h-4" />
+                <span className="hidden sm:inline">Print</span>
+              </button>
+              <button
+                onClick={onClose}
+                className="bg-gradient-to-l from-red-400 to-red-500 text-white p-2 sm:p-2 rounded-lg hover:from-red-500 hover:to-red-600 transition-all duration-200 flex items-center justify-center min-w-[40px] sm:min-w-[44px]"
+              >
+                <Close className="w-4 h-4 sm:w-4 sm:h-4" />
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* Invoice Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div
-            ref={invoiceRef}
-            className="bg-white p-8 rounded-2xl border-2 border-gray-200 invoice-print"
-            style={{ minHeight: "1000px" }}
-          >
-            {/* Invoice Header */}
-            <div className="flex justify-between items-start mb-12 border-b-2 border-gray-300 pb-8">
-              <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Business className="text-white text-2xl" />
-                </div>
-                <div>
-                  <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                    Future Electronics
-                  </h1>
-                  <p className="text-lg text-gray-600 mb-1">
-                    Innovating Tomorrow, Today
-                  </p>
-                  <div className="text-gray-500 space-y-1">
-                    <p className="flex items-center gap-2">
-                      <LocationOn className="w-4 h-4" />
-                      123 Tech Innovation Avenue, Kigali Heights, Rwanda
+          {/* Invoice Content - Scrollable */}
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">
+            <div
+              ref={invoiceRef}
+              className="bg-white p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl border border-gray-200 invoice-print"
+              style={{ minHeight: "800px" }}
+            >
+              {/* Invoice Header - Responsive */}
+              <div className="grid grid-cols-1 md:grid-cols-2 justify-between items-start gap-6 sm:gap-8 mb-8 sm:mb-12 border-b-2 border-gray-300 pb-6 sm:pb-8">
+                <div className=" items-start gap-4 w-full lg:w-auto">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg mx-auto sm:mx-0">
+                    <Business className="text-white text-lg sm:text-xl md:text-2xl" />
+                  </div>
+                  <div className="text-center sm:text-left flex-1">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                      Future Electronics
+                    </h1>
+                    <p className="text-base sm:text-lg text-gray-600 mb-3">
+                      Innovating Tomorrow, Today
                     </p>
-                    <p className="flex items-center gap-2">
-                      <Phone className="w-4 h-4" />
+                    <div className="text-gray-500 space-y-1 text-sm sm:text-base">
+                      <p className="flex items-center gap-2 justify-center sm:justify-start">
+                        <LocationOn className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="break-words">
+                          123 Tech Innovation Avenue, Kigali Heights, Rwanda
+                        </span>
+                      </p>
+                      <p className="flex items-center gap-2 justify-center sm:justify-start">
+                        <Phone className="w-3 h-3 sm:w-4 sm:h-4" />
+                        +250 788 123 456
+                      </p>
+                      <p className="flex items-center gap-2 justify-center sm:justify-start">
+                        <Email className="w-3 h-3 sm:w-4 sm:h-4" />
+                        info@futureelectronics.com
+                      </p>
+                      <p className="text-center sm:text-left">
+                        www.futureelectronics.com
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center sm:text-right bg-gradient-to-br from-blue-50 to-purple-50 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-blue-200 w-full lg:w-auto">
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center justify-center sm:justify-end gap-2">
+                    <Receipt className="text-blue-600 w-5 h-5 sm:w-6 sm:h-6" />
+                    INVOICE
+                  </h2>
+                  <div className="space-y-2 text-sm sm:text-base md:text-lg">
+                    <p className="flex items-center justify-center sm:justify-end gap-2">
+                      <strong className="text-gray-700">Invoice #:</strong>
+                      <span className="font-mono">{orderDetails.orderId}</span>
+                    </p>
+                    <p className="flex items-center justify-center sm:justify-end gap-2">
+                      <strong className="text-gray-700">Date:</strong>
+                      {formatDate(orderDetails.createdAt)}
+                    </p>
+                    <p className="flex items-center justify-center sm:justify-end gap-2">
+                      <strong className="text-gray-700">Status:</strong>
+                      <span className="ml-2 px-3 py-1 sm:px-4 sm:py-2 bg-green-500 text-white rounded-full text-xs sm:text-sm font-bold shadow-lg flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                        PAID
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Customer & Payment Info - Responsive Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 mb-8 sm:mb-12">
+                {/* Bill To */}
+                <div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center justify-center lg:justify-start">
+                    <Person className="mr-2 sm:mr-3 text-blue-600 w-4 h-4 sm:w-5 sm:h-5" />
+                    Bill To:
+                  </h3>
+                  <div className="bg-gray-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200">
+                    <p className="font-bold text-lg sm:text-xl text-gray-900 mb-2 text-center lg:text-left">
+                      {orderDetails.user.firstName} {orderDetails.user.lastName}
+                    </p>
+                    <div className="space-y-1 sm:space-y-2 text-gray-700 text-sm sm:text-base">
+                      <p className="flex items-center gap-2 justify-center lg:justify-start">
+                        <Email className="w-3 h-3 sm:w-4 sm:h-4" />
+                        {orderDetails.user.email}
+                      </p>
+                      <p className="flex items-center gap-2 justify-center lg:justify-start">
+                        <Phone className="w-3 h-3 sm:w-4 sm:h-4" />
+                        {orderDetails.user.phone}
+                      </p>
+                      <p className="flex items-center gap-2 justify-center lg:justify-start">
+                        <LocationOn className="w-3 h-3 sm:w-4 sm:h-4" />
+                        {orderDetails.user.address}
+                      </p>
+                      <p className="text-center lg:text-left">
+                        {orderDetails.user.city}, {orderDetails.user.country}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+              
+              
+
+              {/* Order Items - Responsive Table */}
+              <div className="mb-8 sm:mb-12">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center justify-center lg:justify-start">
+                  <ShoppingCart className="mr-2 sm:mr-3 text-purple-600 w-4 h-4 sm:w-5 sm:h-5" />
+                  Order Details
+                </h3>
+                <div className="border border-gray-200 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg">
+                  {/* Mobile View - Cards */}
+                  <div className="block sm:hidden">
+                    {orderDetails.items.map((item, index) => (
+                      <div
+                        key={item.id}
+                        className={`p-4 ${
+                          index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        } border-b border-gray-200`}
+                      >
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+                            <img
+                              src={item.image}
+                              alt=""
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-gray-900 text-sm truncate">
+                              {item.name}
+                            </p>
+                            <p className="text-gray-600 text-xs">
+                              {item.brand}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-sm">
+                          <div className="text-center">
+                            <p className="text-gray-600 text-xs">Qty</p>
+                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-bold text-xs">
+                              {item.quantity}
+                            </span>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-gray-600 text-xs">Price</p>
+                            <p className="font-semibold text-gray-900">
+                              ${item.price.toFixed(2)}
+                            </p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-gray-600 text-xs">Total</p>
+                            <p className="font-bold text-gray-900">
+                              ${(item.price * item.quantity).toFixed(2)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+</div>
+              {/* Footer - Responsive Grid */}
+              <div className="border-t border-gray-300 pt-6 sm:pt-8">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 md:gap-8 text-center">
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-1 sm:mb-2 flex items-center justify-center gap-2 text-sm sm:text-base">
+                      <LocalShipping className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                      Delivery Info
+                    </h4>
+                    <p className="text-gray-600 text-xs sm:text-sm">
+                      Estimated delivery: 3-5 business days
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-1 sm:mb-2 flex items-center justify-center gap-2 text-sm sm:text-base">
+                      <Support className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                      Support
+                    </h4>
+                    <p className="text-gray-600 text-xs sm:text-sm">
+                      support@futureelectronics.com
+                      <br className="hidden sm:block" />
                       +250 788 123 456
                     </p>
-                    <p className="flex items-center gap-2">
-                      <Email className="w-4 h-4" />
-                      info@futureelectronics.com
-                    </p>
-                    <p>www.futureelectronics.com</p>
                   </div>
-                </div>
-              </div>
-
-              <div className="text-right bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-2xl border border-blue-200">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-end gap-2">
-                  <Receipt className="text-blue-600" />
-                  INVOICE
-                </h2>
-                <div className="space-y-2 text-lg">
-                  <p className="flex items-center justify-end gap-2">
-                    <strong className="text-gray-700">Invoice #:</strong>{" "}
-                    {orderDetails.orderId}
-                  </p>
-                  <p className="flex items-center justify-end gap-2">
-                    <strong className="text-gray-700">Date:</strong>{" "}
-                    {formatDate(orderDetails.createdAt)}
-                  </p>
-                  <p className="flex items-center justify-end gap-2">
-                    <strong className="text-gray-700">Status:</strong>
-                    <span className="ml-3 px-4 py-2 bg-green-500 text-white rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
-                      <CheckCircle className="w-4 h-4" />
-                      PAID
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Customer & Payment Info */}
-            <div className="grid grid-cols-2 gap-12 mb-12">
-              <div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <Person className="mr-3 text-blue-600" />
-                  Bill To:
-                </h3>
-                <div className="bg-gray-50 rounded-2xl p-6 border-2 border-gray-200">
-                  <p className="font-bold text-xl text-gray-900 mb-2">
-                    {orderDetails.user.firstName} {orderDetails.user.lastName}
-                  </p>
-                  <div className="space-y-2 text-gray-700">
-                    <p className="flex items-center gap-2">
-                      <Email className="w-4 h-4" />
-                      {orderDetails.user.email}
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <Phone className="w-4 h-4" />
-                      {orderDetails.user.phone}
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <LocationOn className="w-4 h-4" />
-                      {orderDetails.user.address}
-                    </p>
-                    <p>
-                      {orderDetails.user.city}, {orderDetails.user.country}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <CreditCard className="mr-3 text-green-600" />
-                  Payment Method:
-                </h3>
-                <div className="bg-gray-50 rounded-2xl p-6 border-2 border-gray-200">
-                  <p className="font-bold text-xl text-gray-900 mb-2 capitalize">
-                    {orderDetails.payment.paymentMethod.replace("_", " ")}
-                  </p>
-                  {orderDetails.payment.paymentMethod === "credit_card" && (
-                    <div className="space-y-2 text-gray-700">
-                      <p className="flex items-center gap-2">
-                        <CreditCard className="w-4 h-4" />
-                        Card ending in{" "}
-                        {orderDetails.payment.paymentDetails.cardNumber.slice(
-                          -4
-                        )}
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <span>📅</span>
-                        Expires:{" "}
-                        {orderDetails.payment.paymentDetails.expiryDate}
-                      </p>
-                    </div>
-                  )}
-                  {orderDetails.payment.paymentMethod === "mobile_money" && (
-                    <div className="space-y-2 text-gray-700">
-                      <p className="flex items-center gap-2">
-                        <Smartphone className="w-4 h-4" />
-                        {orderDetails.payment.paymentDetails.network.toUpperCase()}{" "}
-                        Mobile Money
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <Phone className="w-4 h-4" />
-                        {orderDetails.payment.paymentDetails.mobileNumber}
-                      </p>
-                    </div>
-                  )}
-                  <p className="text-green-600 font-semibold mt-3 flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5" />
-                    Paid on {formatDate(orderDetails.createdAt)}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Order Items */}
-            <div className="mb-12">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
-                <ShoppingCart className="mr-3 text-purple-600" />
-                Order Details
-              </h3>
-              <div className="border-2 border-gray-200 rounded-2xl overflow-hidden shadow-lg">
-                <table className="w-full text-black">
-                  <thead className="bg-gradient-to-r from-blue-500 to-purple-600">
-                    <tr>
-                      <th className="px-8 py-6 text-left text-lg font-bold text-white uppercase tracking-wider">
-                        Product
-                      </th>
-                      <th className="px-8 py-6 text-center text-lg font-bold text-white uppercase tracking-wider">
-                        Quantity
-                      </th>
-                      <th className="px-8 py-6 text-right text-lg font-bold text-white uppercase tracking-wider">
-                        Unit Price
-                      </th>
-                      <th className="px-8 py-6 text-right text-lg font-bold text-white uppercase tracking-wider">
-                        Total
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {orderDetails.items.map((item, index) => (
-                      <tr
-                        key={item.id}
-                        className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                      >
-                        <td className="px-8 py-6">
-                          <div className="flex items-center space-x-4">
-                            <div className="w-16 h-16 bg-gray-100 rounded-xl overflow-hidden border-2 border-gray-200">
-                              <img
-                                src={item.image}
-                                alt=""
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                            <div>
-                              <p className="font-semibold text-gray-900 text-lg">
-                                {item.name}
-                              </p>
-                              <p className="text-gray-600 text-sm">
-                                {item.brand}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-8 py-6 text-center">
-                          <span className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-bold text-lg">
-                            {item.quantity}
-                          </span>
-                        </td>
-                        <td className="px-8 py-6 text-right font-semibold text-gray-900 text-lg">
-                          ${item.price.toFixed(2)}
-                        </td>
-                        <td className="px-8 py-6 text-right font-bold text-gray-900 text-lg">
-                          ${(item.price * item.quantity).toFixed(2)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Totals */}
-            <div className="flex justify-end mb-12">
-              <div className="w-96 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 border-2 border-blue-200 shadow-lg">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center text-lg">
-                    <span className="text-gray-700 font-semibold">
-                      Subtotal:
-                    </span>
-                    <span className="font-bold text-gray-900">
-                      ${calculateSubtotal().toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-lg">
-                    <span className="text-gray-700 font-semibold">
-                      Shipping:
-                    </span>
-                    <span className="font-bold text-green-600 flex items-center gap-1">
-                      <CheckCircle className="w-5 h-5" />
-                      FREE
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-lg">
-                    <span className="text-gray-700 font-semibold">
-                      Tax (0%):
-                    </span>
-                    <span className="font-bold text-gray-900">$0.00</span>
-                  </div>
-                  <div className="border-t-2 border-gray-300 pt-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-2xl font-bold text-gray-900">
-                        Total:
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-1 sm:mb-2 flex items-center justify-center gap-2 text-sm sm:text-base">
+                      <span className="text-yellow-600 text-sm sm:text-base">
+                        ⭐
                       </span>
-                      <span className="text-3xl font-bold text-green-600">
-                        ${orderDetails.total.toFixed(2)}
-                      </span>
-                    </div>
+                      Thank You
+                    </h4>
+                    <p className="text-gray-600 text-xs sm:text-sm">
+                      Thank you for choosing Future Electronics
+                    </p>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="border-t-2 border-gray-300 pt-8">
-              <div className="grid grid-cols-3 gap-8 text-center">
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center justify-center gap-2">
-                    <LocalShipping className="w-5 h-5 text-blue-600" />
-                    Delivery Info
-                  </h4>
-                  <p className="text-gray-600 text-sm">
-                    Estimated delivery: 3-5 business days
+                <div className="text-center mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
+                  <p className="text-gray-500 text-xs sm:text-sm flex items-center justify-center gap-2 flex-wrap">
+                    <Receipt className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                    This is a computer-generated invoice. No signature required.
                   </p>
                 </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center justify-center gap-2">
-                    <Support className="w-5 h-5 text-green-600" />
-                    Support
-                  </h4>
-                  <p className="text-gray-600 text-sm">
-                    support@futureelectronics.com
-                    <br />
-                    +250 788 123 456
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center justify-center gap-2">
-                    <span className="text-yellow-600">⭐</span>
-                    Thank You
-                  </h4>
-                  <p className="text-gray-600 text-sm">
-                    Thank you for choosing Future Electronics
-                  </p>
-                </div>
-              </div>
-              <div className="text-center mt-8 pt-6 border-t border-gray-200">
-                <p className="text-gray-500 text-sm flex items-center justify-center gap-2">
-                  <Receipt className="w-4 h-4" />
-                  This is an computer-generated invoice. No signature required.
-                </p>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </>
   );
 };
 
@@ -870,7 +799,7 @@ const CartModal = ({
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="bg-gradient-to-b from-red-400 to-red-500"
+                      className="bg-gradient-to-b from-red-200 to-red-400"
                     >
                       <Remove className="w-4 h-4" />
                     </button>
@@ -1403,46 +1332,47 @@ const PaymentSuccess = ({
     animate={{ opacity: 1, scale: 1 }}
     className="bg-white rounded-3xl p-8 text-center max-w-md w-full text-black"
   >
-    <div className="w-20 h-20 bg-gradient-to-b from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-      <CheckCircle className="text-white text-4xl" />
-    </div>
-    <h2 className="text-3xl font-bold text-gray-900 mb-4">
-      Payment Successful!
-    </h2>
-    <p className="text-gray-600 mb-2">Thank you for your purchase!</p>
-    <p className="text-gray-600 mb-6">
-      Your order has been confirmed and is being processed.
-    </p>
+    <div className="overflow-y-auto">
+      <div className="w-20 h-20 bg-gradient-to-b from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+        <CheckCircle className="text-white text-4xl" />
+      </div>
+      <h2 className="text-3xl font-bold text-green-600 mb-4">
+        Payment Successful!
+      </h2>
+      <p className="text-gray-600 mb-2">Thank you for your purchase!</p>
+      <p className="text-gray-600 mb-2">
+        Your order has been confirmed and is being processed.
+      </p>
 
-    <div className="bg-gray-50 rounded-2xl p-6 mb-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Order Details
-      </h3>
-      <div className="space-y-2 text-left">
-        <div className="flex justify-between">
-          <span className="text-gray-600">Order ID:</span>
-          <span className="font-medium">{orderDetails.orderId}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-600">Total Amount:</span>
-          <span className="font-medium text-green-600">
-            ${orderDetails.total}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-600">Payment Method:</span>
-          <span className="font-medium capitalize">
-            {orderDetails.payment.paymentMethod.replace("_", " ")}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-600">Estimated Delivery:</span>
-          <span className="font-medium">3-5 business days</span>
+      <div className="bg-gray-50 rounded-2xl p-6 mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Order Details
+        </h3>
+        <div className="space-y-2 text-left">
+          <div className="flex justify-between">
+            <span className="text-gray-600">Order ID:</span>
+            <span className="font-medium">{orderDetails.orderId}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Total Amount:</span>
+            <span className="font-medium text-green-600">
+              ${orderDetails.total}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Payment Method:</span>
+            <span className="font-medium capitalize">
+              {orderDetails.payment.paymentMethod.replace("_", " ")}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Estimated Delivery:</span>
+            <span className="font-medium">3-5 business days</span>
+          </div>
         </div>
       </div>
     </div>
-
-    <div className="space-y-3">
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
       <button
         onClick={onViewInvoice}
         className="w-full bg-gradient-to-b from-blue-600 to-blue-700"
@@ -1466,12 +1396,12 @@ const PaymentFailed = ({ onRetry, onCancel, errorMessage }) => (
   <motion.div
     initial={{ opacity: 0, scale: 0.9 }}
     animate={{ opacity: 1, scale: 1 }}
-    className="bg-white rounded-3xl p-8 text-center max-w-md w-full text-black"
+    className="bg-white rounded-3xl p-8 overflow-y-auto text-center max-w-md w-full text-black"
   >
     <div className="w-20 h-20 bg-gradient-to-b from-red-400 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
       <Error className="text-white text-4xl" />
     </div>
-    <h2 className="text-3xl font-bold text-gray-900 mb-4">Payment Failed</h2>
+    <h2 className="text-3xl font-bold text-red-700 mb-4">Payment Failed</h2>
     <p className="text-gray-600 mb-2">
       {errorMessage || "We couldn't process your payment."}
     </p>
@@ -1548,18 +1478,11 @@ const ProductCard = ({
 
         {/* Like Button */}
         <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div
+          <button
             onClick={(e) => {
               e.stopPropagation();
               onLike(device.id);
             }}
-            gradient={
-              isLiked ? "from-red-500 to-red-600" : "from-gray-400 to-gray-500"
-            }
-            hoverGradient={
-              isLiked ? "from-red-600 to-red-700" : "from-gray-500 to-gray-600"
-            }
-            size="sm"
             className="w-8 h-8 min-w-0 p-0 "
             startIcon={
               isLiked ? (
@@ -1977,7 +1900,6 @@ export const Products = () => {
         }
       `}</style>
 
-
       {/* Cart Icon in Header */}
       <div className="fixed top-4 right-4 z-40">
         <motion.button
@@ -2239,7 +2161,10 @@ export const Products = () => {
                           <Favorite className="w-4 h-4 text-red-500" />
                           {getLikes(selectedDevice.id)} likes
                         </span>
-                        <button className="bg-gradient-to-b from-blue-400 to-indigo-300" onClick={() => handleLike(selectedDevice.id)}>
+                        <button
+                          className="bg-gradient-to-b from-blue-400 to-indigo-300"
+                          onClick={() => handleLike(selectedDevice.id)}
+                        >
                           {isLiked(selectedDevice.id) ? "Liked" : "Like"}
                         </button>
                       </div>
