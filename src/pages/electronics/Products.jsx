@@ -46,8 +46,314 @@ import {
   CameraAlt,
   Computer,
   SettingsInputAntenna,
+  Menu,
+  Category,
 } from "@mui/icons-material";
-import { electronicDevices, stats } from "../../assets/images/images";
+
+// Mock data for electronic devices and stats
+const electronicDevices = [
+  {
+    id: 1,
+    name: "MacBook Pro 16-inch",
+    brand: "Apple",
+    price: 2399,
+    originalPrice: 2599,
+    discount: 8,
+    category: "laptops",
+    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400",
+    images: [
+      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400",
+      "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400",
+    ],
+    description:
+      "Powerful laptop for professionals with M2 Pro chip, 16GB RAM, and 1TB SSD.",
+    features: [
+      "M2 Pro Chip",
+      "16GB RAM",
+      "1TB SSD",
+      "16-inch Retina Display",
+      "Touch Bar",
+    ],
+    specifications: {
+      processor: "Apple M2 Pro",
+      memory: "16GB",
+      storage: "1TB SSD",
+      display: "16-inch Retina",
+      graphics: "Integrated 19-core GPU",
+    },
+    rating: 4.8,
+    isNew: true,
+    inStock: true,
+  },
+  {
+    id: 2,
+    name: "iPhone 15 Pro",
+    brand: "Apple",
+    price: 999,
+    originalPrice: 1099,
+    discount: 9,
+    category: "smartphones",
+    image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400",
+    images: [
+      "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400",
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400",
+    ],
+    description:
+      "Latest iPhone with A17 Pro chip, titanium design, and advanced camera system.",
+    features: [
+      "A17 Pro Chip",
+      "Titanium Design",
+      "Pro Camera System",
+      "5G",
+      "Face ID",
+    ],
+    specifications: {
+      processor: "A17 Pro",
+      memory: "8GB",
+      storage: "128GB",
+      display: "6.1-inch Super Retina",
+      camera: "48MP Main",
+    },
+    rating: 4.7,
+    isNew: true,
+    inStock: true,
+  },
+  {
+    id: 3,
+    name: "Sony WH-1000XM5",
+    brand: "Sony",
+    price: 399,
+    originalPrice: 449,
+    discount: 11,
+    category: "audio",
+    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
+    images: [
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
+      "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400",
+    ],
+    description:
+      "Industry-leading noise canceling headphones with exceptional sound quality.",
+    features: [
+      "Noise Canceling",
+      "30hr Battery",
+      "Touch Controls",
+      "Voice Assistant",
+      "Quick Charge",
+    ],
+    specifications: {
+      battery: "30 hours",
+      connectivity: "Bluetooth 5.2",
+      weight: "250g",
+      features: "Noise Canceling, Touch Controls",
+    },
+    rating: 4.6,
+    isNew: false,
+    inStock: true,
+  },
+  {
+    id: 4,
+    name: "Samsung Galaxy Watch 6",
+    brand: "Samsung",
+    price: 329,
+    originalPrice: 359,
+    discount: 8,
+    category: "wearables",
+    image: "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=400",
+    images: [
+      "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=400",
+      "https://images.unsplash.com/photo-1434493652601-8dabae5c8e6a?w=400",
+    ],
+    description:
+      "Advanced smartwatch with health monitoring and premium design.",
+    features: [
+      "Health Monitoring",
+      "GPS",
+      "Water Resistant",
+      "Sleep Tracking",
+      "Voice Assistant",
+    ],
+    specifications: {
+      display: "1.5-inch AMOLED",
+      battery: "40 hours",
+      connectivity: "Bluetooth, Wi-Fi",
+      features: "GPS, Heart Rate Monitor",
+    },
+    rating: 4.4,
+    isNew: true,
+    inStock: true,
+  },
+  {
+    id: 5,
+    name: "LG OLED C3 Series",
+    brand: "LG",
+    price: 1299,
+    originalPrice: 1499,
+    discount: 13,
+    category: "tvs",
+    image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400",
+    images: [
+      "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400",
+      "https://images.unsplash.com/photo-1542751110-97427bbecf20?w=400",
+    ],
+    description: "65-inch 4K Smart TV with OLED technology and webOS platform.",
+    features: ["4K OLED", "Smart TV", "HDR", "webOS", "Dolby Atmos"],
+    specifications: {
+      size: "65-inch",
+      resolution: "4K UHD",
+      technology: "OLED",
+      features: "Smart TV, HDR",
+    },
+    rating: 4.5,
+    isNew: false,
+    inStock: true,
+  },
+  {
+    id: 6,
+    name: "iPad Air 5th Gen",
+    brand: "Apple",
+    price: 599,
+    originalPrice: 649,
+    discount: 8,
+    category: "tablets",
+    image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400",
+    images: [
+      "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400",
+      "https://images.unsplash.com/photo-1561154464-82e9adf32764?w=400",
+    ],
+    description: "Powerful tablet with M1 chip and Liquid Retina display.",
+    features: [
+      "M1 Chip",
+      "Liquid Retina",
+      "5G",
+      "Touch ID",
+      "Apple Pencil Support",
+    ],
+    specifications: {
+      processor: "Apple M1",
+      display: "10.9-inch Liquid Retina",
+      storage: "64GB",
+      features: "5G, Touch ID",
+    },
+    rating: 4.6,
+    isNew: true,
+    inStock: true,
+  },
+  {
+    id: 7,
+    name: "PlayStation 5",
+    brand: "Sony",
+    price: 499,
+    originalPrice: 499,
+    discount: 0,
+    category: "gaming",
+    image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400",
+    images: [
+      "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400",
+      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400",
+    ],
+    description:
+      "Next-gen gaming console with ultra-high speed SSD and ray tracing.",
+    features: [
+      "4K Gaming",
+      "Ray Tracing",
+      "SSD",
+      "Backward Compatible",
+      "3D Audio",
+    ],
+    specifications: {
+      storage: "825GB SSD",
+      resolution: "8K",
+      features: "Ray Tracing, 3D Audio",
+    },
+    rating: 4.8,
+    isNew: false,
+    inStock: false,
+  },
+  {
+    id: 8,
+    name: "Google Nest Hub",
+    brand: "Google",
+    price: 89,
+    originalPrice: 99,
+    discount: 10,
+    category: "smart-home",
+    image: "https://images.unsplash.com/photo-1558089687-f282ffcbc0d4?w=400",
+    images: [
+      "https://images.unsplash.com/photo-1558089687-f282ffcbc0d4?w=400",
+      "https://images.unsplash.com/photo-1558089687-f282ffcbc0d4?w=400",
+    ],
+    description:
+      "Smart display with Google Assistant for home control and entertainment.",
+    features: [
+      "Google Assistant",
+      "Touch Screen",
+      "Smart Home Control",
+      "Video Streaming",
+      "Voice Control",
+    ],
+    specifications: {
+      display: "7-inch",
+      features: "Google Assistant, Smart Home Control",
+    },
+    rating: 4.3,
+    isNew: true,
+    inStock: true,
+  },
+  {
+    id: 9,
+    name: "Canon EOS R5",
+    brand: "Canon",
+    price: 3899,
+    originalPrice: 4299,
+    discount: 9,
+    category: "cameras",
+    image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400",
+    images: [
+      "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400",
+      "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400",
+    ],
+    description:
+      "Professional mirrorless camera with 45MP and 8K video recording.",
+    features: [
+      "45MP Full Frame",
+      "8K Video",
+      "IBIS",
+      "Dual Pixel AF",
+      "Weather Sealed",
+    ],
+    specifications: {
+      sensor: "45MP Full Frame",
+      video: "8K",
+      features: "IBIS, Weather Sealed",
+    },
+    rating: 4.7,
+    isNew: false,
+    inStock: true,
+  },
+];
+
+const stats = [
+  {
+    number: "10K+",
+    label: "Happy Customers",
+    icon: "😊",
+  },
+  {
+    number: "5K+",
+    label: "Products Sold",
+    icon: "📦",
+  },
+  {
+    number: "99%",
+    label: "Satisfaction Rate",
+    icon: "⭐",
+  },
+  {
+    number: "24/7",
+    label: "Support Available",
+    icon: "🛡️",
+  },
+];
 
 // API Base URL
 const API_BASE_URL = "http://localhost:5000/api";
@@ -217,12 +523,12 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   }
 
   return (
-    <div className="flex justify-center items-center space-x-2 mt-8">
+    <div className="flex justify-center items-center space-x-2 mt-8 flex-wrap gap-2">
       {/* Previous Button */}
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className=" bg-gradient-to-tr from-blue-400 to-indigo-400"
+        className="flex items-center justify-center w-10 h-10 bg-gradient-to-tr from-blue-400 to-indigo-400 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:from-blue-500 hover:to-indigo-500 transition-all duration-200"
       >
         <ArrowBack className="w-4 h-4" />
       </button>
@@ -230,31 +536,42 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       {/* First Page */}
       {startPage > 1 && (
         <>
-          <div onClick={() => onPageChange(1)}>1</div>
-          {startPage > 2 && <span className="text-gray-500 px-2">...</span>}
+          <button
+            onClick={() => onPageChange(1)}
+            className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-400 to-blue-400 text-white rounded-xl hover:from-indigo-500 hover:to-blue-500 transition-all duration-200"
+          >
+            1
+          </button>
+          {startPage > 2 && (
+            <span className="text-gray-500 px-2 hidden sm:block">...</span>
+          )}
         </>
       )}
 
       {/* Page Numbers */}
       {pages.map((page) => (
-        <div
+        <button
           key={page}
           onClick={() => onPageChange(page)}
-          className="bg-gradient-to-br p-3 rounded-2xl from-indigo-400 to-blue-400"
+          className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 ${
+            currentPage === page
+              ? "bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg"
+              : "bg-gradient-to-br from-indigo-400 to-blue-400 text-white hover:from-indigo-500 hover:to-blue-500"
+          }`}
         >
           {page}
-        </div>
+        </button>
       ))}
 
       {/* Last Page */}
       {endPage < totalPages && (
         <>
           {endPage < totalPages - 1 && (
-            <span className="text-gray-500 px-2">...</span>
+            <span className="text-gray-500 px-2 hidden sm:block">...</span>
           )}
           <button
             onClick={() => onPageChange(totalPages)}
-            className="bg-gradient-to-b from-blue-600 to-indigo-400"
+            className="flex items-center justify-center w-10 h-10 bg-gradient-to-b from-blue-600 to-indigo-400 text-white rounded-xl hover:from-blue-700 hover:to-indigo-500 transition-all duration-200"
           >
             {totalPages}
           </button>
@@ -265,7 +582,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="bg-gradient-to-br from-blue-400 to-indigo-400"
+        className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-400 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:from-blue-500 hover:to-indigo-500 transition-all duration-200"
       >
         <ArrowForward className="w-4 h-4" />
       </button>
@@ -332,14 +649,7 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
     });
   };
 
-  const calculateSubtotal = () => {
-    return orderDetails.items.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-  };
-
-  if (!isOpen) return null;
+  if (!isOpen || !orderDetails) return null;
 
   return (
     <>
@@ -358,7 +668,7 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header - Responsive */}
-          <div className=" sm:items-center justify-between p-4 sm:p-6 border-b border-gray-200 gap-3 sm:gap-0">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 border-b border-gray-200 gap-3 sm:gap-0">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2 justify-center sm:justify-start">
               <Receipt className="text-blue-600 w-5 h-5 sm:w-6 sm:h-6" />
               Invoice
@@ -367,7 +677,7 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
               <button
                 onClick={handleDownloadPDF}
                 disabled={isGenerating}
-                className="bg-gradient-to-l from-green-500 to-green-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 min-w-[120px] sm:min-w-[140px] justify-center"
+                className="flex items-center gap-2 bg-gradient-to-l from-green-500 to-green-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-w-[120px] sm:min-w-[140px] justify-center"
               >
                 {isGenerating ? (
                   <>
@@ -385,14 +695,15 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
               </button>
               <button
                 onClick={handlePrint}
-                className="bg-gradient-to-l from-blue-500 to-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center gap-2 min-w-[100px] sm:min-w-[120px] justify-center"
+                className="flex items-center gap-2 bg-gradient-to-l from-blue-500 to-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 min-w-[100px] sm:min-w-[120px] justify-center"
               >
                 <Print className="w-4 h-4" />
                 <span className="hidden sm:inline">Print</span>
+                <span className="inline sm:hidden">Print</span>
               </button>
               <button
                 onClick={onClose}
-                className="bg-gradient-to-l from-red-400 to-red-500 text-white p-2 sm:p-2 rounded-lg hover:from-red-500 hover:to-red-600 transition-all duration-200 flex items-center justify-center min-w-[40px] sm:min-w-[44px]"
+                className="flex items-center justify-center bg-gradient-to-l from-red-400 to-red-500 text-white p-2 sm:p-2 rounded-lg hover:from-red-500 hover:to-red-600 transition-all duration-200 min-w-[40px] sm:min-w-[44px] h-10 sm:h-10"
               >
                 <Close className="w-4 h-4 sm:w-4 sm:h-4" />
               </button>
@@ -408,7 +719,7 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
             >
               {/* Invoice Header - Responsive */}
               <div className="grid grid-cols-1 md:grid-cols-2 justify-between items-start gap-6 sm:gap-8 mb-8 sm:mb-12 border-b-2 border-gray-300 pb-6 sm:pb-8">
-                <div className=" items-start gap-4 w-full lg:w-auto">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 w-full lg:w-auto">
                   <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg mx-auto sm:mx-0">
                     <Business className="text-white text-lg sm:text-xl md:text-2xl" />
                   </div>
@@ -498,8 +809,49 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
                   </div>
                 </div>
 
-              
-              
+                {/* Payment Method */}
+                <div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center justify-center lg:justify-start">
+                    <CreditCard className="mr-2 sm:mr-3 text-green-600 w-4 h-4 sm:w-5 sm:h-5" />
+                    Payment Method:
+                  </h3>
+                  <div className="bg-gray-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200">
+                    <p className="font-bold text-lg sm:text-xl text-gray-900 mb-2 text-center lg:text-left capitalize">
+                      {orderDetails.payment.paymentMethod.replace("_", " ")}
+                    </p>
+                    <div className="space-y-1 sm:space-y-2 text-gray-700 text-sm sm:text-base">
+                      {orderDetails.payment.paymentMethod === "credit_card" && (
+                        <>
+                          <p className="flex items-center gap-2 justify-center lg:justify-start">
+                            <CreditCard className="w-3 h-3 sm:w-4 sm:h-4" />
+                            Card ending in{" "}
+                            {orderDetails.payment.paymentDetails.cardNumber?.slice(
+                              -4
+                            ) || "****"}
+                          </p>
+                        </>
+                      )}
+                      {orderDetails.payment.paymentMethod ===
+                        "mobile_money" && (
+                        <>
+                          <p className="flex items-center gap-2 justify-center lg:justify-start">
+                            <Smartphone className="w-3 h-3 sm:w-4 sm:h-4" />
+                            {orderDetails.payment.paymentDetails.network?.toUpperCase() ||
+                              "MTN"}{" "}
+                            -{" "}
+                            {orderDetails.payment.paymentDetails.mobileNumber ||
+                              "N/A"}
+                          </p>
+                        </>
+                      )}
+                      <p className="flex items-center gap-2 justify-center lg:justify-start">
+                        <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                        Payment Completed
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               {/* Order Items - Responsive Table */}
               <div className="mb-8 sm:mb-12">
@@ -521,7 +873,7 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
                           <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
                             <img
                               src={item.image}
-                              alt=""
+                              alt={item.name}
                               className="w-full h-full object-cover"
                             />
                           </div>
@@ -557,9 +909,82 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
                       </div>
                     ))}
                   </div>
+
+                  {/* Desktop View - Table */}
+                  <div className="hidden sm:block">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-gradient-to-r from-blue-50 to-purple-50">
+                          <th className="text-left p-4 font-semibold text-gray-900">
+                            Product
+                          </th>
+                          <th className="text-center p-4 font-semibold text-gray-900">
+                            Quantity
+                          </th>
+                          <th className="text-right p-4 font-semibold text-gray-900">
+                            Price
+                          </th>
+                          <th className="text-right p-4 font-semibold text-gray-900">
+                            Total
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orderDetails.items.map((item, index) => (
+                          <tr
+                            key={item.id}
+                            className={
+                              index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                            }
+                          >
+                            <td className="p-4">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+                                  <img
+                                    src={item.image}
+                                    alt={item.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-gray-900">
+                                    {item.name}
+                                  </p>
+                                  <p className="text-gray-600 text-sm">
+                                    {item.brand}
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="text-center p-4">
+                              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold">
+                                {item.quantity}
+                              </span>
+                            </td>
+                            <td className="text-right p-4 font-semibold text-gray-900">
+                              ${item.price.toFixed(2)}
+                            </td>
+                            <td className="text-right p-4 font-bold text-gray-900">
+                              ${(item.price * item.quantity).toFixed(2)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Order Summary */}
+                <div className="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl sm:rounded-2xl p-6 border border-blue-200">
+                  <div className="flex justify-between items-center text-lg sm:text-xl font-bold">
+                    <span>Total Amount:</span>
+                    <span className="text-green-600 text-xl sm:text-2xl">
+                      ${orderDetails.total.toFixed(2)}
+                    </span>
+                  </div>
                 </div>
               </div>
-</div>
+
               {/* Footer - Responsive Grid */}
               <div className="border-t border-gray-300 pt-6 sm:pt-8">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 md:gap-8 text-center">
@@ -620,7 +1045,7 @@ const AddToCartModal = ({
 }) => {
   const [quantity, setQuantity] = useState(1);
 
-  if (!isOpen) return null;
+  if (!isOpen || !product) return null;
 
   return (
     <motion.div
@@ -639,22 +1064,22 @@ const AddToCartModal = ({
       >
         <div className="p-6">
           <div className="flex items-center space-x-4 mb-4">
-            <div className="w-16 h-16 bg-gray-100 rounded-xl overflow-hidden">
+            <div className="w-16 h-16 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
               <img
                 src={product.image}
-                alt=""
+                alt={product.name}
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-gray-900">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-lg font-bold text-gray-900 truncate">
                 {product.name}
               </h3>
               <p className="text-blue-600 font-semibold">${product.price}</p>
             </div>
             <button
               onClick={onClose}
-              className="bg-gradient-to-l from-red-500 to-red-700"
+              className="flex items-center justify-center w-8 h-8 bg-gradient-to-l from-red-500 to-red-700 text-white rounded-lg hover:from-red-600 hover:to-red-800 transition-all duration-200 flex-shrink-0"
             >
               <Close className="w-4 h-4" />
             </button>
@@ -667,7 +1092,7 @@ const AddToCartModal = ({
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="bg-gradient-to-t from-red-400 to-red-500"
+                className="flex items-center justify-center w-10 h-10 bg-gradient-to-t from-red-400 to-red-500 text-white rounded-xl hover:from-red-500 hover:to-red-600 transition-all duration-200"
               >
                 <Remove className="w-4 h-4" />
               </button>
@@ -676,7 +1101,7 @@ const AddToCartModal = ({
               </span>
               <button
                 onClick={() => setQuantity(quantity + 1)}
-                className="bg-gradient-to-r from-blue-300 to-indigo-300"
+                className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-300 to-indigo-300 text-white rounded-xl hover:from-blue-400 hover:to-indigo-400 transition-all duration-200"
               >
                 <Add className="w-4 h-4" />
               </button>
@@ -695,22 +1120,24 @@ const AddToCartModal = ({
           <div className="flex flex-col space-y-3">
             <button
               onClick={() => onConfirm(product, quantity)}
-              className="bg-gradient-to-b from-blue-400 to-indigo-400"
+              className="flex items-center justify-center gap-2 w-full bg-gradient-to-b from-blue-400 to-indigo-400 text-white py-3 rounded-xl font-semibold hover:from-blue-500 hover:to-indigo-500 transition-all duration-200"
             >
               <Add className="w-4 h-4" />
+              Add to Cart
             </button>
             <button
               onClick={() => {
                 onConfirm(product, quantity);
                 onViewCart();
               }}
-              className="w-full bg-gradient-to-l from-blue-600 to-blue-700"
+              className="flex items-center justify-center gap-2 w-full bg-gradient-to-l from-blue-600 to-blue-700 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200"
             >
+              <ShoppingCart className="w-4 h-4" />
               Add to Cart & View Cart
             </button>
             <button
               onClick={onClose}
-              className="bg-gradient-to-l from-violet-400 to-indigo-400"
+              className="flex items-center justify-center gap-2 w-full bg-gradient-to-l from-violet-400 to-indigo-400 text-white py-3 rounded-xl font-semibold hover:from-violet-500 hover:to-indigo-500 transition-all duration-200"
             >
               <ArrowBack className="w-4 h-4" />
               Continue Shopping
@@ -757,7 +1184,7 @@ const CartModal = ({
             </h2>
             <button
               onClick={onClose}
-              className="bg-gradient-to-l from-red-500 to-red-600"
+              className="flex items-center justify-center w-8 h-8 bg-gradient-to-l from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200"
             >
               <Close className="w-4 h-4" />
             </button>
@@ -785,21 +1212,23 @@ const CartModal = ({
                   key={item.id}
                   className="flex items-center space-x-4 bg-gray-50 rounded-xl p-4"
                 >
-                  <div className="w-16 h-16 bg-white rounded-lg overflow-hidden">
+                  <div className="w-16 h-16 bg-white rounded-lg overflow-hidden flex-shrink-0">
                     <img
                       src={item.image}
-                      alt=""
+                      alt={item.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900">{item.name}</h4>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-gray-900 truncate">
+                      {item.name}
+                    </h4>
                     <p className="text-blue-600 font-semibold">${item.price}</p>
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="bg-gradient-to-b from-red-200 to-red-400"
+                      className="flex items-center justify-center w-8 h-8 bg-gradient-to-b from-red-200 to-red-400 text-white rounded-lg hover:from-red-300 hover:to-red-500 transition-all duration-200"
                     >
                       <Remove className="w-4 h-4" />
                     </button>
@@ -808,14 +1237,14 @@ const CartModal = ({
                     </span>
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="bg-gradient-to-t from-blue-400 to-indigo-400"
+                      className="flex items-center justify-center w-8 h-8 bg-gradient-to-t from-blue-400 to-indigo-400 text-white rounded-lg hover:from-blue-500 hover:to-indigo-500 transition-all duration-200"
                     >
                       <Add className="w-4 h-4" />
                     </button>
                   </div>
                   <button
                     onClick={() => removeFromCart(item.id)}
-                    className="bg-gradient-to-t from-red-300 to-red-500"
+                    className="flex items-center justify-center w-8 h-8 bg-gradient-to-t from-red-300 to-red-500 text-white rounded-lg hover:from-red-400 hover:to-red-600 transition-all duration-200"
                   >
                     <Delete className="w-4 h-4" />
                   </button>
@@ -837,7 +1266,7 @@ const CartModal = ({
             </div>
             <button
               onClick={onCheckout}
-              className="w-full bg-gradient-to-t from-purple-600 to-purple-700"
+              className="flex items-center justify-center w-full bg-gradient-to-t from-purple-600 to-purple-700 text-white py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-purple-800 transition-all duration-200"
             >
               Proceed to Checkout
             </button>
@@ -876,12 +1305,12 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="bg-white rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto text-black"
+      className="bg-white rounded-3xl p-4 sm:p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto text-black"
     >
       <div className="flex items-center space-x-4 mb-6">
         <button
           onClick={onBack}
-          className="bg-gradient-to-bl from-purple-600 to-purple-700"
+          className="flex items-center justify-center w-10 h-10 bg-gradient-to-bl from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-200"
         >
           <ArrowBack className="w-4 h-4" />
         </button>
@@ -892,7 +1321,7 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 text-black">
-        <div className="grid grid-cols-1 xsm:grid-cols-2 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2 items-center gap-2">
               <Person className="w-4 h-4" />
@@ -925,7 +1354,7 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 xsm:grid-cols-2 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2 items-center gap-2">
               <Email className="w-4 h-4" />
@@ -974,7 +1403,7 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
           />
         </div>
 
-        <div className="grid grid-cols-1 xsm:grid-cols-2 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
               <LocationOn className="w-4 h-4" />
@@ -1044,7 +1473,7 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-b from-indigo-600 to-indigo-700"
+          className="flex items-center justify-center w-full bg-gradient-to-b from-indigo-600 to-indigo-700 text-white py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? "Processing..." : "Continue to Payment"}
         </button>
@@ -1083,12 +1512,12 @@ const PaymentMethod = ({
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="bg-white rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto text-black"
+      className="bg-white rounded-3xl p-4 sm:p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto text-black"
     >
       <div className="flex items-center space-x-4 mb-6">
         <button
           onClick={onBack}
-          className="bg-gradient-to-b from-indigo-600 to-indigo-700"
+          className="flex items-center justify-center w-10 h-10 bg-gradient-to-b from-indigo-600 to-indigo-700 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200"
         >
           <ArrowBack className="w-4 h-4" />
         </button>
@@ -1105,22 +1534,30 @@ const PaymentMethod = ({
             <CreditCard className="w-5 h-5" />
             Select Payment Method *
           </label>
-          <div className="grid grid-cols-1 xsm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button
               type="button"
               onClick={() => setPaymentMethod("mobile_money")}
-              className="flex-col h-20 bg-gradient-to-r from-green-500 to-green-600"
+              className={`flex flex-col items-center justify-center h-20 rounded-xl transition-all duration-200 ${
+                paymentMethod === "mobile_money"
+                  ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
+                  : "bg-gradient-to-r from-green-400 to-green-500 text-white hover:from-green-500 hover:to-green-600"
+              }`}
             >
-              <Smartphone className="text-2xl" />
+              <Smartphone className="text-2xl mb-1" />
               <span className="text-sm">Mobile Money</span>
             </button>
 
             <button
               type="button"
               onClick={() => setPaymentMethod("credit_card")}
-              className="flex-col h-20 bg-gradient-to-b from-blue-500 to-blue-600"
+              className={`flex flex-col items-center justify-center h-20 rounded-xl transition-all duration-200 ${
+                paymentMethod === "credit_card"
+                  ? "bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-lg"
+                  : "bg-gradient-to-b from-blue-400 to-blue-500 text-white hover:from-blue-500 hover:to-blue-600"
+              }`}
             >
-              <CreditCard className="text-2xl" />
+              <CreditCard className="text-2xl mb-1" />
               <span className="text-sm">Credit Card</span>
             </button>
           </div>
@@ -1153,7 +1590,7 @@ const PaymentMethod = ({
               />
             </div>
 
-            <div className="grid grid-cols-1 xsm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Expiry Date *
@@ -1260,13 +1697,13 @@ const PaymentMethod = ({
           <div className="space-y-3">
             {cart.map((item) => (
               <div key={item.id} className="flex justify-between items-center">
-                <div>
-                  <span className="font-medium">{item.name}</span>
+                <div className="flex-1 min-w-0">
+                  <span className="font-medium truncate">{item.name}</span>
                   <span className="text-gray-600 text-sm ml-2">
                     x{item.quantity}
                   </span>
                 </div>
-                <span className="font-medium">
+                <span className="font-medium flex-shrink-0">
                   ${(item.price * item.quantity).toFixed(2)}
                 </span>
               </div>
@@ -1311,7 +1748,7 @@ const PaymentMethod = ({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-t from-green-600 to-green-700"
+          className="flex items-center justify-center gap-2 w-full bg-gradient-to-t from-green-600 to-green-700 text-white py-3 rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <CheckCircle className="w-5 h-5" />
           {isLoading ? "Processing Payment..." : "Complete Payment"}
@@ -1330,7 +1767,7 @@ const PaymentSuccess = ({
   <motion.div
     initial={{ opacity: 0, scale: 0.9 }}
     animate={{ opacity: 1, scale: 1 }}
-    className="bg-white rounded-3xl p-8 text-center max-w-md w-full text-black"
+    className="bg-white rounded-3xl p-6 sm:p-8 text-center max-w-md w-full text-black"
   >
     <div className="overflow-y-auto">
       <div className="w-20 h-20 bg-gradient-to-b from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -1356,7 +1793,7 @@ const PaymentSuccess = ({
           <div className="flex justify-between">
             <span className="text-gray-600">Total Amount:</span>
             <span className="font-medium text-green-600">
-              ${orderDetails.total}
+              ${orderDetails.total.toFixed(2)}
             </span>
           </div>
           <div className="flex justify-between">
@@ -1372,17 +1809,17 @@ const PaymentSuccess = ({
         </div>
       </div>
     </div>
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <button
         onClick={onViewInvoice}
-        className="w-full bg-gradient-to-b from-blue-600 to-blue-700"
+        className="flex items-center justify-center gap-2 w-full bg-gradient-to-b from-blue-600 to-blue-700 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200"
       >
         <Receipt className="w-5 h-5" />
         View Invoice
       </button>
       <button
         onClick={onContinueShopping}
-        className="w-full bg-gradient-to-t from-green-600 to-green-700"
+        className="flex items-center justify-center gap-2 w-full bg-gradient-to-t from-green-600 to-green-700 text-white py-3 rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-200"
       >
         <ShoppingCart className="w-5 h-5" />
         Continue Shopping
@@ -1396,7 +1833,7 @@ const PaymentFailed = ({ onRetry, onCancel, errorMessage }) => (
   <motion.div
     initial={{ opacity: 0, scale: 0.9 }}
     animate={{ opacity: 1, scale: 1 }}
-    className="bg-white rounded-3xl p-8 overflow-y-auto text-center max-w-md w-full text-black"
+    className="bg-white rounded-3xl p-6 sm:p-8 overflow-y-auto text-center max-w-md w-full text-black"
   >
     <div className="w-20 h-20 bg-gradient-to-b from-red-400 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
       <Error className="text-white text-4xl" />
@@ -1409,17 +1846,17 @@ const PaymentFailed = ({ onRetry, onCancel, errorMessage }) => (
       Please check your payment details and try again.
     </p>
 
-    <div className="flex space-x-3">
+    <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
       <button
         onClick={onCancel}
-        className="flex-1 bg-gradient-to-r from-red-400 to-red-600"
+        className="flex items-center justify-center gap-2 flex-1 bg-gradient-to-r from-red-400 to-red-600 text-white py-3 rounded-xl font-semibold hover:from-red-500 hover:to-red-700 transition-all duration-200"
       >
         <ArrowBack className="w-5 h-5" />
         Cancel
       </button>
       <button
         onClick={onRetry}
-        className="flex-1 bg-gradient-to-r from-orange-600 to-orange-700"
+        className="flex items-center justify-center gap-2 flex-1 bg-gradient-to-r from-orange-600 to-orange-700 text-white py-3 rounded-xl font-semibold hover:from-orange-700 hover:to-orange-800 transition-all duration-200"
       >
         <span className="text-lg">🔄</span>
         Try Again
@@ -1453,7 +1890,7 @@ const ProductCard = ({
       <div className="relative h-48 overflow-hidden">
         <img
           src={device.image}
-          alt=""
+          alt={device.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
 
@@ -1483,15 +1920,14 @@ const ProductCard = ({
               e.stopPropagation();
               onLike(device.id);
             }}
-            className="w-8 h-8 min-w-0 p-0 "
-            startIcon={
-              isLiked ? (
-                <Favorite className="w-4 h-4" />
-              ) : (
-                <FavoriteBorder className="w-4 h-4" />
-              )
-            }
-          />
+            className="flex items-center justify-center w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200"
+          >
+            {isLiked ? (
+              <Favorite className="w-4 h-4 text-red-500" />
+            ) : (
+              <FavoriteBorder className="w-4 h-4 text-gray-600" />
+            )}
+          </button>
         </div>
 
         {/* Likes Count */}
@@ -1504,10 +1940,10 @@ const ProductCard = ({
       {/* Device Info */}
       <div className="p-5">
         <div className="flex items-start justify-between mb-2">
-          <h3 className="text-lg font-bold text-gray-900 line-clamp-2">
+          <h3 className="text-lg font-bold text-gray-900 line-clamp-2 flex-1 pr-2">
             {device.name}
           </h3>
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-1 flex-shrink-0">
             <Star className="text-yellow-400 w-4 h-4" />
             <span className="text-sm text-gray-600">{device.rating}</span>
           </div>
@@ -1559,9 +1995,10 @@ const ProductCard = ({
               e.stopPropagation();
               onViewDetails(device);
             }}
-            className="flex-1 bg-gradient-to-r from-gray-600 to-gray-700"
+            className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-2 rounded-xl font-semibold hover:from-gray-700 hover:to-gray-800 transition-all duration-200 text-sm"
           >
             <span className="text-sm">👁️</span>
+            Details
           </button>
           <button
             onClick={(e) => {
@@ -1569,9 +2006,9 @@ const ProductCard = ({
               onAddToCart(device);
             }}
             disabled={!device.inStock}
-            className="bg-gradient-to-t from-blue-500 to-blue-600"
+            className="flex items-center justify-center gap-2 bg-gradient-to-t from-blue-500 to-blue-600 text-white py-2 px-4 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
-            <ShoppingCart />
+            <ShoppingCart className="w-4 h-4" />
             {device.inStock ? "Add to Cart" : "Out of Stock"}
           </button>
         </div>
@@ -1595,6 +2032,86 @@ const StarRating = ({ rating }) => {
         />
       ))}
       <span className="text-sm text-gray-600 ml-1">({rating})</span>
+    </div>
+  );
+};
+
+// Category Filter Component
+const CategoryFilter = ({ categories, activeCategory, onCategoryChange }) => {
+  const [showMobileCategories, setShowMobileCategories] = useState(false);
+
+  return (
+    <div className="w-full">
+      {/* Mobile Category Toggle */}
+      <div className="lg:hidden mb-4">
+        <button
+          onClick={() => setShowMobileCategories(!showMobileCategories)}
+          className="flex items-center justify-center gap-2 w-full bg-gradient-to-br from-blue-500 to-blue-600 text-white py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
+        >
+          <Category className="w-5 h-5" />
+          Categories (
+          {categories.find((cat) => cat.id === activeCategory)?.name || "All"})
+          <Menu className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* Categories Grid */}
+      <div
+        className={`
+        ${showMobileCategories ? "block" : "hidden"} 
+        lg:block transition-all duration-300
+      `}
+      >
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-3">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => {
+                onCategoryChange(category.id);
+                setShowMobileCategories(false);
+              }}
+              className={`
+                flex items-center justify-between p-4 rounded-xl transition-all duration-300 transform hover:scale-105
+                ${
+                  activeCategory === category.id
+                    ? `bg-gradient-to-r ${category.gradient} text-white shadow-lg`
+                    : "bg-white text-gray-700 hover:bg-gray-50 shadow-md"
+                }
+              `}
+            >
+              <div className="flex items-center space-x-3">
+                <div
+                  className={`
+                  p-2 rounded-lg transition-colors duration-300
+                  ${
+                    activeCategory === category.id
+                      ? "bg-white/20"
+                      : "bg-gray-100"
+                  }
+                `}
+                >
+                  {category.icon}
+                </div>
+                <span className="font-medium text-sm sm:text-base">
+                  {category.name}
+                </span>
+              </div>
+              <span
+                className={`
+                px-2 py-1 rounded-full text-xs font-bold transition-colors duration-300
+                ${
+                  activeCategory === category.id
+                    ? "bg-white text-gray-900"
+                    : "bg-gray-200 text-gray-600"
+                }
+              `}
+              >
+                {category.count}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
@@ -1906,7 +2423,7 @@ export const Products = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => setShowCartModal(true)}
-          className="bg-gradient-to-b from-blue-500 to-blue-600 rounded-full p-3 shadow-lg border border-white/20 relative hover:from-blue-600 hover:to-blue-700"
+          className="bg-gradient-to-b from-blue-500 to-blue-600 rounded-full p-3 shadow-lg border border-white/20 relative hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
         >
           <ShoppingCart className="text-white text-2xl" />
           {getCartCount() > 0 && (
@@ -1925,7 +2442,7 @@ export const Products = () => {
       <section className="relative py-20 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/40"></div>
 
-        <div className="relative max-w-7xl mx-auto px-4 xsm:px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1939,10 +2456,10 @@ export const Products = () => {
             >
               <div className="text-6xl mb-4">🚀</div>
             </motion.div>
-            <h1 className="text-4xl xsm:text-4xl sm:text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">
               Future Electronics
             </h1>
-            <p className="text-lg xsm:text-lg sm:text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
               Discover the latest and most innovative electronic devices. From
               cutting-edge smartphones to revolutionary smart home tech.
             </p>
@@ -1968,23 +2485,21 @@ export const Products = () => {
 
       {/* Stats Section */}
       <section className="relative py-16 bg-white/80 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 xsm:px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 xsm:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 xsm:gap-4 sm:gap-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             {stats.map((stat, index) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="text-center p-4 xsm:p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-white to-gray-50 shadow-lg border border-gray-100"
+                className="text-center p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-white to-gray-50 shadow-lg border border-gray-100"
               >
-                <div className="text-2xl xsm:text-2xl sm:text-3xl mb-2">
-                  {stat.icon}
-                </div>
-                <div className="text-xl xsm:text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+                <div className="text-2xl sm:text-3xl mb-2">{stat.icon}</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-1">
                   {stat.number}
                 </div>
-                <div className="text-xs xsm:text-xs sm:text-sm text-gray-600 font-medium">
+                <div className="text-xs sm:text-sm text-gray-600 font-medium">
                   {stat.label}
                 </div>
               </motion.div>
@@ -1995,7 +2510,7 @@ export const Products = () => {
 
       {/* Categories & Filters */}
       <section className="relative py-12">
-        <div className="max-w-7xl mx-auto px-4 xsm:px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Categories Sidebar */}
             <div className="lg:w-1/4">
@@ -2004,29 +2519,12 @@ export const Products = () => {
                   <span>📂</span>
                   Categories
                 </h3>
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {categories.map((category) => (
-                    <button
-                      key={category.id}
-                      onClick={() => setActiveCategory(category.id)}
-                      className="w-full bg-gradient-to-b flex from-blue-400 to-indigo-400 justify-between text-left"
-                    >
-                      {category.icon}
-                      <div className="flex items-center space-x-3">
-                        <span className="font-medium">{category.name}</span>
-                      </div>
-                      <span
-                        className={`px-2 py-1 rounded-full text-sm ${
-                          activeCategory === category.id
-                            ? "bg-white text-gray-900"
-                            : "bg-gray-200 text-gray-600"
-                        }`}
-                      >
-                        {category.count}
-                      </span>
-                    </button>
-                  ))}
-                </div>
+
+                <CategoryFilter
+                  categories={categories}
+                  activeCategory={activeCategory}
+                  onCategoryChange={setActiveCategory}
+                />
 
                 {/* Sort Options */}
                 <div className="mt-8 text-black">
@@ -2046,12 +2544,29 @@ export const Products = () => {
                     <option value="rating">Highest Rated</option>
                   </select>
                 </div>
+
+                {/* Results Count */}
+                <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                  <p className="text-sm text-blue-800 font-medium">
+                    Showing {currentProducts.length} of {filteredDevices.length}{" "}
+                    products
+                  </p>
+                  {activeCategory !== "all" && (
+                    <p className="text-xs text-blue-600 mt-1">
+                      in{" "}
+                      {
+                        categories.find((cat) => cat.id === activeCategory)
+                          ?.name
+                      }
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Devices Grid */}
             <div className="lg:w-3/4">
-              <div className="grid grid-cols-1 xsm:grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 xsm:gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                 {currentProducts.map((device, index) => (
                   <ProductCard
                     key={device.id}
@@ -2075,6 +2590,15 @@ export const Products = () => {
                   <p className="text-gray-600">
                     Try adjusting your search or filter criteria
                   </p>
+                  <button
+                    onClick={() => {
+                      setActiveCategory("all");
+                      setSearchTerm("");
+                    }}
+                    className="mt-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
+                  >
+                    Reset Filters
+                  </button>
                 </div>
               )}
 
@@ -2108,24 +2632,24 @@ export const Products = () => {
               className="bg-white rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-y-auto text-black"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-4 xsm:p-4 sm:p-6 md:p-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xsm:gap-6 sm:gap-8 md:gap-12">
+              <div className="p-4 sm:p-6 md:p-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
                   {/* Image Gallery */}
                   <div>
                     <div className="rounded-2xl overflow-hidden mb-4">
                       <img
                         src={selectedDevice.image}
-                        alt=""
-                        className="w-full h-64 xsm:h-64 sm:h-72 md:h-80 object-cover"
+                        alt={selectedDevice.name}
+                        className="w-full h-64 sm:h-72 md:h-80 object-cover"
                       />
                     </div>
-                    <div className="grid grid-cols-3 gap-2 xsm:gap-2 sm:gap-3">
-                      {selectedDevice.images.map((img, index) => (
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                      {selectedDevice.images?.map((img, index) => (
                         <motion.img
                           key={index}
                           src={img}
                           alt={`${selectedDevice.name} ${index + 1}`}
-                          className="w-full h-20 xsm:h-20 sm:h-24 object-cover rounded-xl cursor-pointer hover:opacity-80 transition-opacity"
+                          className="w-full h-20 sm:h-24 object-cover rounded-xl cursor-pointer hover:opacity-80 transition-opacity"
                           whileHover={{ scale: 1.05 }}
                         />
                       ))}
@@ -2136,7 +2660,7 @@ export const Products = () => {
                   <div className="relative">
                     <button
                       onClick={() => setSelectedDevice(null)}
-                      className="bg-gradient-to-b from-red-500 to-red-700"
+                      className="absolute -top-2 -right-2 flex items-center justify-center w-8 h-8 bg-gradient-to-b from-red-500 to-red-700 text-white rounded-lg hover:from-red-600 hover:to-red-800 transition-all duration-200"
                     >
                       <Close className="w-4 h-4" />
                     </button>
@@ -2152,7 +2676,7 @@ export const Products = () => {
                           {selectedDevice.brand}
                         </span>
                       </div>
-                      <h1 className="text-2xl xsm:text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                         {selectedDevice.name}
                       </h1>
                       <StarRating rating={selectedDevice.rating} />
@@ -2162,8 +2686,8 @@ export const Products = () => {
                           {getLikes(selectedDevice.id)} likes
                         </span>
                         <button
-                          className="bg-gradient-to-b from-blue-400 to-indigo-300"
                           onClick={() => handleLike(selectedDevice.id)}
+                          className="flex items-center gap-2 bg-gradient-to-b from-blue-400 to-indigo-300 text-white px-4 py-2 rounded-xl hover:from-blue-500 hover:to-indigo-400 transition-all duration-200"
                         >
                           {isLiked(selectedDevice.id) ? "Liked" : "Like"}
                         </button>
@@ -2174,9 +2698,9 @@ export const Products = () => {
                     </div>
 
                     {/* Pricing */}
-                    <div className="bg-gray-50 rounded-2xl p-4 xsm:p-4 sm:p-6 mb-6">
+                    <div className="bg-gray-50 rounded-2xl p-4 sm:p-6 mb-6">
                       <div className="flex items-center space-x-4 mb-4">
-                        <span className="text-2xl xsm:text-2xl sm:text-3xl font-bold text-gray-900">
+                        <span className="text-2xl sm:text-3xl font-bold text-gray-900">
                           ${selectedDevice.price}
                         </span>
                         {selectedDevice.originalPrice >
@@ -2195,7 +2719,7 @@ export const Products = () => {
                         <button
                           onClick={() => handleAddToCartClick(selectedDevice)}
                           disabled={!selectedDevice.inStock}
-                          className="flex-1 bg-gradient-to-t from-blue-600 to-blue-700"
+                          className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-t from-blue-600 to-blue-700 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Add className="w-4 h-4" />
                           {selectedDevice.inStock
@@ -2210,7 +2734,7 @@ export const Products = () => {
                       <h3 className="text-xl font-bold text-gray-900 mb-4">
                         Key Features
                       </h3>
-                      <div className="grid grid-cols-1 xsm:grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {selectedDevice.features.map((feature, index) => (
                           <div
                             key={index}
