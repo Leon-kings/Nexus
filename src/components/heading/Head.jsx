@@ -115,7 +115,7 @@ export default function Head() {
 
   return (
     <>
-      <div className="w-full bg-white mt-2 mb-1 rounded-2xl">
+      <div className="w-full bg-white mt-2 dark:text-white mb-1 rounded-2xl">
         <div className="w-full">
           <div className="relative overflow-hidden bg-white w-full">
             {/* Header Section */}
@@ -192,9 +192,9 @@ export default function Head() {
                           className="flex items-center space-x-3"
                         >
                           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                          <span className="text-gray-700 font-medium">
+                          <div className=" dark:text-white font-medium">
                             {feature}
-                          </span>
+                          </div>
                         </div>
                       ))}
                     </motion.div>

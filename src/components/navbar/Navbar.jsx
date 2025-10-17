@@ -8,30 +8,21 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { LoadingSpinner } from "../../pages/loading/LoadingSpinner";
 import { Close } from "@mui/icons-material";
+import Button from "@mui/material/Button";
 
 // API Base URL - Update this to your actual API endpoint
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "https://nexusbackend-hdyk.onrender.com";
 
 // Navigation Configuration
 const navigationConfig = {
   main: [
-    { name: "Home", path: "/", icon: "🏠" },
-    { name: "About", path: "/about", icon: "ℹ️" },
-    { name: "Services", path: "/services", icon: "⭐" },
-    { name: "Pricing", path: "/products", icon: "💰" },
-    { name: "FAQ", path: "/faq", icon: "💰" },
-    { name: "Contact", path: "#contact", icon: "📞", isButton: true },
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "Services", path: "/services" },
+    { name: "Pricing", path: "/products" },
+    { name: "FAQ", path: "/faq" },
   ],
-  authenticated: [
-    { name: "Dashboard", path: "/dashboard", icon: "📊" },
-    { name: "Profile", path: "/profile", icon: "👤" },
-    { name: "Settings", path: "/settings", icon: "⚙️" },
-  ],
-  admin: [
-    { name: "Admin Dashboard", path: "/admin-dashboard", icon: "🛡️" },
-    { name: "User Management", path: "/admin/users", icon: "👥" },
-    { name: "Analytics", path: "/admin/analytics", icon: "📈" },
-  ],
+  authenticated: [{ name: "Dashboard", path: "/dashboard" }],
 };
 
 // SVG Icons Component
@@ -134,6 +125,31 @@ const SvgIcons = {
       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
     </svg>
   ),
+  Lock: () => (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+  ),
+  Key: () => (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+    </svg>
+  ),
 };
 
 // Create Auth Context
@@ -148,9 +164,9 @@ export const useAuth = () => {
   return context;
 };
 
-// API Service functions
+// API Service functions - FIXED
 const apiService = {
-  // Login API call
+  // Login API call - FIXED
   login: async (email, password) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/auth/login`, {
@@ -159,13 +175,13 @@ const apiService = {
       });
       return response.data;
     } catch (error) {
-      throw new Error(
-        error.response?.data?.message || "Login failed. Please try again."
-      );
+      const errorMessage =
+        error.response?.data?.message || "Login failed. Please try again.";
+      throw new Error(errorMessage);
     }
   },
 
-  // Register API call
+  // Register API call - FIXED
   register: async (name, email, password) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/auth/register`, {
@@ -175,10 +191,44 @@ const apiService = {
       });
       return response.data;
     } catch (error) {
-      throw new Error(
+      const errorMessage =
         error.response?.data?.message ||
-          "Registration failed. Please try again."
+        "Registration failed. Please try again.";
+      throw new Error(errorMessage);
+    }
+  },
+
+  // Forgot Password API call
+  forgotPassword: async (email) => {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/auth/forgot-password`,
+        {
+          email,
+        }
       );
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to send reset email. Please try again.";
+      throw new Error(errorMessage);
+    }
+  },
+
+  // Reset Password API call
+  resetPassword: async (token, password) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/auth/reset-password`, {
+        token,
+        password,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to reset password. Please try again.";
+      throw new Error(errorMessage);
     }
   },
 
@@ -194,21 +244,9 @@ const apiService = {
       );
     }
   },
-
-  // Verify token API call (optional - for token validation)
-  verifyToken: async (token) => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/auth/verify`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error("Token verification failed");
-    }
-  },
 };
 
-// Auth Provider Component
+// Auth Provider Component - FIXED
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -219,18 +257,45 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(true);
       const response = await apiService.login(email, password);
 
-      if (response.success) {
-        setUser(response.data.user);
+      // FIXED: Proper response handling
+      if (response && response.success) {
+        const userData = response.data.user;
+
+        // Validate and set user status with fallback
+        const validStatuses = ["admin", "user", "manager"];
+        const userStatus = validStatuses.includes(
+          userData.status?.toLowerCase()
+        )
+          ? userData.status.toLowerCase()
+          : "user"; // Default to 'user' if invalid or missing status
+
+        // Create user object with email and validated status
+        const userProfile = {
+          email: userData.email || email,
+          status: userStatus, // Validated status: 'admin', 'user', or 'manager'
+          id: userData.id,
+          name: userData.name,
+          // Include any other relevant user data
+          ...userData,
+        };
+
+        setUser(userProfile);
         setIsAuthenticated(true);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+
+        // Save user data to localStorage
+        localStorage.setItem("user", JSON.stringify(userProfile));
         localStorage.setItem("token", response.data.token);
+        localStorage.setItem("userEmail", userProfile.email);
+        localStorage.setItem("userRole", userProfile.status); // Save status separately
 
         // Set default authorization header for future requests
         axios.defaults.headers.common[
           "Authorization"
         ] = `Bearer ${response.data.token}`;
 
-        return { success: true, user: response.data.user };
+        return { success: true, user: userProfile };
+      } else {
+        return { success: false, error: response?.message || "Login failed" };
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -239,16 +304,17 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
-
   const register = async (name, email, password) => {
     try {
       setIsLoading(true);
       const response = await apiService.register(name, email, password);
 
-      if (response.success) {
-        setUser(response.data.user);
+      // FIXED: Proper response handling
+      if (response && response.success) {
+        const userData = response.data.user;
+        setUser(userData);
         setIsAuthenticated(true);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("user", JSON.stringify(userData));
         localStorage.setItem("token", response.data.token);
 
         // Set default authorization header for future requests
@@ -256,7 +322,12 @@ export const AuthProvider = ({ children }) => {
           "Authorization"
         ] = `Bearer ${response.data.token}`;
 
-        return { success: true, user: response.data.user };
+        return { success: true, user: userData };
+      } else {
+        return {
+          success: false,
+          error: response?.message || "Registration failed",
+        };
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -288,9 +359,6 @@ export const AuthProvider = ({ children }) => {
           // Set authorization header for existing token
           axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-          // Optional: Verify token with backend
-          // await apiService.verifyToken(token);
-
           const userData = JSON.parse(savedUser);
           setUser(userData);
           setIsAuthenticated(true);
@@ -319,7 +387,7 @@ export const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Protected Route Component
+// Protected Route Component - UPDATED FOR STATUS
 export const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { isAuthenticated, user, isLoading } = useAuth();
   const navigate = useNavigate();
@@ -328,14 +396,14 @@ export const ProtectedRoute = ({ children, adminOnly = false }) => {
     if (!isLoading && !isAuthenticated) {
       navigate("/");
     }
-    if (!isLoading && adminOnly && user?.role !== "admin") {
+    if (!isLoading && adminOnly && user?.status !== "admin") {
       navigate("/user-dashboard");
     }
   }, [isAuthenticated, user, isLoading, navigate]);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-500">
         <LoadingSpinner text="Checking authentication..." />
       </div>
     );
@@ -345,14 +413,14 @@ export const ProtectedRoute = ({ children, adminOnly = false }) => {
     return null;
   }
 
-  if (adminOnly && user?.role !== "admin") {
+  if (adminOnly && user?.status !== "admin") {
     return null;
   }
 
   return children;
 };
 
-// Modal Overlay Component - FIXED VERSION
+// Modal Overlay Component
 const ModalOverlay = ({ children, onClose }) => (
   <motion.div
     initial={{ opacity: 0 }}
@@ -360,7 +428,6 @@ const ModalOverlay = ({ children, onClose }) => (
     exit={{ opacity: 0 }}
     className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto flex items-start justify-center z-50 p-4"
     onClick={(e) => {
-      // Only close if clicking the backdrop, not the modal content
       if (e.target === e.currentTarget) {
         onClose();
       }
@@ -374,19 +441,19 @@ const ModalOverlay = ({ children, onClose }) => (
 const ModalCloseButton = ({ onClose }) => (
   <button
     onClick={onClose}
-    className="absolute top-4 right-4 bg-gradient-to-b from-red-500 to-red-700 text-xl w-8 h-8 flex items-center justify-center z-10"
+    className="absolute top-4 right-4 bg-gradient-to-tr from-red-500 to-pink-600 text-white w-8 h-8 flex items-center justify-center rounded-full z-10 shadow-lg hover:from-red-600 hover:to-pink-700 transition-all duration-200"
   >
-    <Close className='size-4'/>
+    <Close className="size-4" />
   </button>
 );
 
-// Login Form Component
+// Login Form Component - ENHANCED WITH FORGOT PASSWORD
 const LoginForm = ({
   form,
   onChange,
   onSubmit,
   isSubmitting,
-  onDemoLogin,
+  onForgotPassword,
   onSwitchToRegister,
 }) => (
   <form onSubmit={onSubmit} className="space-y-6 text-black">
@@ -399,7 +466,7 @@ const LoginForm = ({
         name="email"
         value={form.email}
         onChange={(e) => onChange({ ...form, email: e.target.value })}
-        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50"
+        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm"
         placeholder="Enter your email"
         required
       />
@@ -414,25 +481,31 @@ const LoginForm = ({
         name="password"
         value={form.password}
         onChange={(e) => onChange({ ...form, password: e.target.value })}
-        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50"
+        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm"
         placeholder="Enter your password"
         required
       />
     </div>
 
-    <motion.button
+    <div className="text-right">
+      <button
+        type="button"
+        onClick={onForgotPassword}
+        className="text-sm bg-gradient-to-br from-blue-400 to-indigo-400 text-white px-4 py-2 rounded-xl font-semibold hover:from-blue-500 hover:to-indigo-500 transition-all duration-200"
+      >
+        Forgot Password?
+      </button>
+    </div>
+
+    <button
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       type="submit"
       disabled={isSubmitting}
-      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-4 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-semibold shadow-lg shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+      className="w-full bg-gradient-to-tr from-blue-600 via-purple-600 to-indigo-700 text-white py-4 px-4 rounded-xl hover:from-blue-700 hover:via-purple-700 hover:to-indigo-800 transition-all duration-200 font-semibold shadow-lg shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      {isSubmitting ? (
-        <LoadingSpinner size="sm" text="Signing in..." />
-      ) : (
-        "Sign In"
-      )}
-    </motion.button>
+      {isSubmitting ? <LoadingSpinner size="sm" /> : "Sign In"}
+    </button>
 
     <div className="mt-8 text-center">
       <p className="text-gray-600">
@@ -440,7 +513,7 @@ const LoginForm = ({
         <button
           type="button"
           onClick={onSwitchToRegister}
-          className="bg-gradient-to-b from-blue-400 to-indigo-700 font-semibold"
+          className="bg-gradient-to-br from-blue-800 to-indigo-800  px-4 py-2 rounded-xl font-semibold hover:from-blue-500 hover:to-indigo-500 transition-all duration-200"
         >
           Create one here
         </button>
@@ -449,7 +522,7 @@ const LoginForm = ({
   </form>
 );
 
-// Register Form Component
+// Register Form Component - ENHANCED DESIGN
 const RegisterForm = ({
   form,
   onChange,
@@ -467,7 +540,7 @@ const RegisterForm = ({
         name="name"
         value={form.name}
         onChange={(e) => onChange({ ...form, name: e.target.value })}
-        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50"
+        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm"
         placeholder="Enter your full name"
         required
       />
@@ -482,7 +555,7 @@ const RegisterForm = ({
         name="email"
         value={form.email}
         onChange={(e) => onChange({ ...form, email: e.target.value })}
-        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50"
+        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm"
         placeholder="Enter your email"
         required
       />
@@ -497,7 +570,7 @@ const RegisterForm = ({
         name="password"
         value={form.password}
         onChange={(e) => onChange({ ...form, password: e.target.value })}
-        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50"
+        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm"
         placeholder="Enter your password"
         required
         minLength={6}
@@ -516,7 +589,7 @@ const RegisterForm = ({
         name="confirmPassword"
         value={form.confirmPassword}
         onChange={(e) => onChange({ ...form, confirmPassword: e.target.value })}
-        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50"
+        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm"
         placeholder="Confirm your password"
         required
       />
@@ -527,7 +600,7 @@ const RegisterForm = ({
       whileTap={{ scale: 0.98 }}
       type="submit"
       disabled={isSubmitting}
-      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 px-4 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-200 font-semibold shadow-lg shadow-green-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+      className="w-full bg-gradient-to-tr from-green-500 via-emerald-500 to-teal-600 text-white py-4 px-4 rounded-xl hover:from-green-600 hover:via-emerald-600 hover:to-teal-700 transition-all duration-200 font-semibold shadow-lg shadow-green-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {isSubmitting ? (
         <LoadingSpinner size="sm" text="Creating account..." />
@@ -542,7 +615,7 @@ const RegisterForm = ({
         <button
           type="button"
           onClick={onSwitchToLogin}
-          className="bg-gradient-to-b from-green-400 to-indigo-700 font-semibold"
+          className="bg-gradient-to-br from-blue-400 to-indigo-400 text-white px-4 py-2 rounded-xl font-semibold hover:from-blue-500 hover:to-indigo-500 transition-all duration-200"
         >
           Sign in here
         </button>
@@ -551,7 +624,119 @@ const RegisterForm = ({
   </form>
 );
 
-// Contact Form Component
+// Forgot Password Form Component
+const ForgotPasswordForm = ({
+  form,
+  onChange,
+  onSubmit,
+  isSubmitting,
+  onSwitchToLogin,
+}) => (
+  <form onSubmit={onSubmit} className="space-y-6 text-black">
+    <div className="text-center mb-6">
+      <div className="w-16 h-16 bg-gradient-to-tr from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <SvgIcons.Key />
+      </div>
+      <h3 className="text-2xl font-bold text-gray-800 mb-2">Reset Password</h3>
+      <p className="text-gray-600">
+        Enter your email to receive reset instructions
+      </p>
+    </div>
+
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-3">
+        Email Address
+      </label>
+      <input
+        type="email"
+        name="email"
+        value={form.email}
+        onChange={(e) => onChange({ ...form, email: e.target.value })}
+        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm"
+        placeholder="Enter your email"
+        required
+      />
+    </div>
+
+    <motion.button
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      type="submit"
+      disabled={isSubmitting}
+      className="w-full bg-gradient-to-tr from-orange-500 to-amber-600 text-white py-4 px-4 rounded-xl hover:from-orange-600 hover:to-amber-700 transition-all duration-200 font-semibold shadow-lg shadow-orange-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {isSubmitting ? "Sending Instructions..." : "Send Reset Link"}
+    </motion.button>
+
+    <div className="text-center">
+      <button
+        type="button"
+        onClick={onSwitchToLogin}
+        className="text-sm bg-gradient-to-br from-blue-400 to-indigo-400 text-white px-4 py-2 rounded-xl font-semibold hover:from-blue-500 hover:to-indigo-500 transition-all duration-200"
+      >
+        Back to Sign In
+      </button>
+    </div>
+  </form>
+);
+
+// Reset Password Form Component
+const ResetPasswordForm = ({ form, onChange, onSubmit, isSubmitting }) => (
+  <form onSubmit={onSubmit} className="space-y-6 text-black">
+    <div className="text-center mb-6">
+      <div className="w-16 h-16 bg-gradient-to-tr from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <SvgIcons.Lock />
+      </div>
+      <h3 className="text-2xl font-bold text-gray-800 mb-2">
+        Set New Password
+      </h3>
+      <p className="text-gray-600">Enter your new password below</p>
+    </div>
+
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-3">
+        New Password
+      </label>
+      <input
+        type="password"
+        name="password"
+        value={form.password}
+        onChange={(e) => onChange({ ...form, password: e.target.value })}
+        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm"
+        placeholder="Enter new password"
+        required
+        minLength={6}
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-3">
+        Confirm New Password
+      </label>
+      <input
+        type="password"
+        name="confirmPassword"
+        value={form.confirmPassword}
+        onChange={(e) => onChange({ ...form, confirmPassword: e.target.value })}
+        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm"
+        placeholder="Confirm new password"
+        required
+      />
+    </div>
+
+    <motion.button
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      type="submit"
+      disabled={isSubmitting}
+      className="w-full bg-gradient-to-tr from-green-500 to-emerald-600 text-white py-4 px-4 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-200 font-semibold shadow-lg shadow-green-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {isSubmitting ? "Resetting Password..." : "Reset Password"}
+    </motion.button>
+  </form>
+);
+
+// Contact Form Component - ENHANCED DESIGN
 const ContactForm = ({ form, onChange, onSubmit, isSubmitting }) => (
   <form onSubmit={onSubmit} className="space-y-6 text-black">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -564,7 +749,7 @@ const ContactForm = ({ form, onChange, onSubmit, isSubmitting }) => (
           name="name"
           value={form.name}
           onChange={(e) => onChange({ ...form, name: e.target.value })}
-          className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50"
+          className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm"
           placeholder="Enter your full name"
           required
         />
@@ -579,7 +764,7 @@ const ContactForm = ({ form, onChange, onSubmit, isSubmitting }) => (
           name="email"
           value={form.email}
           onChange={(e) => onChange({ ...form, email: e.target.value })}
-          className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50"
+          className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm"
           placeholder="Enter your email"
           required
         />
@@ -595,7 +780,7 @@ const ContactForm = ({ form, onChange, onSubmit, isSubmitting }) => (
         name="subject"
         value={form.subject}
         onChange={(e) => onChange({ ...form, subject: e.target.value })}
-        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50"
+        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm"
         placeholder="Enter the subject"
         required
       />
@@ -610,7 +795,7 @@ const ContactForm = ({ form, onChange, onSubmit, isSubmitting }) => (
         value={form.message}
         onChange={(e) => onChange({ ...form, message: e.target.value })}
         rows={6}
-        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 resize-none"
+        className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm resize-none"
         placeholder="Enter your message..."
         required
       />
@@ -621,7 +806,7 @@ const ContactForm = ({ form, onChange, onSubmit, isSubmitting }) => (
       whileTap={{ scale: 0.98 }}
       type="submit"
       disabled={isSubmitting}
-      className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-4 px-4 rounded-xl hover:from-orange-600 hover:to-red-700 transition-all duration-200 font-semibold shadow-lg shadow-orange-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+      className="w-full bg-gradient-to-tr from-orange-500 via-red-500 to-pink-600 text-white py-4 px-4 rounded-xl hover:from-orange-600 hover:via-red-600 hover:to-pink-700 transition-all duration-200 font-semibold shadow-lg shadow-orange-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {isSubmitting ? (
         <LoadingSpinner size="sm" text="Sending message..." />
@@ -636,10 +821,33 @@ const ContactForm = ({ form, onChange, onSubmit, isSubmitting }) => (
   </form>
 );
 
-// Navbar Component
+// Helper function to get dashboard path based on user status
+const getDashboardPath = (user) => {
+  const userStatus = user?.status;
+
+  switch (userStatus) {
+    case "admin":
+      return "/dashboard";
+    case "manager":
+      return "/manager-dashboard";
+    case "user":
+      return "/user-dashboard";
+    default:
+      return "/dashboard";
+  }
+};
+
+// Helper function to get user display status
+const getUserDisplayStatus = (user) => {
+  return user?.status || "user";
+};
+
+// Navbar Component - ENHANCED WITH STATUS-BASED NAVIGATION
 export const Navbar = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+  const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -650,6 +858,12 @@ export const Navbar = () => {
     email: "",
     password: "",
     confirmPassword: "",
+  });
+  const [forgotPasswordForm, setForgotPasswordForm] = useState({ email: "" });
+  const [resetPasswordForm, setResetPasswordForm] = useState({
+    password: "",
+    confirmPassword: "",
+    token: "",
   });
   const [contactForm, setContactForm] = useState({
     name: "",
@@ -665,6 +879,8 @@ export const Navbar = () => {
   const openLogin = () => {
     setIsLoginOpen(true);
     setIsRegisterOpen(false);
+    setIsForgotPasswordOpen(false);
+    setIsResetPasswordOpen(false);
     setIsContactOpen(false);
     setIsMobileMenuOpen(false);
   };
@@ -672,23 +888,47 @@ export const Navbar = () => {
   const openRegister = () => {
     setIsRegisterOpen(true);
     setIsLoginOpen(false);
+    setIsForgotPasswordOpen(false);
+    setIsResetPasswordOpen(false);
     setIsContactOpen(false);
     setIsMobileMenuOpen(false);
+  };
+
+  const openForgotPassword = () => {
+    setIsForgotPasswordOpen(true);
+    setIsLoginOpen(false);
+    setIsRegisterOpen(false);
+    setIsResetPasswordOpen(false);
+    setIsContactOpen(false);
+  };
+
+  const openResetPassword = () => {
+    setIsResetPasswordOpen(true);
+    setIsForgotPasswordOpen(false);
+    setIsLoginOpen(false);
+    setIsRegisterOpen(false);
+    setIsContactOpen(false);
   };
 
   const openContact = () => {
     setIsContactOpen(true);
     setIsLoginOpen(false);
     setIsRegisterOpen(false);
+    setIsForgotPasswordOpen(false);
+    setIsResetPasswordOpen(false);
     setIsMobileMenuOpen(false);
   };
 
   const closeModals = () => {
     setIsLoginOpen(false);
     setIsRegisterOpen(false);
+    setIsForgotPasswordOpen(false);
+    setIsResetPasswordOpen(false);
     setIsContactOpen(false);
     setLoginForm({ email: "", password: "" });
     setRegisterForm({ name: "", email: "", password: "", confirmPassword: "" });
+    setForgotPasswordForm({ email: "" });
+    setResetPasswordForm({ password: "", confirmPassword: "", token: "" });
     setContactForm({ name: "", email: "", subject: "", message: "" });
   };
 
@@ -696,7 +936,6 @@ export const Navbar = () => {
   const switchToRegister = () => {
     setIsLoginOpen(false);
     setIsRegisterOpen(true);
-    // Pre-fill email if available from login form
     if (loginForm.email) {
       setRegisterForm((prev) => ({
         ...prev,
@@ -709,7 +948,6 @@ export const Navbar = () => {
   const switchToLogin = () => {
     setIsRegisterOpen(false);
     setIsLoginOpen(true);
-    // Pre-fill email if available from register form
     if (registerForm.email) {
       setLoginForm((prev) => ({
         ...prev,
@@ -718,7 +956,7 @@ export const Navbar = () => {
     }
   };
 
-  // Form handlers
+  // Form handlers - FIXED
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -726,15 +964,15 @@ export const Navbar = () => {
     const result = await login(loginForm.email, loginForm.password);
     if (result.success) {
       toast.success(`Welcome back, ${result.user.name}! 🎉`);
-      // Don't close modal immediately - let user see success message
       setTimeout(() => {
         closeModals();
-        navigate("/dashboard");
+        const dashboardPath = getDashboardPath(result.user);
+        navigate(dashboardPath);
       }, 1500);
     } else {
       toast.error(result.error || "Login failed! Please try again.");
-      setIsSubmitting(false);
     }
+    setIsSubmitting(false);
   };
 
   const handleRegisterSubmit = async (e) => {
@@ -758,23 +996,78 @@ export const Navbar = () => {
     );
     if (result.success) {
       toast.success(`Welcome to Nexus, ${result.user.name}! 🚀`);
-      // After successful registration, switch to login modal instead of closing
       setTimeout(() => {
         setIsRegisterOpen(false);
         setIsLoginOpen(true);
         setLoginForm({
           email: registerForm.email,
-          password: "", // Don't auto-fill password for security
+          password: "",
         });
         setIsSubmitting(false);
-
-        // Show success message and prompt to login
         toast.info("Please login with your new account");
       }, 1500);
     } else {
       toast.error(result.error || "Registration failed! Please try again.");
       setIsSubmitting(false);
     }
+  };
+
+  const handleForgotPasswordSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const result = await apiService.forgotPassword(forgotPasswordForm.email);
+      if (result.success) {
+        toast.success("Password reset instructions sent to your email! 📧");
+        setTimeout(() => {
+          setIsForgotPasswordOpen(false);
+          setIsLoginOpen(true);
+        }, 2000);
+      } else {
+        toast.error(
+          result.error || "Failed to send reset email. Please try again."
+        );
+      }
+    } catch (error) {
+      toast.error(
+        error.message || "Failed to send reset email. Please try again."
+      );
+    }
+    setIsSubmitting(false);
+  };
+
+  const handleResetPasswordSubmit = async (e) => {
+    e.preventDefault();
+
+    if (resetPasswordForm.password !== resetPasswordForm.confirmPassword) {
+      toast.error("Passwords do not match!");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const result = await apiService.resetPassword(
+        resetPasswordForm.token,
+        resetPasswordForm.password
+      );
+      if (result.success) {
+        toast.success("Password reset successfully! ✅");
+        setTimeout(() => {
+          setIsResetPasswordOpen(false);
+          setIsLoginOpen(true);
+        }, 2000);
+      } else {
+        toast.error(
+          result.error || "Failed to reset password. Please try again."
+        );
+      }
+    } catch (error) {
+      toast.error(
+        error.message || "Failed to reset password. Please try again."
+      );
+    }
+    setIsSubmitting(false);
   };
 
   const handleContactSubmit = async (e) => {
@@ -787,7 +1080,6 @@ export const Navbar = () => {
         toast.success(
           "Message sent successfully! We'll get back to you soon. 📧"
         );
-        // Don't auto-close contact modal - let user see success
         setTimeout(() => {
           closeModals();
         }, 2000);
@@ -795,12 +1087,11 @@ export const Navbar = () => {
         toast.error(
           result.error || "Failed to send message. Please try again."
         );
-        setIsSubmitting(false);
       }
     } catch (error) {
       toast.error(error.message || "Failed to send message. Please try again.");
-      setIsSubmitting(false);
     }
+    setIsSubmitting(false);
   };
 
   const handleLogout = () => {
@@ -809,67 +1100,29 @@ export const Navbar = () => {
     navigate("/");
   };
 
-  const handleDemoLogin = async (role) => {
-    const demoCredentials = {
-      admin: { email: "admin@example.com", password: "admin123" },
-      user: { email: "user@example.com", password: "user123" },
-    };
-
-    const creds = demoCredentials[role];
-    setLoginForm(creds);
-
-    const result = await login(creds.email, creds.password);
-    if (result.success) {
-      toast.success(
-        `Demo ${role} login successful! Welcome, ${result.user.name}!`
-      );
-      closeModals();
-      navigate("/dashboard");
+  const handleDashboardNavigation = () => {
+    if (user) {
+      const dashboardPath = getDashboardPath(user);
+      navigate(dashboardPath);
     } else {
-      toast.error(`Demo ${role} login failed. Please try again.`);
+      navigate("/dashboard");
     }
   };
 
-  // Responsive background SVG
+  // Enhanced background pattern with floating elements
   const BackgroundPattern = () => (
     <div className="absolute inset-0 -z-10 overflow-hidden">
-      <svg
-        className="absolute w-full h-full opacity-5"
-        viewBox="0 0 1000 1000"
-        preserveAspectRatio="none"
-      >
-        <defs>
-          <pattern
-            id="grid"
-            width="50"
-            height="50"
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d="M 50 0 L 0 0 0 50"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1"
-            />
-          </pattern>
-          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#3B82F6" />
-            <stop offset="50%" stopColor="#8B5CF6" />
-            <stop offset="100%" stopColor="#EC4899" />
-          </linearGradient>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid)" />
-        <circle cx="20%" cy="30%" r="100" fill="url(#gradient)" opacity="0.1" />
-        <circle cx="80%" cy="70%" r="150" fill="url(#gradient)" opacity="0.1" />
-      </svg>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50"></div>
+      <div className="absolute top-1/4 -left-10 w-72 h-72 bg-gradient-to-tr from-blue-200/20 to-purple-300/20 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-1/4 -right-10 w-96 h-96 bg-gradient-to-bl from-green-200/20 to-teal-300/20 rounded-full blur-3xl"></div>
+      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-r from-orange-200/20 to-red-300/20 rounded-full blur-3xl"></div>
     </div>
   );
 
   return (
     <>
       {/* Navigation Bar */}
-      <nav className="bg-white/80 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-gray-200/60 overflow-visible">
-        <BackgroundPattern />
+      <nav className="bg-gradient-to-t from-gray-100 to-white backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-gray-200/60 overflow-visible">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="flex justify-between h-16">
             {/* Logo */}
@@ -888,57 +1141,52 @@ export const Navbar = () => {
             </div>
 
             {/* Desktop Menu */}
-            <div className="hidden lg:flex items-center space-x-1 max-w-2xl overflow-x-auto">
+            <div className="hidden lg:flex items-center space-x-8">
               {/* Main Navigation */}
               {navigationConfig.main.map((item) => (
-                <Link key={item.path} to={item.path}>
-                  <button
-                    key={item.path}
-                    icon={item.icon}
-                    className="bg-gradient-to-b from-blue-300 t0-indigo-400"
-                    isButton={item.isButton}
-                    onClick={item.isButton ? openContact : undefined}
-                  >
-                    {item.name}
-                  </button>
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="flex items-center space-x-2 transition-all duration-200 font-medium group"
+                >
+                  <Button className="bg-gradient-to-t from-blue-300 to-indigo-300">
+                    <span className="relative">
+                      {item.name}
+                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
+                    </span>
+                  </Button>
                 </Link>
               ))}
 
-              {/* Authenticated Navigation */}
-              {isAuthenticated && (
-                <>
-                  {navigationConfig.authenticated.map((item) => (
-                    <Link key={item.path} to={item.path} icon={item.icon}>
-                      <button className="bg-gradient-to-b from-blue-400 t0-indigo-400">
-                        {item.name}
-                      </button>
-                    </Link>
-                  ))}
+              {/* Contact Button */}
+              <button
+                onClick={openContact}
+                className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-200 font-medium group"
+              >
+                <span className="relative">
+                  Contact
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
+                </span>
+              </button>
 
-                  {/* Admin Navigation */}
-                  {user?.role === "admin" && (
-                    <>
-                      {navigationConfig.admin.map((item) => (
-                        <Link
-                          key={item.path}
-                          to={item.path}
-                          icon={item.icon}
-                          className="bg-gradient-to-b from-blue-300 t0-indigo-400"
-                        >
-                          {item.name}
-                        </Link>
-                      ))}
-                    </>
-                  )}
-                </>
+              {/* Dashboard Button for Authenticated Users */}
+              {isAuthenticated && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleDashboardNavigation}
+                  className="bg-gradient-to-tr from-blue-600 via-purple-600 to-indigo-700 text-white px-6 py-2.5 rounded-xl hover:from-blue-700 hover:via-purple-700 hover:to-indigo-800 transition-all duration-200 font-semibold shadow-lg shadow-blue-500/25 flex items-center space-x-2"
+                >
+                  <span>Dashboard</span>
+                </motion.button>
               )}
             </div>
 
             {/* Desktop Auth Buttons */}
-            <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
+            <div className="hidden lg:flex items-center space-x-4">
               {isAuthenticated ? (
                 <div className="flex items-center space-x-4 pl-4 border-l border-gray-200">
-                  <div className="flex items-center space-x-3 min-w-0">
+                  <div className="flex items-center space-x-3 min-w-0 bg-white/50 backdrop-blur-sm rounded-xl px-3 py-2 border border-gray-200/50">
                     <img
                       src={
                         user?.avatar ||
@@ -951,10 +1199,10 @@ export const Navbar = () => {
                     />
                     <div className="text-right min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate max-w-32">
-                        {user?.name}
+                        {user?.name.slice(0, 8)}
                       </p>
-                      <p className="text-xs text-gray-500 capitalize">
-                        {user?.role}
+                      <p className="text-xs text-gray-500 capitalize font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">
+                        {getUserDisplayStatus(user)}
                       </p>
                     </div>
                   </div>
@@ -962,28 +1210,28 @@ export const Navbar = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleLogout}
-                    className="bg-gradient-to-r from-blue-600 to-green-700 text-white px-4 py-2 rounded-md text-sm font-medium hover:from-gray-700 hover:to-gray-800 transition-all duration-200 shadow-lg flex-shrink-0"
+                    className="bg-gradient-to-tr from-gray-600 via-green-700 to-blue-800 text-white px-4 py-2.5 rounded-xl hover:from-blue-700 hover:via-gray-800 hover:to-green-900 transition-all duration-200 font-semibold shadow-lg flex items-center space-x-2"
                   >
-                    Logout
+                    <span>Logout</span>
                   </motion.button>
                 </div>
               ) : (
-                <div className="flex items-center space-x-3 flex-shrink-0">
+                <div className="flex items-center space-x-4">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={openLogin}
-                    className="bg-gradient-to-t from-blue-400 to-indigo-400 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 border border-blue-600 hover:bg-blue-50 shadow-sm whitespace-nowrap"
+                    className="border-2 border-blue-600 bg-transparent text-blue-600 px-6 py-2.5 rounded-xl hover:bg-blue-50 transition-all duration-200 font-semibold shadow-sm flex items-center space-x-2"
                   >
-                    Sign In
+                    <span>Sign In</span>
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={openRegister}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg shadow-blue-500/25 whitespace-nowrap"
+                    className="bg-gradient-to-tr from-blue-600 via-purple-600 to-indigo-700 text-white px-6 py-2.5 rounded-xl hover:from-blue-700 hover:via-purple-700 hover:to-indigo-800 transition-all duration-200 font-semibold shadow-lg shadow-blue-500/25 flex items-center space-x-2"
                   >
-                    Register
+                    <span>Register</span>
                   </motion.button>
                 </div>
               )}
@@ -994,7 +1242,7 @@ export const Navbar = () => {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="bg-gradient-to-t from-blue-400 to-violet-400 p-2"
+                className="bg-gradient-to-tr from-blue-500 to-purple-600 text-white p-2.5 rounded-xl shadow-lg"
               >
                 {isMobileMenuOpen ? <SvgIcons.Close /> : <SvgIcons.Menu />}
               </motion.button>
@@ -1011,81 +1259,77 @@ export const Navbar = () => {
               exit={{ opacity: 0, height: 0 }}
               className="lg:hidden bg-white/95 backdrop-blur-md border-t border-gray-200/60 shadow-xl absolute top-full left-0 right-0 max-h-[80vh] overflow-y-auto"
             >
-              <div className="px-2 grid grid-cols-1 w-full pt-2 pb-4 space-y-1">
+              <div className="px-4 py-6 space-y-4">
                 {/* Main Navigation Mobile */}
                 {navigationConfig.main.map((item) => (
                   <Link
-                    key={item.path}
                     to={item.path}
-                    icon={item.icon}
-                    className="w-full"
-                    mobile
-                    isButton={item.isButton}
+                    key={item.name}
                     onClick={
                       item.isButton
                         ? openContact
-                        : () => setIsMobileMenuOpen(false)
+                        : () => {
+                            navigate(item.path);
+                            setIsMobileMenuOpen(false);
+                          }
                     }
+                    className="w-full flex items-center space-x-3 px-4 py-3 text-left text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-600 rounded-xl transition-all duration-200 font-medium"
                   >
-                    <button className="w-full bg-gradient-to-t from-blue-400 to-indigo-400">
-                      {item.name}
-                    </button>
+                    <Button className="w-full bg-gradient-to-r from-blue-200 to-violet-200">
+                      <span>{item.name}</span>
+                    </Button>
                   </Link>
                 ))}
 
-                {/* Authenticated Navigation Mobile */}
-                {isAuthenticated && (
-                  <>
-                    {navigationConfig.authenticated.map((item) => (
-                      <Link
-                        key={item.path}
-                        to={item.path}
-                        icon={item.icon}
-                        mobile
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        {item.name}
-                      </Link>
-                    ))}
+                {/* Contact Mobile */}
+                <button
+                  onClick={() => {
+                    openContact();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center bg-gradient-to-r from-blue-600 to-purple-600 space-x-3 px-4 py-3 text-left bg-transparent text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-600 rounded-xl transition-all duration-200 font-medium"
+                >
+                  <span>Contact</span>
+                </button>
 
-                    {/* Admin Navigation Mobile */}
-                    {user?.role === "admin" && (
-                      <>
-                        {navigationConfig.admin.map((item) => (
-                          <Link
-                            key={item.path}
-                            to={item.path}
-                            icon={item.icon}
-                            mobile
-                            onClick={() => setIsMobileMenuOpen(false)}
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </>
-                    )}
-                  </>
+                {/* Dashboard Button for Authenticated Users Mobile */}
+                {isAuthenticated && (
+                  <button
+                    onClick={() => {
+                      handleDashboardNavigation();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center space-x-3 px-4 py-3 text-center bg-gradient-to-tr from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg"
+                  >
+                    <span>Dashboard</span>
+                  </button>
                 )}
 
                 {/* Auth Buttons Mobile */}
                 {!isAuthenticated ? (
-                  <div className="px-3 py-4 border-t border-gray-200 mt-2 space-y-3">
+                  <div className="pt-4 border-t border-gray-200 space-y-3">
                     <button
-                      onClick={openLogin}
-                      className="block w-full text-center bg-gradient-to-r from-blue-400 to-indigo-400 px-3 py-3 rounded-lg text-base font-medium hover:bg-blue-50 border border-blue-600 transition-all duration-200"
+                      onClick={() => {
+                        openLogin();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full flex items-center space-x-3 px-4 py-3 text-center border-2 border-blue-600 bg-transparent text-blue-600 rounded-xl font-semibold"
                     >
-                      Sign In
+                      <span>Sign In</span>
                     </button>
                     <button
-                      onClick={openRegister}
-                      className="block w-full text-center text-white bg-gradient-to-r from-blue-600 to-purple-600 px-3 py-3 rounded-lg text-base font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg"
+                      onClick={() => {
+                        openRegister();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full flex items-center space-x-3 px-4 py-3 text-center bg-gradient-to-tr from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg"
                     >
-                      Register
+                      <span>Register</span>
                     </button>
                   </div>
                 ) : (
-                  <div className="px-3 py-4 border-t border-gray-200 mt-2 pt-4">
-                    <div className="flex items-center space-x-3 mb-4">
+                  <div className="pt-4 border-t border-gray-200 space-y-3">
+                    <div className="flex items-center space-x-3 px-4 py-3 bg-white/50 rounded-xl border border-gray-200/50">
                       <img
                         src={
                           user?.avatar ||
@@ -1096,20 +1340,23 @@ export const Navbar = () => {
                         alt={user?.name}
                         className="w-10 h-10 rounded-full border-2 border-blue-500"
                       />
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {user?.name}
                         </p>
-                        <p className="text-xs text-gray-500 capitalize">
-                          {user?.role}
+                        <p className="text-xs text-gray-500 capitalize font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">
+                          {getUserDisplayStatus(user)}
                         </p>
                       </div>
                     </div>
                     <button
-                      onClick={handleLogout}
-                      className="block w-full text-center bg-gradient-to-r from-green-600 to-blue-700 text-white px-4 py-3 rounded-lg text-base font-medium hover:from-gray-700 hover:to-gray-800 transition-all duration-200 shadow-lg"
+                      onClick={() => {
+                        handleLogout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full flex items-center space-x-3 px-4 py-3 text-center bg-gradient-to-tr from-green-600 to-blue-800 text-white rounded-xl font-semibold shadow-lg"
                     >
-                      Logout
+                      <span>Logout</span>
                     </button>
                   </div>
                 )}
@@ -1129,11 +1376,11 @@ export const Navbar = () => {
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", damping: 25 }}
               className="bg-white rounded-2xl w-full max-w-md p-8 relative shadow-2xl mx-4 max-h-[90vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()} // Prevent click from closing modal
+              onClick={(e) => e.stopPropagation()}
             >
               <ModalCloseButton onClose={closeModals} />
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <div className="w-16 h-16 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <SvgIcons.User />
                 </div>
                 <h2 className="text-3xl font-bold text-gray-800 mb-2">
@@ -1147,7 +1394,7 @@ export const Navbar = () => {
                 onChange={setLoginForm}
                 onSubmit={handleLoginSubmit}
                 isSubmitting={isSubmitting}
-                onDemoLogin={handleDemoLogin}
+                onForgotPassword={openForgotPassword}
                 onSwitchToRegister={switchToRegister}
               />
             </motion.div>
@@ -1165,11 +1412,11 @@ export const Navbar = () => {
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", damping: 25 }}
               className="bg-white rounded-2xl w-full max-w-md p-8 relative shadow-2xl mx-4 max-h-[90vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()} // Prevent click from closing modal
+              onClick={(e) => e.stopPropagation()}
             >
               <ModalCloseButton onClose={closeModals} />
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <div className="w-16 h-16 bg-gradient-to-tr from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <span className="text-white font-bold text-xl">+</span>
                 </div>
                 <h2 className="text-3xl font-bold text-gray-800 mb-2">
@@ -1192,6 +1439,58 @@ export const Navbar = () => {
         )}
       </AnimatePresence>
 
+      {/* Forgot Password Modal */}
+      <AnimatePresence>
+        {isForgotPasswordOpen && (
+          <ModalOverlay onClose={closeModals}>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25 }}
+              className="bg-white rounded-2xl w-full max-w-md p-8 relative shadow-2xl mx-4 max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ModalCloseButton onClose={closeModals} />
+              <ForgotPasswordForm
+                form={forgotPasswordForm}
+                onChange={setForgotPasswordForm}
+                onSubmit={handleForgotPasswordSubmit}
+                isSubmitting={isSubmitting}
+                onSwitchToLogin={() => {
+                  setIsForgotPasswordOpen(false);
+                  setIsLoginOpen(true);
+                }}
+              />
+            </motion.div>
+          </ModalOverlay>
+        )}
+      </AnimatePresence>
+
+      {/* Reset Password Modal */}
+      <AnimatePresence>
+        {isResetPasswordOpen && (
+          <ModalOverlay onClose={closeModals}>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25 }}
+              className="bg-white rounded-2xl w-full max-w-md p-8 relative shadow-2xl mx-4 max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ModalCloseButton onClose={closeModals} />
+              <ResetPasswordForm
+                form={resetPasswordForm}
+                onChange={setResetPasswordForm}
+                onSubmit={handleResetPasswordSubmit}
+                isSubmitting={isSubmitting}
+              />
+            </motion.div>
+          </ModalOverlay>
+        )}
+      </AnimatePresence>
+
       {/* Contact Modal */}
       <AnimatePresence>
         {isContactOpen && (
@@ -1202,11 +1501,11 @@ export const Navbar = () => {
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", damping: 25 }}
               className="bg-white rounded-2xl w-full max-w-2xl p-8 relative shadow-2xl mx-4 max-h-[90vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()} // Prevent click from closing modal
+              onClick={(e) => e.stopPropagation()}
             >
               <ModalCloseButton onClose={closeModals} />
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <div className="w-16 h-16 bg-gradient-to-tr from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <SvgIcons.Message />
                 </div>
                 <h2 className="text-3xl font-bold text-gray-800 mb-2">
