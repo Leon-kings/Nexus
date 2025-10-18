@@ -170,13 +170,7 @@ const sidebarMenu = {
       path: "/7833/8303i/products/managements",
       badge: "156",
     },
-    {
-      id: "categories",
-      label: "Categories",
-      icon: <Category />,
-      path: "/categories",
-      badge: "12",
-    },
+
     {
       id: "orders",
       label: "Orders",
@@ -188,7 +182,7 @@ const sidebarMenu = {
       id: "customers",
       label: "Customers",
       icon: <People />,
-      path: "/customers",
+      path: "/08393/8303i/users/managements",
       badge: "8.4K",
     },
   ],
@@ -587,14 +581,4 @@ export const Sidebar = ({ isOpen, onToggle, isMobile }) => {
   );
 };
 
-// Menu Button Component for Small Screens
-export const MenuButton = ({ isOpen, onToggle }) => {
-  return (
-    <button
-      onClick={onToggle}
-      className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-gradient-to-b from-blue-400 to-indigo-400 text-white shadow-lg transition-colors"
-    >
-      {isOpen ? <Close /> : <Menu />}
-    </button>
-  );
-};
+

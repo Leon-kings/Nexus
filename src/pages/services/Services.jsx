@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { services, testimonials } from "../../assets/images/images";
 
 // API Base URL
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "https://nexusbackend-hdyk.onrender.com";
 
 export const Services = () => {
   const [activeService, setActiveService] = useState(null);
@@ -134,12 +134,14 @@ export const Services = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // In real implementation, use:
-      // const response = await axios.post(`${API_BASE_URL}/bookings`, bookingData);
+
+      const response = await axios.post(`${API_BASE_URL}/bookings`, bookingData);
 
       // For demo, simulate success
-      const response = {
-        data: { success: true, bookingId: `BK${Date.now()}` },
-      };
+      
+      // const response = {
+      //   data: { success: true, bookingId: `BK${Date.now()}` },
+      // };
 
       if (response.data.success) {
         setBookingModal({
@@ -177,13 +179,14 @@ export const Services = () => {
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
       // In real implementation, use:
-      // const response = await axios.post(`${API_BASE_URL}/payments`, paymentData);
+      const response = await axios.post(`${API_BASE_URL}/payments`, paymentData);
 
       // For demo, simulate 80% success rate
-      const isSuccess = Math.random() > 0.2;
-      const response = {
-        data: { success: isSuccess, transactionId: `TXN${Date.now()}` },
-      };
+
+      // const isSuccess = Math.random() > 0.2;
+      // const response = {
+      //   data: { success: isSuccess, transactionId: `TXN${Date.now()}` },
+      // };
 
       if (response.data.success) {
         setPaymentStatus("success");
@@ -1254,101 +1257,101 @@ export const Services = () => {
       </AnimatePresence>
 
       {/* Testimonials Slider Section */}
-      <section className="relative py-24 bg-gradient-to-br from-gray-50 to-blue-50 overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              whileInView={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring" }}
-              className="inline-block mb-4"
-            >
-              <div className="text-4xl">💬</div>
-            </motion.div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              What Our Clients Say
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Don't just take our word for it. Here's what our satisfied
-              customers have to say about our services.
-            </p>
-          </motion.div>
+<section className="relative py-24 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900 overflow-hidden">
+  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      className="text-center mb-16"
+    >
+      <motion.div
+        initial={{ scale: 0 }}
+        whileInView={{ scale: 1 }}
+        transition={{ delay: 0.2, type: "spring" }}
+        className="inline-block mb-4"
+      >
+        <div className="text-4xl">💬</div>
+      </motion.div>
+      <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        What Our Clients Say
+      </h2>
+      <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+        Don't just take our word for it. Here's what our satisfied
+        customers have to say about our services.
+      </p>
+    </motion.div>
 
-          <div className="relative">
-            {/* Testimonial Cards */}
-            <div className="overflow-hidden">
+    <div className="relative">
+      {/* Testimonial Cards */}
+      <div className="overflow-hidden">
+        <motion.div
+          key={currentTestimonial}
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -100 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl dark:shadow-gray-900/30 p-8 md:p-12 max-w-4xl mx-auto border border-gray-200 dark:border-gray-700"
+        >
+          <div className="flex flex-col md:flex-row items-center md:items-start space-y-8 md:space-y-0 md:space-x-12">
+            {/* Client Image */}
+            <div className="flex-shrink-0">
               <motion.div
-                key={currentTestimonial}
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                transition={{ duration: 0.5 }}
-                className="bg-white rounded-3xl shadow-xl p-8 md:p-12 max-w-4xl mx-auto"
+                whileHover={{ scale: 1.05 }}
+                className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-gray-800 shadow-lg"
               >
-                <div className="flex flex-col md:flex-row items-center md:items-start space-y-8 md:space-y-0 md:space-x-12">
-                  {/* Client Image */}
-                  <div className="flex-shrink-0">
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg"
-                    >
-                      <img
-                        src={testimonials[currentTestimonial].image}
-                        alt=""
-                        className="w-full h-full object-cover"
-                      />
-                    </motion.div>
-                  </div>
-
-                  {/* Testimonial Content */}
-                  <div className="flex-1 text-center md:text-left">
-                    {/* Rating */}
-                    <div className="flex justify-center md:justify-start space-x-1 mb-4">
-                      {[...Array(testimonials[currentTestimonial].rating)].map(
-                        (_, i) => (
-                          <motion.span
-                            key={i}
-                            className="text-yellow-400 text-2xl"
-                            whileHover={{ scale: 1.2 }}
-                          >
-                            ⭐
-                          </motion.span>
-                        )
-                      )}
-                    </div>
-
-                    {/* Quote */}
-                    <blockquote className="text-2xl md:text-3xl font-light text-gray-700 mb-6 leading-relaxed">
-                      "{testimonials[currentTestimonial].text}"
-                    </blockquote>
-
-                    {/* Client Info */}
-                    <div>
-                      <div className="text-xl font-bold text-gray-900">
-                        {testimonials[currentTestimonial].name}
-                      </div>
-                      <div className="text-gray-600 mb-2">
-                        {testimonials[currentTestimonial].company}
-                      </div>
-                      <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-100 to-cyan-100 px-4 py-2 rounded-full">
-                        <span className="text-blue-600">🎯</span>
-                        <span className="text-blue-700 font-semibold">
-                          {testimonials[currentTestimonial].service}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <img
+                  src={testimonials[currentTestimonial].image}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
               </motion.div>
             </div>
+
+            {/* Testimonial Content */}
+            <div className="flex-1 text-center md:text-left">
+              {/* Rating */}
+              <div className="flex justify-center md:justify-start space-x-1 mb-4">
+                {[...Array(testimonials[currentTestimonial].rating)].map(
+                  (_, i) => (
+                    <motion.span
+                      key={i}
+                      className="text-yellow-400 text-2xl"
+                      whileHover={{ scale: 1.2 }}
+                    >
+                      ⭐
+                    </motion.span>
+                  )
+                )}
+              </div>
+
+              {/* Quote */}
+              <blockquote className="text-2xl md:text-3xl font-light text-gray-700 dark:text-gray-200 mb-6 leading-relaxed">
+                "{testimonials[currentTestimonial].text}"
+              </blockquote>
+
+              {/* Client Info */}
+              <div>
+                <div className="text-xl font-bold text-gray-900 dark:text-white">
+                  {testimonials[currentTestimonial].name}
+                </div>
+                <div className="text-gray-600 dark:text-gray-400 mb-2">
+                  {testimonials[currentTestimonial].company}
+                </div>
+                <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 px-4 py-2 rounded-full border border-blue-200 dark:border-blue-800">
+                  <span className="text-blue-600 dark:text-blue-400">🎯</span>
+                  <span className="text-blue-700 dark:text-blue-300 font-semibold">
+                    {testimonials[currentTestimonial].service}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </motion.div>
+      </div>
+    </div>
+  </div>
+</section>
     </div>
   );
 };

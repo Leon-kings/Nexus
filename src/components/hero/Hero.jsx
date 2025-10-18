@@ -749,7 +749,7 @@ const HoverInfoBoard = () => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    className="absolute top-20 right-4 bg-white/95 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20 max-w-xs z-20"
+    className="absolute top-20 right-4 bg-white/95 dark:text-black backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20 max-w-xs z-20"
   >
     <h3 className="text-lg font-bold text-blue-400 mb-3">
       Why Choose Nexus Computers?
@@ -787,7 +787,7 @@ export const Hero = () => {
     <>
       <ToastContainer position="top-right" autoClose={5000} />
 
-      <div className="w-full mt-2 h-screen rounded-2xl mb-2 relative">
+      <div className="w-full mt-2 dark:text-white h-screen rounded-2xl mb-2 relative">
         {/* Video Background */}
         <div className="relative h-screen w-full overflow-hidden">
           <video

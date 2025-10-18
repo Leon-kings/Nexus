@@ -50,6 +50,7 @@ button {
 .dark {
   --tw-bg-opacity: 1;
   background-color: rgba(17, 24, 39, var(--tw-bg-opacity));
+  color: rgba(255, 255, 255, 0.87);
 }
 
 .dark .text-gray-900 {
@@ -71,5 +72,6 @@ button {
   --tw-border-opacity: 1;
   border-color: rgba(55, 65, 81, var(--tw-border-opacity));
 }
+
 
 @import "tailwindcss";

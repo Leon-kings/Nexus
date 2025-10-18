@@ -1389,3 +1389,94 @@ export const faqData = {
                 "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
             },
           ];
+
+
+
+
+// Updated categories array with correct counts
+export const categories = [
+  {
+    id: "all",
+    name: "All Devices",
+    icon: "⚡",
+    count: electronicDevices.length,
+    gradient: "from-blue-500 to-blue-600",
+  },
+  {
+    id: "laptops",
+    name: "Laptops",
+    icon: "💻",
+    count: electronicDevices.filter((d) => d.category === "laptops").length,
+    gradient: "from-purple-500 to-purple-600",
+  },
+  {
+    id: "smartphones",
+    name: "Smartphones",
+    icon: "📱",
+    count: electronicDevices.filter((d) => d.category === "smartphones").length,
+    gradient: "from-green-500 to-green-600",
+  },
+  {
+    id: "audio",
+    name: "Audio",
+    icon: "🎧",
+    count: electronicDevices.filter((d) => d.category === "audio").length,
+    gradient: "from-orange-500 to-orange-600",
+  },
+  {
+    id: "wearables",
+    name: "Wearables",
+    icon: "⌚",
+    count: electronicDevices.filter((d) => d.category === "wearables").length,
+    gradient: "from-red-500 to-red-600",
+  },
+  {
+    id: "tvs",
+    name: "TVs",
+    icon: "📺",
+    count: electronicDevices.filter((d) => d.category === "tvs").length,
+    gradient: "from-indigo-500 to-indigo-600",
+  },
+  {
+    id: "tablets",
+    name: "Tablets",
+    icon: "📟",
+    count: electronicDevices.filter((d) => d.category === "tablets").length,
+    gradient: "from-pink-500 to-pink-600",
+  },
+  {
+    id: "gaming",
+    name: "Gaming",
+    icon: "🎮",
+    count: electronicDevices.filter((d) => d.category === "gaming").length,
+    gradient: "from-yellow-500 to-yellow-600",
+  },
+  {
+    id: "smart-home",
+    name: "Smart Home",
+    icon: "🏠",
+    count: electronicDevices.filter((d) => d.category === "smart-home").length,
+    gradient: "from-teal-500 to-teal-600",
+  },
+  {
+    id: "cameras",
+    name: "Cameras",
+    icon: "📷",
+    count: electronicDevices.filter((d) => d.category === "cameras").length,
+    gradient: "from-cyan-500 to-cyan-600",
+  },
+  {
+    id: "monitors",
+    name: "Monitors",
+    icon: "🖥️",
+    count: electronicDevices.filter((d) => d.category === "monitors").length,
+    gradient: "from-blue-500 to-cyan-500",
+  },
+  {
+    id: "accessories",
+    name: "Accessories",
+    icon: "🔌",
+    count: electronicDevices.filter((d) => d.category === "accessories").length,
+    gradient: "from-gray-500 to-gray-600",
+  },
+];

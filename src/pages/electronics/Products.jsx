@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -48,289 +49,14 @@ import {
   SettingsInputAntenna,
   Menu,
   Category,
+  AddPhotoAlternate,
+  AdminPanelSettings,
+  CloudUpload,
+  Logout,
 } from "@mui/icons-material";
+import { electronicDevices } from "../../assets/images/products";
 
 // Mock data for electronic devices and stats
-const electronicDevices = [
-  {
-    id: 1,
-    name: "MacBook Pro 16-inch",
-    brand: "Apple",
-    price: 2399,
-    originalPrice: 2599,
-    discount: 8,
-    category: "laptops",
-    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400",
-    images: [
-      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400",
-      "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400",
-    ],
-    description:
-      "Powerful laptop for professionals with M2 Pro chip, 16GB RAM, and 1TB SSD.",
-    features: [
-      "M2 Pro Chip",
-      "16GB RAM",
-      "1TB SSD",
-      "16-inch Retina Display",
-      "Touch Bar",
-    ],
-    specifications: {
-      processor: "Apple M2 Pro",
-      memory: "16GB",
-      storage: "1TB SSD",
-      display: "16-inch Retina",
-      graphics: "Integrated 19-core GPU",
-    },
-    rating: 4.8,
-    isNew: true,
-    inStock: true,
-  },
-  {
-    id: 2,
-    name: "iPhone 15 Pro",
-    brand: "Apple",
-    price: 999,
-    originalPrice: 1099,
-    discount: 9,
-    category: "smartphones",
-    image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400",
-    images: [
-      "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400",
-      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400",
-    ],
-    description:
-      "Latest iPhone with A17 Pro chip, titanium design, and advanced camera system.",
-    features: [
-      "A17 Pro Chip",
-      "Titanium Design",
-      "Pro Camera System",
-      "5G",
-      "Face ID",
-    ],
-    specifications: {
-      processor: "A17 Pro",
-      memory: "8GB",
-      storage: "128GB",
-      display: "6.1-inch Super Retina",
-      camera: "48MP Main",
-    },
-    rating: 4.7,
-    isNew: true,
-    inStock: true,
-  },
-  {
-    id: 3,
-    name: "Sony WH-1000XM5",
-    brand: "Sony",
-    price: 399,
-    originalPrice: 449,
-    discount: 11,
-    category: "audio",
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
-    images: [
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
-      "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400",
-    ],
-    description:
-      "Industry-leading noise canceling headphones with exceptional sound quality.",
-    features: [
-      "Noise Canceling",
-      "30hr Battery",
-      "Touch Controls",
-      "Voice Assistant",
-      "Quick Charge",
-    ],
-    specifications: {
-      battery: "30 hours",
-      connectivity: "Bluetooth 5.2",
-      weight: "250g",
-      features: "Noise Canceling, Touch Controls",
-    },
-    rating: 4.6,
-    isNew: false,
-    inStock: true,
-  },
-  {
-    id: 4,
-    name: "Samsung Galaxy Watch 6",
-    brand: "Samsung",
-    price: 329,
-    originalPrice: 359,
-    discount: 8,
-    category: "wearables",
-    image: "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=400",
-    images: [
-      "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=400",
-      "https://images.unsplash.com/photo-1434493652601-8dabae5c8e6a?w=400",
-    ],
-    description:
-      "Advanced smartwatch with health monitoring and premium design.",
-    features: [
-      "Health Monitoring",
-      "GPS",
-      "Water Resistant",
-      "Sleep Tracking",
-      "Voice Assistant",
-    ],
-    specifications: {
-      display: "1.5-inch AMOLED",
-      battery: "40 hours",
-      connectivity: "Bluetooth, Wi-Fi",
-      features: "GPS, Heart Rate Monitor",
-    },
-    rating: 4.4,
-    isNew: true,
-    inStock: true,
-  },
-  {
-    id: 5,
-    name: "LG OLED C3 Series",
-    brand: "LG",
-    price: 1299,
-    originalPrice: 1499,
-    discount: 13,
-    category: "tvs",
-    image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400",
-    images: [
-      "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400",
-      "https://images.unsplash.com/photo-1542751110-97427bbecf20?w=400",
-    ],
-    description: "65-inch 4K Smart TV with OLED technology and webOS platform.",
-    features: ["4K OLED", "Smart TV", "HDR", "webOS", "Dolby Atmos"],
-    specifications: {
-      size: "65-inch",
-      resolution: "4K UHD",
-      technology: "OLED",
-      features: "Smart TV, HDR",
-    },
-    rating: 4.5,
-    isNew: false,
-    inStock: true,
-  },
-  {
-    id: 6,
-    name: "iPad Air 5th Gen",
-    brand: "Apple",
-    price: 599,
-    originalPrice: 649,
-    discount: 8,
-    category: "tablets",
-    image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400",
-    images: [
-      "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400",
-      "https://images.unsplash.com/photo-1561154464-82e9adf32764?w=400",
-    ],
-    description: "Powerful tablet with M1 chip and Liquid Retina display.",
-    features: [
-      "M1 Chip",
-      "Liquid Retina",
-      "5G",
-      "Touch ID",
-      "Apple Pencil Support",
-    ],
-    specifications: {
-      processor: "Apple M1",
-      display: "10.9-inch Liquid Retina",
-      storage: "64GB",
-      features: "5G, Touch ID",
-    },
-    rating: 4.6,
-    isNew: true,
-    inStock: true,
-  },
-  {
-    id: 7,
-    name: "PlayStation 5",
-    brand: "Sony",
-    price: 499,
-    originalPrice: 499,
-    discount: 0,
-    category: "gaming",
-    image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400",
-    images: [
-      "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400",
-      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400",
-    ],
-    description:
-      "Next-gen gaming console with ultra-high speed SSD and ray tracing.",
-    features: [
-      "4K Gaming",
-      "Ray Tracing",
-      "SSD",
-      "Backward Compatible",
-      "3D Audio",
-    ],
-    specifications: {
-      storage: "825GB SSD",
-      resolution: "8K",
-      features: "Ray Tracing, 3D Audio",
-    },
-    rating: 4.8,
-    isNew: false,
-    inStock: false,
-  },
-  {
-    id: 8,
-    name: "Google Nest Hub",
-    brand: "Google",
-    price: 89,
-    originalPrice: 99,
-    discount: 10,
-    category: "smart-home",
-    image: "https://images.unsplash.com/photo-1558089687-f282ffcbc0d4?w=400",
-    images: [
-      "https://images.unsplash.com/photo-1558089687-f282ffcbc0d4?w=400",
-      "https://images.unsplash.com/photo-1558089687-f282ffcbc0d4?w=400",
-    ],
-    description:
-      "Smart display with Google Assistant for home control and entertainment.",
-    features: [
-      "Google Assistant",
-      "Touch Screen",
-      "Smart Home Control",
-      "Video Streaming",
-      "Voice Control",
-    ],
-    specifications: {
-      display: "7-inch",
-      features: "Google Assistant, Smart Home Control",
-    },
-    rating: 4.3,
-    isNew: true,
-    inStock: true,
-  },
-  {
-    id: 9,
-    name: "Canon EOS R5",
-    brand: "Canon",
-    price: 3899,
-    originalPrice: 4299,
-    discount: 9,
-    category: "cameras",
-    image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400",
-    images: [
-      "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400",
-      "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400",
-    ],
-    description:
-      "Professional mirrorless camera with 45MP and 8K video recording.",
-    features: [
-      "45MP Full Frame",
-      "8K Video",
-      "IBIS",
-      "Dual Pixel AF",
-      "Weather Sealed",
-    ],
-    specifications: {
-      sensor: "45MP Full Frame",
-      video: "8K",
-      features: "IBIS, Weather Sealed",
-    },
-    rating: 4.7,
-    isNew: false,
-    inStock: true,
-  },
-];
 
 const stats = [
   {
@@ -356,7 +82,77 @@ const stats = [
 ];
 
 // API Base URL
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "https://nexusbackend-hdyk.onrender.com";
+
+// Auth Hook
+const useAuth = () => {
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        // Check for token in localStorage (common approach)
+        const token = localStorage.getItem("token");
+        
+        if (token) {
+          // Verify token with backend
+          const response = await axios.get(`${API_BASE_URL}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          if (response.data.success) {
+            setUser(response.data.user);
+          } else {
+            // Invalid token, clear it
+            localStorage.removeItem("token");
+            setUser(null);
+          }
+        } else {
+          // Also check cookies as fallback
+          const cookies = document.cookie.split(';');
+          const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('token='));
+          
+          if (tokenCookie) {
+            const cookieToken = tokenCookie.split('=')[1];
+            const response = await axios.get(`${API_BASE_URL}/auth/me`, {
+              headers: { Authorization: `Bearer ${cookieToken}` }
+            });
+            
+            if (response.data.success) {
+              setUser(response.data.user);
+              // Store in localStorage for consistency
+              localStorage.setItem("token", cookieToken);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Auth check failed:", error);
+        // Clear any invalid tokens
+        localStorage.removeItem("token");
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const login = (token, userData) => {
+    localStorage.setItem("token", token);
+    setUser(userData);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    // Clear cookie if exists
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    setUser(null);
+  };
+
+  return { user, isLoading, login, logout };
+};
 
 // Cart Context
 const useCart = () => {
@@ -504,6 +300,659 @@ const useLikes = () => {
     getLikes,
     isLiked,
   };
+};
+
+// Payment Hook
+const usePayment = () => {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [availableMethods, setAvailableMethods] = useState([]);
+
+  // Get available payment methods
+  const getPaymentMethods = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/payments/methods`);
+      setAvailableMethods(response.data.data.paymentMethods || []);
+      return response.data.data.paymentMethods || [];
+    } catch (error) {
+      console.error("Failed to fetch payment methods:", error);
+      toast.error("Failed to load payment methods");
+      return [];
+    }
+  };
+
+  // Process payment
+  const processPayment = async (orderData, paymentData) => {
+    setIsProcessing(true);
+    try {
+      const response = await axios.post(`${API_BASE_URL}/payments/process`, {
+        orderId: orderData.orderId,
+        paymentMethod: paymentData.paymentMethod,
+        paymentData: paymentData.paymentDetails,
+      });
+
+      if (response.data.success) {
+        toast.success(
+          response.data.message || "Payment processed successfully!"
+        );
+        return {
+          success: true,
+          data: response.data.data,
+          message: response.data.message,
+        };
+      } else {
+        throw new Error(response.data.message || "Payment failed");
+      }
+    } catch (error) {
+      console.error("Payment processing error:", error);
+      toast.error(
+        error.response?.data?.message || error.message || "Payment failed"
+      );
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message,
+      };
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Check payment status
+  const checkPaymentStatus = async (paymentId) => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/payments/status/${paymentId}`
+      );
+      return response.data.data.payment;
+    } catch (error) {
+      console.error("Failed to check payment status:", error);
+      return null;
+    }
+  };
+
+  return {
+    isProcessing,
+    availableMethods,
+    getPaymentMethods,
+    processPayment,
+    checkPaymentStatus,
+  };
+};
+
+// Login Modal Component
+const LoginModal = ({ isOpen, onClose, onLogin }) => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post(`${API_BASE_URL}/auth/login`, formData);
+      
+      if (response.data.success) {
+        const { token, user } = response.data.data;
+        onLogin(token, user);
+        toast.success(`Welcome back, ${user.firstName || user.email}!`);
+        onClose();
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      toast.error(error.response?.data?.message || 'Login failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-white dark:bg-gray-800 rounded-3xl max-w-md w-full text-black dark:text-white"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <Person className="text-blue-600 dark:text-blue-400" />
+              Login
+            </h2>
+            <button
+              onClick={onClose}
+              className="flex items-center justify-center w-8 h-8 bg-gradient-to-l from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200"
+            >
+              <Close className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Email *
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
+              placeholder="Enter your email"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Password *
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              required
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
+              placeholder="Enter your password"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-gradient-to-b from-blue-600 to-blue-700 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+// Create Product Modal Component
+const CreateProductModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    brand: "",
+    price: "",
+    originalPrice: "",
+    discount: 0,
+    category: "laptops",
+    description: "",
+    features: [""],
+    specifications: {
+      processor: "",
+      memory: "",
+      storage: "",
+      display: "",
+    },
+    inStock: true,
+    isNew: false,
+  });
+
+  const [images, setImages] = useState([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSpecChange = (key, value) => {
+    setFormData(prev => ({
+      ...prev,
+      specifications: {
+        ...prev.specifications,
+        [key]: value
+      }
+    }));
+  };
+
+  const handleFeatureChange = (index, value) => {
+    const newFeatures = [...formData.features];
+    newFeatures[index] = value;
+    setFormData(prev => ({ ...prev, features: newFeatures }));
+  };
+
+  const addFeature = () => {
+    setFormData(prev => ({
+      ...prev,
+      features: [...prev.features, ""]
+    }));
+  };
+
+  const removeFeature = (index) => {
+    const newFeatures = formData.features.filter((_, i) => i !== index);
+    setFormData(prev => ({ ...prev, features: newFeatures }));
+  };
+
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    setUploadingImages(true);
+    const uploadedImages = [];
+
+    try {
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'ld_computer_preset'); // Replace with your upload preset
+
+        const response = await axios.post(
+          'https://api.cloudinary.com/v1_1/demo/image/upload', // Replace with your cloud name
+          formData
+        );
+
+        if (response.data.secure_url) {
+          uploadedImages.push(response.data.secure_url);
+        }
+      }
+
+      setImages(prev => [...prev, ...uploadedImages]);
+      toast.success(`${uploadedImages.length} image(s) uploaded successfully!`);
+    } catch (error) {
+      console.error('Image upload failed:', error);
+      toast.error('Failed to upload images');
+    } finally {
+      setUploadingImages(false);
+    }
+  };
+
+  const removeImage = (index) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (images.length === 0) {
+      toast.error('Please upload at least one image');
+      return;
+    }
+
+    const productData = {
+      ...formData,
+      price: parseFloat(formData.price),
+      originalPrice: parseFloat(formData.originalPrice) || parseFloat(formData.price),
+      discount: parseInt(formData.discount) || 0,
+      image: images[0],
+      images: images,
+      rating: 4.0, // Default rating
+      category: formData.category,
+    };
+
+    await onSubmit(productData);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-white dark:bg-gray-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto text-black dark:text-white"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <AddPhotoAlternate className="text-blue-600 dark:text-blue-400" />
+              Create New Product
+            </h2>
+            <button
+              onClick={onClose}
+              className="flex items-center justify-center w-8 h-8 bg-gradient-to-l from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200"
+            >
+              <Close className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Basic Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Product Name *
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
+                placeholder="Enter product name"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Brand *
+              </label>
+              <input
+                type="text"
+                name="brand"
+                value={formData.brand}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
+                placeholder="Enter brand name"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Price ($) *
+              </label>
+              <input
+                type="number"
+                name="price"
+                value={formData.price}
+                onChange={handleInputChange}
+                required
+                min="0"
+                step="0.01"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
+                placeholder="0.00"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Original Price ($)
+              </label>
+              <input
+                type="number"
+                name="originalPrice"
+                value={formData.originalPrice}
+                onChange={handleInputChange}
+                min="0"
+                step="0.01"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
+                placeholder="0.00"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Category *
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
+              >
+                <option value="laptops">Laptops</option>
+                <option value="smartphones">Smartphones</option>
+                <option value="audio">Audio</option>
+                <option value="wearables">Wearables</option>
+                <option value="tvs">TVs</option>
+                <option value="tablets">Tablets</option>
+                <option value="gaming">Gaming</option>
+                <option value="smart-home">Smart Home</option>
+                <option value="cameras">Cameras</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Discount (%)
+              </label>
+              <input
+                type="number"
+                name="discount"
+                value={formData.discount}
+                onChange={handleInputChange}
+                min="0"
+                max="100"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
+                placeholder="0"
+              />
+            </div>
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Description *
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              required
+              rows="3"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
+              placeholder="Enter product description"
+            />
+          </div>
+
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Product Images *
+            </label>
+            <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-6 text-center">
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+                id="image-upload"
+                disabled={uploadingImages}
+              />
+              <label
+                htmlFor="image-upload"
+                className={`cursor-pointer flex flex-col items-center justify-center space-y-2 ${
+                  uploadingImages ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                <CloudUpload className="text-4xl text-gray-400" />
+                <span className="text-sm text-gray-600 dark:text-gray-300">
+                  {uploadingImages ? 'Uploading...' : 'Click to upload images'}
+                </span>
+                <span className="text-xs text-gray-500">
+                  PNG, JPG, WEBP up to 10MB
+                </span>
+              </label>
+            </div>
+
+            {/* Image Preview */}
+            {images.length > 0 && (
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {images.map((image, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={image}
+                      alt={`Preview ${index + 1}`}
+                      className="w-full h-24 object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Features */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Features
+            </label>
+            {formData.features.map((feature, index) => (
+              <div key={index} className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  value={feature}
+                  onChange={(e) => handleFeatureChange(index, e.target.value)}
+                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
+                  placeholder="Enter feature"
+                />
+                {formData.features.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeFeature(index)}
+                    className="px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={addFeature}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
+            >
+              <Add className="w-4 h-4" />
+              Add Feature
+            </button>
+          </div>
+
+          {/* Specifications */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Processor
+              </label>
+              <input
+                type="text"
+                value={formData.specifications.processor}
+                onChange={(e) => handleSpecChange('processor', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
+                placeholder="Enter processor details"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Memory
+              </label>
+              <input
+                type="text"
+                value={formData.specifications.memory}
+                onChange={(e) => handleSpecChange('memory', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
+                placeholder="Enter memory details"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Storage
+              </label>
+              <input
+                type="text"
+                value={formData.specifications.storage}
+                onChange={(e) => handleSpecChange('storage', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
+                placeholder="Enter storage details"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Display
+              </label>
+              <input
+                type="text"
+                value={formData.specifications.display}
+                onChange={(e) => handleSpecChange('display', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
+                placeholder="Enter display details"
+              />
+            </div>
+          </div>
+
+          {/* Checkboxes */}
+          <div className="flex gap-6">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="inStock"
+                checked={formData.inStock}
+                onChange={handleInputChange}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm text-gray-700 dark:text-gray-300">In Stock</span>
+            </label>
+
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="isNew"
+                checked={formData.isNew}
+                onChange={handleInputChange}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm text-gray-700 dark:text-gray-300">New Product</span>
+            </label>
+          </div>
+
+          {/* Submit Buttons */}
+          <div className="flex gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading || uploadingImages}
+              className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? 'Creating...' : 'Create Product'}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </motion.div>
+  );
 };
 
 // Pagination Component
@@ -664,13 +1113,13 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-6xl h-[95vh] sm:h-[90vh] flex flex-col mx-auto"
+          className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-6xl h-[95vh] sm:h-[90vh] flex flex-col mx-auto"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header - Responsive */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 border-b border-gray-200 gap-3 sm:gap-0">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2 justify-center sm:justify-start">
-              <Receipt className="text-blue-600 w-5 h-5 sm:w-6 sm:h-6" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 gap-3 sm:gap-0">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2 justify-center sm:justify-start">
+              <Receipt className="text-blue-600 dark:text-blue-400 w-5 h-5 sm:w-6 sm:h-6" />
               Invoice
             </h2>
             <div className="flex items-center justify-center sm:justify-end space-x-2 sm:space-x-3 flex-wrap gap-2">
@@ -714,23 +1163,23 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
           <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">
             <div
               ref={invoiceRef}
-              className="bg-white p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl border border-gray-200 invoice-print"
+              className="bg-white dark:bg-gray-800 p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 invoice-print"
               style={{ minHeight: "800px" }}
             >
               {/* Invoice Header - Responsive */}
-              <div className="grid grid-cols-1 md:grid-cols-2 justify-between items-start gap-6 sm:gap-8 mb-8 sm:mb-12 border-b-2 border-gray-300 pb-6 sm:pb-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 justify-between items-start gap-6 sm:gap-8 mb-8 sm:mb-12 border-b-2 border-gray-300 dark:border-gray-600 pb-6 sm:pb-8">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 w-full lg:w-auto">
                   <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg mx-auto sm:mx-0">
                     <Business className="text-white text-lg sm:text-xl md:text-2xl" />
                   </div>
                   <div className="text-center sm:text-left flex-1">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
                       Future Electronics
                     </h1>
-                    <p className="text-base sm:text-lg text-gray-600 mb-3">
+                    <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-3">
                       Innovating Tomorrow, Today
                     </p>
-                    <div className="text-gray-500 space-y-1 text-sm sm:text-base">
+                    <div className="text-gray-500 dark:text-gray-400 space-y-1 text-sm sm:text-base">
                       <p className="flex items-center gap-2 justify-center sm:justify-start">
                         <LocationOn className="w-3 h-3 sm:w-4 sm:h-4" />
                         <span className="break-words">
@@ -752,22 +1201,32 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
                   </div>
                 </div>
 
-                <div className="text-center sm:text-right bg-gradient-to-br from-blue-50 to-purple-50 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-blue-200 w-full lg:w-auto">
-                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center justify-center sm:justify-end gap-2">
-                    <Receipt className="text-blue-600 w-5 h-5 sm:w-6 sm:h-6" />
+                <div className="text-center sm:text-right bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-blue-200 dark:border-blue-800 w-full lg:w-auto">
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center justify-center sm:justify-end gap-2">
+                    <Receipt className="text-blue-600 dark:text-blue-400 w-5 h-5 sm:w-6 sm:h-6" />
                     INVOICE
                   </h2>
                   <div className="space-y-2 text-sm sm:text-base md:text-lg">
                     <p className="flex items-center justify-center sm:justify-end gap-2">
-                      <strong className="text-gray-700">Invoice #:</strong>
-                      <span className="font-mono">{orderDetails.orderId}</span>
+                      <strong className="text-gray-700 dark:text-gray-300">
+                        Invoice #:
+                      </strong>
+                      <span className="font-mono text-gray-900 dark:text-white">
+                        {orderDetails.orderId}
+                      </span>
                     </p>
                     <p className="flex items-center justify-center sm:justify-end gap-2">
-                      <strong className="text-gray-700">Date:</strong>
-                      {formatDate(orderDetails.createdAt)}
+                      <strong className="text-gray-700 dark:text-gray-300">
+                        Date:
+                      </strong>
+                      <span className="text-gray-900 dark:text-white">
+                        {formatDate(orderDetails.createdAt)}
+                      </span>
                     </p>
                     <p className="flex items-center justify-center sm:justify-end gap-2">
-                      <strong className="text-gray-700">Status:</strong>
+                      <strong className="text-gray-700 dark:text-gray-300">
+                        Status:
+                      </strong>
                       <span className="ml-2 px-3 py-1 sm:px-4 sm:py-2 bg-green-500 text-white rounded-full text-xs sm:text-sm font-bold shadow-lg flex items-center gap-1">
                         <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                         PAID
@@ -781,15 +1240,15 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 mb-8 sm:mb-12">
                 {/* Bill To */}
                 <div>
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center justify-center lg:justify-start">
-                    <Person className="mr-2 sm:mr-3 text-blue-600 w-4 h-4 sm:w-5 sm:h-5" />
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center justify-center lg:justify-start">
+                    <Person className="mr-2 sm:mr-3 text-blue-600 dark:text-blue-400 w-4 h-4 sm:w-5 sm:h-5" />
                     Bill To:
                   </h3>
-                  <div className="bg-gray-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200">
-                    <p className="font-bold text-lg sm:text-xl text-gray-900 mb-2 text-center lg:text-left">
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600">
+                    <p className="font-bold text-lg sm:text-xl text-gray-900 dark:text-white mb-2 text-center lg:text-left">
                       {orderDetails.user.firstName} {orderDetails.user.lastName}
                     </p>
-                    <div className="space-y-1 sm:space-y-2 text-gray-700 text-sm sm:text-base">
+                    <div className="space-y-1 sm:space-y-2 text-gray-700 dark:text-gray-300 text-sm sm:text-base">
                       <p className="flex items-center gap-2 justify-center lg:justify-start">
                         <Email className="w-3 h-3 sm:w-4 sm:h-4" />
                         {orderDetails.user.email}
@@ -811,16 +1270,16 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
 
                 {/* Payment Method */}
                 <div>
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center justify-center lg:justify-start">
-                    <CreditCard className="mr-2 sm:mr-3 text-green-600 w-4 h-4 sm:w-5 sm:h-5" />
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center justify-center lg:justify-start">
+                    <CreditCard className="mr-2 sm:mr-3 text-green-600 dark:text-green-400 w-4 h-4 sm:w-5 sm:h-5" />
                     Payment Method:
                   </h3>
-                  <div className="bg-gray-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200">
-                    <p className="font-bold text-lg sm:text-xl text-gray-900 mb-2 text-center lg:text-left capitalize">
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600">
+                    <p className="font-bold text-lg sm:text-xl text-gray-900 dark:text-white mb-2 text-center lg:text-left capitalize">
                       {orderDetails.payment.paymentMethod.replace("_", " ")}
                     </p>
-                    <div className="space-y-1 sm:space-y-2 text-gray-700 text-sm sm:text-base">
-                      {orderDetails.payment.paymentMethod === "credit_card" && (
+                    <div className="space-y-1 sm:space-y-2 text-gray-700 dark:text-gray-300 text-sm sm:text-base">
+                      {orderDetails.payment.paymentMethod === "stripe" && (
                         <>
                           <p className="flex items-center gap-2 justify-center lg:justify-start">
                             <CreditCard className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -831,8 +1290,7 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
                           </p>
                         </>
                       )}
-                      {orderDetails.payment.paymentMethod ===
-                        "mobile_money" && (
+                      {orderDetails.payment.paymentMethod === "paypack" && (
                         <>
                           <p className="flex items-center gap-2 justify-center lg:justify-start">
                             <Smartphone className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -855,53 +1313,61 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
 
               {/* Order Items - Responsive Table */}
               <div className="mb-8 sm:mb-12">
-                <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center justify-center lg:justify-start">
-                  <ShoppingCart className="mr-2 sm:mr-3 text-purple-600 w-4 h-4 sm:w-5 sm:h-5" />
+                <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6 flex items-center justify-center lg:justify-start">
+                  <ShoppingCart className="mr-2 sm:mr-3 text-purple-600 dark:text-purple-400 w-4 h-4 sm:w-5 sm:h-5" />
                   Order Details
                 </h3>
-                <div className="border border-gray-200 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg">
                   {/* Mobile View - Cards */}
                   <div className="block sm:hidden">
                     {orderDetails.items.map((item, index) => (
                       <div
                         key={item.id}
                         className={`p-4 ${
-                          index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                        } border-b border-gray-200`}
+                          index % 2 === 0
+                            ? "bg-white dark:bg-gray-800"
+                            : "bg-gray-50 dark:bg-gray-700"
+                        } border-b border-gray-200 dark:border-gray-600`}
                       >
                         <div className="flex items-center space-x-3 mb-3">
-                          <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+                          <div className="w-12 h-12 bg-gray-100 dark:bg-gray-600 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-500 flex-shrink-0">
                             <img
                               src={item.image}
-                              alt={item.name}
+                              alt=""
                               className="w-full h-full object-cover"
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-gray-900 text-sm truncate">
+                            <p className="font-semibold text-gray-900 dark:text-white text-sm truncate">
                               {item.name}
                             </p>
-                            <p className="text-gray-600 text-xs">
+                            <p className="text-gray-600 dark:text-gray-300 text-xs">
                               {item.brand}
                             </p>
                           </div>
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-sm">
                           <div className="text-center">
-                            <p className="text-gray-600 text-xs">Qty</p>
-                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-bold text-xs">
+                            <p className="text-gray-600 dark:text-gray-300 text-xs">
+                              Qty
+                            </p>
+                            <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full font-bold text-xs">
                               {item.quantity}
                             </span>
                           </div>
                           <div className="text-center">
-                            <p className="text-gray-600 text-xs">Price</p>
-                            <p className="font-semibold text-gray-900">
+                            <p className="text-gray-600 dark:text-gray-300 text-xs">
+                              Price
+                            </p>
+                            <p className="font-semibold text-gray-900 dark:text-white">
                               ${item.price.toFixed(2)}
                             </p>
                           </div>
                           <div className="text-center">
-                            <p className="text-gray-600 text-xs">Total</p>
-                            <p className="font-bold text-gray-900">
+                            <p className="text-gray-600 dark:text-gray-300 text-xs">
+                              Total
+                            </p>
+                            <p className="font-bold text-gray-900 dark:text-white">
                               ${(item.price * item.quantity).toFixed(2)}
                             </p>
                           </div>
@@ -914,17 +1380,17 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
                   <div className="hidden sm:block">
                     <table className="w-full">
                       <thead>
-                        <tr className="bg-gradient-to-r from-blue-50 to-purple-50">
-                          <th className="text-left p-4 font-semibold text-gray-900">
+                        <tr className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
+                          <th className="text-left p-4 font-semibold text-gray-900 dark:text-white">
                             Product
                           </th>
-                          <th className="text-center p-4 font-semibold text-gray-900">
+                          <th className="text-center p-4 font-semibold text-gray-900 dark:text-white">
                             Quantity
                           </th>
-                          <th className="text-right p-4 font-semibold text-gray-900">
+                          <th className="text-right p-4 font-semibold text-gray-900 dark:text-white">
                             Price
                           </th>
-                          <th className="text-right p-4 font-semibold text-gray-900">
+                          <th className="text-right p-4 font-semibold text-gray-900 dark:text-white">
                             Total
                           </th>
                         </tr>
@@ -934,12 +1400,14 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
                           <tr
                             key={item.id}
                             className={
-                              index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                              index % 2 === 0
+                                ? "bg-white dark:bg-gray-800"
+                                : "bg-gray-50 dark:bg-gray-700"
                             }
                           >
                             <td className="p-4">
                               <div className="flex items-center space-x-3">
-                                <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+                                <div className="w-12 h-12 bg-gray-100 dark:bg-gray-600 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-500 flex-shrink-0">
                                   <img
                                     src={item.image}
                                     alt={item.name}
@@ -947,24 +1415,24 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
                                   />
                                 </div>
                                 <div>
-                                  <p className="font-semibold text-gray-900">
+                                  <p className="font-semibold text-gray-900 dark:text-white">
                                     {item.name}
                                   </p>
-                                  <p className="text-gray-600 text-sm">
+                                  <p className="text-gray-600 dark:text-gray-300 text-sm">
                                     {item.brand}
                                   </p>
                                 </div>
                               </div>
                             </td>
                             <td className="text-center p-4">
-                              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold">
+                              <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full font-bold">
                                 {item.quantity}
                               </span>
                             </td>
-                            <td className="text-right p-4 font-semibold text-gray-900">
+                            <td className="text-right p-4 font-semibold text-gray-900 dark:text-white">
                               ${item.price.toFixed(2)}
                             </td>
-                            <td className="text-right p-4 font-bold text-gray-900">
+                            <td className="text-right p-4 font-bold text-gray-900 dark:text-white">
                               ${(item.price * item.quantity).toFixed(2)}
                             </td>
                           </tr>
@@ -975,10 +1443,12 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
                 </div>
 
                 {/* Order Summary */}
-                <div className="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl sm:rounded-2xl p-6 border border-blue-200">
+                <div className="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl sm:rounded-2xl p-6 border border-blue-200 dark:border-blue-800">
                   <div className="flex justify-between items-center text-lg sm:text-xl font-bold">
-                    <span>Total Amount:</span>
-                    <span className="text-green-600 text-xl sm:text-2xl">
+                    <span className="text-gray-900 dark:text-white">
+                      Total Amount:
+                    </span>
+                    <span className="text-green-600 dark:text-green-400 text-xl sm:text-2xl">
                       ${orderDetails.total.toFixed(2)}
                     </span>
                   </div>
@@ -986,42 +1456,42 @@ const Invoice = ({ orderDetails, onClose, isOpen }) => {
               </div>
 
               {/* Footer - Responsive Grid */}
-              <div className="border-t border-gray-300 pt-6 sm:pt-8">
+              <div className="border-t border-gray-300 dark:border-gray-600 pt-6 sm:pt-8">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 md:gap-8 text-center">
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1 sm:mb-2 flex items-center justify-center gap-2 text-sm sm:text-base">
-                      <LocalShipping className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 flex items-center justify-center gap-2 text-sm sm:text-base">
+                      <LocalShipping className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
                       Delivery Info
                     </h4>
-                    <p className="text-gray-600 text-xs sm:text-sm">
+                    <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">
                       Estimated delivery: 3-5 business days
                     </p>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1 sm:mb-2 flex items-center justify-center gap-2 text-sm sm:text-base">
-                      <Support className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 flex items-center justify-center gap-2 text-sm sm:text-base">
+                      <Support className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400" />
                       Support
                     </h4>
-                    <p className="text-gray-600 text-xs sm:text-sm">
+                    <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">
                       support@futureelectronics.com
                       <br className="hidden sm:block" />
                       +250 788 123 456
                     </p>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1 sm:mb-2 flex items-center justify-center gap-2 text-sm sm:text-base">
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 flex items-center justify-center gap-2 text-sm sm:text-base">
                       <span className="text-yellow-600 text-sm sm:text-base">
                         ⭐
                       </span>
                       Thank You
                     </h4>
-                    <p className="text-gray-600 text-xs sm:text-sm">
+                    <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">
                       Thank you for choosing Future Electronics
                     </p>
                   </div>
                 </div>
-                <div className="text-center mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
-                  <p className="text-gray-500 text-xs sm:text-sm flex items-center justify-center gap-2 flex-wrap">
+                <div className="text-center mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200 dark:border-gray-600">
+                  <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm flex items-center justify-center gap-2 flex-wrap">
                     <Receipt className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                     This is a computer-generated invoice. No signature required.
                   </p>
@@ -1059,12 +1529,12 @@ const AddToCartModal = ({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white rounded-3xl max-w-md w-full text-black overflow-y-auto max-h-[90vh]"
+        className="bg-white dark:bg-gray-800 rounded-3xl max-w-md w-full text-black dark:text-white overflow-y-auto max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6">
           <div className="flex items-center space-x-4 mb-4">
-            <div className="w-16 h-16 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
+            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-xl overflow-hidden flex-shrink-0">
               <img
                 src={product.image}
                 alt={product.name}
@@ -1072,10 +1542,12 @@ const AddToCartModal = ({
               />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-bold text-gray-900 truncate">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate">
                 {product.name}
               </h3>
-              <p className="text-blue-600 font-semibold">${product.price}</p>
+              <p className="text-blue-600 dark:text-blue-400 font-semibold">
+                ${product.price}
+              </p>
             </div>
             <button
               onClick={onClose}
@@ -1086,7 +1558,7 @@ const AddToCartModal = ({
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Quantity
             </label>
             <div className="flex items-center space-x-3">
@@ -1096,7 +1568,7 @@ const AddToCartModal = ({
               >
                 <Remove className="w-4 h-4" />
               </button>
-              <span className="text-lg font-semibold w-8 text-center">
+              <span className="text-lg font-semibold w-8 text-center text-gray-900 dark:text-white">
                 {quantity}
               </span>
               <button
@@ -1108,10 +1580,12 @@ const AddToCartModal = ({
             </div>
           </div>
 
-          <div className="bg-gray-50 rounded-xl p-4 mb-6">
+          <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 mb-6">
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">Subtotal:</span>
-              <span className="text-lg font-bold text-gray-900">
+              <span className="text-gray-600 dark:text-gray-300">
+                Subtotal:
+              </span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">
                 ${(product.price * quantity).toFixed(2)}
               </span>
             </div>
@@ -1173,13 +1647,13 @@ const CartModal = ({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-hidden text-black"
+        className="bg-white dark:bg-gray-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-hidden text-black dark:text-white"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <ShoppingCart className="text-blue-600" />
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <ShoppingCart className="text-blue-600 dark:text-blue-400" />
               Shopping Cart
             </h2>
             <button
@@ -1189,7 +1663,7 @@ const CartModal = ({
               <Close className="w-4 h-4" />
             </button>
           </div>
-          <p className="text-gray-600 mt-1 flex items-center gap-2">
+          <p className="text-gray-600 dark:text-gray-300 mt-1 flex items-center gap-2">
             <span>{cart.length} items in cart</span>
           </p>
         </div>
@@ -1198,10 +1672,10 @@ const CartModal = ({
           {cart.length === 0 ? (
             <div className="text-center py-12">
               <ShoppingCart className="text-6xl text-gray-400 mb-4 mx-auto" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 Your cart is empty
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-300">
                 Add some amazing devices to get started!
               </p>
             </div>
@@ -1210,9 +1684,9 @@ const CartModal = ({
               {cart.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center space-x-4 bg-gray-50 rounded-xl p-4"
+                  className="flex items-center space-x-4 bg-gray-50 dark:bg-gray-700 rounded-xl p-4"
                 >
-                  <div className="w-16 h-16 bg-white rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="w-16 h-16 bg-white dark:bg-gray-600 rounded-lg overflow-hidden flex-shrink-0">
                     <img
                       src={item.image}
                       alt={item.name}
@@ -1220,10 +1694,12 @@ const CartModal = ({
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-gray-900 truncate">
+                    <h4 className="font-semibold text-gray-900 dark:text-white truncate">
                       {item.name}
                     </h4>
-                    <p className="text-blue-600 font-semibold">${item.price}</p>
+                    <p className="text-blue-600 dark:text-blue-400 font-semibold">
+                      ${item.price}
+                    </p>
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
@@ -1232,7 +1708,7 @@ const CartModal = ({
                     >
                       <Remove className="w-4 h-4" />
                     </button>
-                    <span className="w-8 text-center font-semibold">
+                    <span className="w-8 text-center font-semibold text-gray-900 dark:text-white">
                       {item.quantity}
                     </span>
                     <button
@@ -1255,12 +1731,12 @@ const CartModal = ({
         </div>
 
         {cart.length > 0 && (
-          <div className="p-6 border-t border-gray-200">
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-lg font-semibold text-gray-900">
+              <span className="text-lg font-semibold text-gray-900 dark:text-white">
                 Total:
               </span>
-              <span className="text-2xl font-bold text-green-600">
+              <span className="text-2xl font-bold text-green-600 dark:text-green-400">
                 ${getCartTotal().toFixed(2)}
               </span>
             </div>
@@ -1305,7 +1781,7 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="bg-white rounded-3xl p-4 sm:p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto text-black"
+      className="bg-white dark:bg-gray-800 rounded-3xl p-4 sm:p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto text-black dark:text-white"
     >
       <div className="flex items-center space-x-4 mb-6">
         <button
@@ -1314,16 +1790,19 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
         >
           <ArrowBack className="w-4 h-4" />
         </button>
-        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <Person className="text-blue-600" />
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <Person className="text-blue-600 dark:text-blue-400" />
           Customer Information
         </h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 text-black">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6 text-black dark:text-white"
+      >
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 items-center gap-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 items-center gap-2">
               <Person className="w-4 h-4" />
               First Name *
             </label>
@@ -1333,12 +1812,12 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
               value={formData.firstName}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
               placeholder="Enter first name"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 items-center gap-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 items-center gap-2">
               <Person className="w-4 h-4" />
               Last Name *
             </label>
@@ -1348,7 +1827,7 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
               value={formData.lastName}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
               placeholder="Enter last name"
             />
           </div>
@@ -1356,7 +1835,7 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 items-center gap-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 items-center gap-2">
               <Email className="w-4 h-4" />
               Email Address *
             </label>
@@ -1366,12 +1845,12 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
               value={formData.email}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
               placeholder="Enter email address"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 items-center gap-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 items-center gap-2">
               <Phone className="w-4 h-4" />
               Phone Number *
             </label>
@@ -1381,14 +1860,14 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
               value={formData.phone}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
               placeholder="Enter phone number"
             />
           </div>
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
             <LocationOn className="w-4 h-4" />
             Delivery Address *
           </label>
@@ -1398,14 +1877,14 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
             onChange={handleInputChange}
             required
             rows="3"
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
             placeholder="Enter complete delivery address"
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
               <LocationOn className="w-4 h-4" />
               City *
             </label>
@@ -1415,12 +1894,12 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
               value={formData.city}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
               placeholder="Enter city"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 items-center gap-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 items-center gap-2">
               <LocationOn className="w-4 h-4" />
               Country *
             </label>
@@ -1429,7 +1908,7 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
               value={formData.country}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
             >
               <option value="Rwanda">Rwanda</option>
               <option value="Uganda">Uganda</option>
@@ -1440,29 +1919,31 @@ const UserInfoForm = ({ cart, getCartTotal, onBack, onSubmit, isLoading }) => {
         </div>
 
         {/* Order Summary */}
-        <div className="bg-gray-50 rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <ShoppingCart className="text-blue-600" />
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <ShoppingCart className="text-blue-600 dark:text-blue-400" />
             Order Summary
           </h3>
           <div className="space-y-3">
             {cart.map((item) => (
               <div key={item.id} className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">{item.name}</span>
-                  <span className="text-gray-600 text-sm">
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    {item.name}
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-300 text-sm">
                     x{item.quantity}
                   </span>
                 </div>
-                <span className="font-medium">
+                <span className="font-medium text-gray-900 dark:text-white">
                   ${(item.price * item.quantity).toFixed(2)}
                 </span>
               </div>
             ))}
-            <div className="border-t border-gray-200 pt-3">
+            <div className="border-t border-gray-200 dark:border-gray-600 pt-3">
               <div className="flex justify-between text-lg font-bold">
-                <span>Total</span>
-                <span className="text-green-600">
+                <span className="text-gray-900 dark:text-white">Total</span>
+                <span className="text-green-600 dark:text-green-400">
                   ${getCartTotal().toFixed(2)}
                 </span>
               </div>
@@ -1491,7 +1972,7 @@ const PaymentMethod = ({
   onSubmit,
   isLoading,
 }) => {
-  const [paymentMethod, setPaymentMethod] = useState("mobile_money");
+  const [paymentMethod, setPaymentMethod] = useState("paypack");
   const [paymentDetails, setPaymentDetails] = useState({
     cardNumber: "",
     expiryDate: "",
@@ -1500,19 +1981,50 @@ const PaymentMethod = ({
     network: "mtn",
   });
 
-  const handlePaymentSubmit = (e) => {
+  const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-    onSubmit({
+
+    // Validate payment details based on method
+    if (paymentMethod === "stripe") {
+      if (
+        !paymentDetails.cardNumber ||
+        !paymentDetails.expiryDate ||
+        !paymentDetails.cvv
+      ) {
+        toast.error("Please fill all card details");
+        return;
+      }
+    } else if (paymentMethod === "paypack") {
+      if (!paymentDetails.mobileNumber) {
+        toast.error("Please enter your mobile number");
+        return;
+      }
+    }
+
+    const paymentData = {
       paymentMethod,
-      paymentDetails,
-    });
+      paymentDetails:
+        paymentMethod === "stripe"
+          ? {
+              cardNumber: paymentDetails.cardNumber,
+              expiryDate: paymentDetails.expiryDate,
+              cvv: paymentDetails.cvv,
+              cardHolder: `${userInfo.firstName} ${userInfo.lastName}`,
+            }
+          : {
+              mobileNumber: paymentDetails.mobileNumber,
+              network: paymentDetails.network,
+            },
+    };
+
+    onSubmit(paymentData);
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="bg-white rounded-3xl p-4 sm:p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto text-black"
+      className="bg-white dark:bg-gray-800 rounded-3xl p-4 sm:p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto text-black dark:text-white"
     >
       <div className="flex items-center space-x-4 mb-6">
         <button
@@ -1521,25 +2033,28 @@ const PaymentMethod = ({
         >
           <ArrowBack className="w-4 h-4" />
         </button>
-        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <CreditCard className="text-blue-600" />
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <CreditCard className="text-blue-600 dark:text-blue-400" />
           Payment Method
         </h2>
       </div>
 
-      <form onSubmit={handlePaymentSubmit} className="space-y-6 text-black">
+      <form
+        onSubmit={handlePaymentSubmit}
+        className="space-y-6 text-black dark:text-white"
+      >
         {/* Payment Method Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-4 items-center gap-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 items-center gap-2">
             <CreditCard className="w-5 h-5" />
             Select Payment Method *
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button
               type="button"
-              onClick={() => setPaymentMethod("mobile_money")}
+              onClick={() => setPaymentMethod("paypack")}
               className={`flex flex-col items-center justify-center h-20 rounded-xl transition-all duration-200 ${
-                paymentMethod === "mobile_money"
+                paymentMethod === "paypack"
                   ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
                   : "bg-gradient-to-r from-green-400 to-green-500 text-white hover:from-green-500 hover:to-green-600"
               }`}
@@ -1550,9 +2065,9 @@ const PaymentMethod = ({
 
             <button
               type="button"
-              onClick={() => setPaymentMethod("credit_card")}
+              onClick={() => setPaymentMethod("stripe")}
               className={`flex flex-col items-center justify-center h-20 rounded-xl transition-all duration-200 ${
-                paymentMethod === "credit_card"
+                paymentMethod === "stripe"
                   ? "bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-lg"
                   : "bg-gradient-to-b from-blue-400 to-blue-500 text-white hover:from-blue-500 hover:to-blue-600"
               }`}
@@ -1564,15 +2079,15 @@ const PaymentMethod = ({
         </div>
 
         {/* Payment Details */}
-        {paymentMethod === "credit_card" && (
+        {paymentMethod === "stripe" && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <CreditCard className="text-blue-600" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+              <CreditCard className="text-blue-600 dark:text-blue-400" />
               Card Details
             </h3>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Card Number *
               </label>
               <input
@@ -1586,13 +2101,13 @@ const PaymentMethod = ({
                   })
                 }
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Expiry Date *
                 </label>
                 <input
@@ -1606,11 +2121,11 @@ const PaymentMethod = ({
                     })
                   }
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   CVV *
                 </label>
                 <input
@@ -1624,22 +2139,22 @@ const PaymentMethod = ({
                     })
                   }
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
                 />
               </div>
             </div>
           </div>
         )}
 
-        {paymentMethod === "mobile_money" && (
+        {paymentMethod === "paypack" && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <Smartphone className="text-green-600" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+              <Smartphone className="text-green-600 dark:text-green-400" />
               Mobile Money Details
             </h3>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Mobile Network *
               </label>
               <select
@@ -1651,7 +2166,7 @@ const PaymentMethod = ({
                   })
                 }
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
               >
                 <option value="mtn">MTN Mobile Money</option>
                 <option value="airtel">Airtel Money</option>
@@ -1660,7 +2175,7 @@ const PaymentMethod = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Mobile Number *
               </label>
               <input
@@ -1674,12 +2189,12 @@ const PaymentMethod = ({
                   })
                 }
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black dark:text-white bg-white dark:bg-gray-700"
               />
             </div>
 
-            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-              <p className="text-yellow-800 text-sm flex items-center gap-2">
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
+              <p className="text-yellow-800 dark:text-yellow-200 text-sm flex items-center gap-2">
                 <span>💡</span>
                 <strong>Note:</strong> You will receive a payment prompt on your
                 phone to complete the transaction.
@@ -1689,29 +2204,31 @@ const PaymentMethod = ({
         )}
 
         {/* Order Summary */}
-        <div className="bg-gray-50 rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <ShoppingCart className="text-blue-600" />
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <ShoppingCart className="text-blue-600 dark:text-blue-400" />
             Order Summary
           </h3>
           <div className="space-y-3">
             {cart.map((item) => (
               <div key={item.id} className="flex justify-between items-center">
                 <div className="flex-1 min-w-0">
-                  <span className="font-medium truncate">{item.name}</span>
-                  <span className="text-gray-600 text-sm ml-2">
+                  <span className="font-medium text-gray-900 dark:text-white truncate">
+                    {item.name}
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-300 text-sm ml-2">
                     x{item.quantity}
                   </span>
                 </div>
-                <span className="font-medium flex-shrink-0">
+                <span className="font-medium text-gray-900 dark:text-white flex-shrink-0">
                   ${(item.price * item.quantity).toFixed(2)}
                 </span>
               </div>
             ))}
-            <div className="border-t border-gray-200 pt-3">
+            <div className="border-t border-gray-200 dark:border-gray-600 pt-3">
               <div className="flex justify-between text-lg font-bold">
-                <span>Total</span>
-                <span className="text-green-600">
+                <span className="text-gray-900 dark:text-white">Total</span>
+                <span className="text-green-600 dark:text-green-400">
                   ${getCartTotal().toFixed(2)}
                 </span>
               </div>
@@ -1720,25 +2237,27 @@ const PaymentMethod = ({
         </div>
 
         {/* Customer Info Preview */}
-        <div className="bg-blue-50 rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <LocalShipping className="text-blue-600" />
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <LocalShipping className="text-blue-600 dark:text-blue-400" />
             Delivery Information
           </h3>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-600">Name:</span>
-              <span className="font-medium">
+              <span className="text-gray-600 dark:text-gray-300">Name:</span>
+              <span className="font-medium text-gray-900 dark:text-white">
                 {userInfo.firstName} {userInfo.lastName}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Phone:</span>
-              <span className="font-medium">{userInfo.phone}</span>
+              <span className="text-gray-600 dark:text-gray-300">Phone:</span>
+              <span className="font-medium text-gray-900 dark:text-white">
+                {userInfo.phone}
+              </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Address:</span>
-              <span className="font-medium text-right">
+              <span className="text-gray-600 dark:text-gray-300">Address:</span>
+              <span className="font-medium text-gray-900 dark:text-white text-right">
                 {userInfo.address}, {userInfo.city}
               </span>
             </div>
@@ -1767,44 +2286,56 @@ const PaymentSuccess = ({
   <motion.div
     initial={{ opacity: 0, scale: 0.9 }}
     animate={{ opacity: 1, scale: 1 }}
-    className="bg-white rounded-3xl p-6 sm:p-8 text-center max-w-md w-full text-black"
+    className="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 text-center max-w-md w-full text-black dark:text-white"
   >
     <div className="overflow-y-auto">
       <div className="w-20 h-20 bg-gradient-to-b from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
         <CheckCircle className="text-white text-4xl" />
       </div>
-      <h2 className="text-3xl font-bold text-green-600 mb-4">
+      <h2 className="text-3xl font-bold text-green-600 dark:text-green-400 mb-4">
         Payment Successful!
       </h2>
-      <p className="text-gray-600 mb-2">Thank you for your purchase!</p>
-      <p className="text-gray-600 mb-2">
+      <p className="text-gray-600 dark:text-gray-300 mb-2">
+        Thank you for your purchase!
+      </p>
+      <p className="text-gray-600 dark:text-gray-300 mb-2">
         Your order has been confirmed and is being processed.
       </p>
 
-      <div className="bg-gray-50 rounded-2xl p-6 mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-6 mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Order Details
         </h3>
         <div className="space-y-2 text-left">
           <div className="flex justify-between">
-            <span className="text-gray-600">Order ID:</span>
-            <span className="font-medium">{orderDetails.orderId}</span>
+            <span className="text-gray-600 dark:text-gray-300">Order ID:</span>
+            <span className="font-medium text-gray-900 dark:text-white">
+              {orderDetails.orderId}
+            </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Total Amount:</span>
-            <span className="font-medium text-green-600">
+            <span className="text-gray-600 dark:text-gray-300">
+              Total Amount:
+            </span>
+            <span className="font-medium text-green-600 dark:text-green-400">
               ${orderDetails.total.toFixed(2)}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Payment Method:</span>
-            <span className="font-medium capitalize">
+            <span className="text-gray-600 dark:text-gray-300">
+              Payment Method:
+            </span>
+            <span className="font-medium text-gray-900 dark:text-white capitalize">
               {orderDetails.payment.paymentMethod.replace("_", " ")}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Estimated Delivery:</span>
-            <span className="font-medium">3-5 business days</span>
+            <span className="text-gray-600 dark:text-gray-300">
+              Estimated Delivery:
+            </span>
+            <span className="font-medium text-gray-900 dark:text-white">
+              3-5 business days
+            </span>
           </div>
         </div>
       </div>
@@ -1833,16 +2364,18 @@ const PaymentFailed = ({ onRetry, onCancel, errorMessage }) => (
   <motion.div
     initial={{ opacity: 0, scale: 0.9 }}
     animate={{ opacity: 1, scale: 1 }}
-    className="bg-white rounded-3xl p-6 sm:p-8 overflow-y-auto text-center max-w-md w-full text-black"
+    className="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 overflow-y-auto text-center max-w-md w-full text-black dark:text-white"
   >
     <div className="w-20 h-20 bg-gradient-to-b from-red-400 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
       <Error className="text-white text-4xl" />
     </div>
-    <h2 className="text-3xl font-bold text-red-700 mb-4">Payment Failed</h2>
-    <p className="text-gray-600 mb-2">
+    <h2 className="text-3xl font-bold text-red-700 dark:text-red-400 mb-4">
+      Payment Failed
+    </h2>
+    <p className="text-gray-600 dark:text-gray-300 mb-2">
       {errorMessage || "We couldn't process your payment."}
     </p>
-    <p className="text-gray-600 mb-6">
+    <p className="text-gray-600 dark:text-gray-300 mb-6">
       Please check your payment details and try again.
     </p>
 
@@ -1884,7 +2417,7 @@ const ProductCard = ({
       whileHover={{ y: -5, scale: 1.02 }}
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
-      className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer group"
+      className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer group border border-gray-200 dark:border-gray-700"
     >
       {/* Device Image */}
       <div className="relative h-48 overflow-hidden">
@@ -1920,12 +2453,12 @@ const ProductCard = ({
               e.stopPropagation();
               onLike(device.id);
             }}
-            className="flex items-center justify-center w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200"
+            className="flex items-center justify-center w-8 h-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full hover:bg-white dark:hover:bg-gray-700 transition-all duration-200"
           >
             {isLiked ? (
               <Favorite className="w-4 h-4 text-red-500" />
             ) : (
-              <FavoriteBorder className="w-4 h-4 text-gray-600" />
+              <FavoriteBorder className="w-4 h-4 text-gray-600 dark:text-gray-300" />
             )}
           </button>
         </div>
@@ -1940,31 +2473,33 @@ const ProductCard = ({
       {/* Device Info */}
       <div className="p-5">
         <div className="flex items-start justify-between mb-2">
-          <h3 className="text-lg font-bold text-gray-900 line-clamp-2 flex-1 pr-2">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-2 flex-1 pr-2">
             {device.name}
           </h3>
           <div className="flex items-center space-x-1 flex-shrink-0">
             <Star className="text-yellow-400 w-4 h-4" />
-            <span className="text-sm text-gray-600">{device.rating}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-300">
+              {device.rating}
+            </span>
           </div>
         </div>
 
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+        <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
           {device.description}
         </p>
 
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-gray-900">
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">
               ${device.price}
             </span>
             {device.originalPrice > device.price && (
-              <span className="text-sm text-gray-500 line-through">
+              <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
                 ${device.originalPrice}
               </span>
             )}
           </div>
-          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+          <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
             {device.brand}
           </span>
         </div>
@@ -1975,13 +2510,13 @@ const ProductCard = ({
             {device.features.slice(0, 3).map((feature, idx) => (
               <span
                 key={idx}
-                className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded"
+                className="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded"
               >
                 {feature.split(" ")[0]}
               </span>
             ))}
             {device.features.length > 3 && (
-              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+              <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded">
                 +{device.features.length - 3} more
               </span>
             )}
@@ -1998,7 +2533,6 @@ const ProductCard = ({
             className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-2 rounded-xl font-semibold hover:from-gray-700 hover:to-gray-800 transition-all duration-200 text-sm"
           >
             <span className="text-sm">👁️</span>
-            Details
           </button>
           <button
             onClick={(e) => {
@@ -2008,7 +2542,6 @@ const ProductCard = ({
             disabled={!device.inStock}
             className="flex items-center justify-center gap-2 bg-gradient-to-t from-blue-500 to-blue-600 text-white py-2 px-4 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
-            <ShoppingCart className="w-4 h-4" />
             {device.inStock ? "Add to Cart" : "Out of Stock"}
           </button>
         </div>
@@ -2027,11 +2560,13 @@ const StarRating = ({ rating }) => {
           className={`w-4 h-4 ${
             i < Math.floor(rating)
               ? "text-yellow-400 fill-current"
-              : "text-gray-300"
+              : "text-gray-300 dark:text-gray-600"
           }`}
         />
       ))}
-      <span className="text-sm text-gray-600 ml-1">({rating})</span>
+      <span className="text-sm text-gray-600 dark:text-gray-300 ml-1">
+        ({rating})
+      </span>
     </div>
   );
 };
@@ -2071,11 +2606,11 @@ const CategoryFilter = ({ categories, activeCategory, onCategoryChange }) => {
                 setShowMobileCategories(false);
               }}
               className={`
-                flex items-center justify-between p-4 rounded-xl transition-all duration-300 transform hover:scale-105
+                flex items-center justify-between bg-gradient-to-bl from-blue-400 to-indigo-300 p-4 rounded-xl transition-all duration-300 transform hover:scale-105
                 ${
                   activeCategory === category.id
                     ? `bg-gradient-to-r ${category.gradient} text-white shadow-lg`
-                    : "bg-white text-gray-700 hover:bg-gray-50 shadow-md"
+                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-md border border-gray-200 dark:border-gray-700"
                 }
               `}
             >
@@ -2086,11 +2621,17 @@ const CategoryFilter = ({ categories, activeCategory, onCategoryChange }) => {
                   ${
                     activeCategory === category.id
                       ? "bg-white/20"
-                      : "bg-gray-100"
+                      : "bg-gray-100 dark:bg-gray-700"
                   }
                 `}
                 >
-                  {category.icon}
+                  {React.cloneElement(category.icon, {
+                    className: `w-5 h-5 ${
+                      activeCategory === category.id
+                        ? "text-white"
+                        : "text-gray-600 dark:text-gray-300"
+                    }`,
+                  })}
                 </div>
                 <span className="font-medium text-sm sm:text-base">
                   {category.name}
@@ -2102,7 +2643,7 @@ const CategoryFilter = ({ categories, activeCategory, onCategoryChange }) => {
                 ${
                   activeCategory === category.id
                     ? "bg-white text-gray-900"
-                    : "bg-gray-200 text-gray-600"
+                    : "bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300"
                 }
               `}
               >
@@ -2127,6 +2668,18 @@ export const Products = () => {
   const [showInvoice, setShowInvoice] = useState(false);
   const productsPerPage = 6;
 
+  // Auth state
+  const { user, isLoading: authLoading, login, logout } = useAuth();
+  const [showCreateProductModal, setShowCreateProductModal] = useState(false);
+  const [isCreatingProduct, setIsCreatingProduct] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // Check if user can create products
+  const canCreateProducts = () => {
+    if (!user) return false;
+    return user.status === 'admin' || user.status === 'manager';
+  };
+
   // Cart State
   const {
     cart,
@@ -2140,6 +2693,15 @@ export const Products = () => {
 
   // Likes State
   const { toggleLike, getLikes, isLiked } = useLikes();
+
+  // Payment State
+  const {
+    isProcessing,
+    availableMethods,
+    getPaymentMethods,
+    processPayment,
+    checkPaymentStatus,
+  } = usePayment();
 
   // Modal States
   const [showCartModal, setShowCartModal] = useState(false);
@@ -2156,21 +2718,21 @@ export const Products = () => {
     {
       id: "all",
       name: "All Devices",
-      icon: <SettingsInputAntenna className="w-5 h-5" />,
+      icon: <SettingsInputAntenna />,
       count: electronicDevices.length,
       gradient: "from-blue-500 to-blue-600",
     },
     {
       id: "laptops",
       name: "Laptops",
-      icon: <Laptop className="w-5 h-5" />,
+      icon: <Laptop />,
       count: electronicDevices.filter((d) => d.category === "laptops").length,
       gradient: "from-purple-500 to-purple-600",
     },
     {
       id: "smartphones",
       name: "Smartphones",
-      icon: <PhoneIphone className="w-5 h-5" />,
+      icon: <PhoneIphone />,
       count: electronicDevices.filter((d) => d.category === "smartphones")
         .length,
       gradient: "from-green-500 to-green-600",
@@ -2178,42 +2740,42 @@ export const Products = () => {
     {
       id: "audio",
       name: "Audio",
-      icon: <Headphones className="w-5 h-5" />,
+      icon: <Headphones />,
       count: electronicDevices.filter((d) => d.category === "audio").length,
       gradient: "from-orange-500 to-orange-600",
     },
     {
       id: "wearables",
       name: "Wearables",
-      icon: <Watch className="w-5 h-5" />,
+      icon: <Watch />,
       count: electronicDevices.filter((d) => d.category === "wearables").length,
       gradient: "from-red-500 to-red-600",
     },
     {
       id: "tvs",
       name: "TVs",
-      icon: <Tv className="w-5 h-5" />,
+      icon: <Tv />,
       count: electronicDevices.filter((d) => d.category === "tvs").length,
       gradient: "from-indigo-500 to-indigo-600",
     },
     {
       id: "tablets",
       name: "Tablets",
-      icon: <Tablet className="w-5 h-5" />,
+      icon: <Tablet />,
       count: electronicDevices.filter((d) => d.category === "tablets").length,
       gradient: "from-pink-500 to-pink-600",
     },
     {
       id: "gaming",
       name: "Gaming",
-      icon: <SportsEsports className="w-5 h-5" />,
+      icon: <SportsEsports />,
       count: electronicDevices.filter((d) => d.category === "gaming").length,
       gradient: "from-yellow-500 to-yellow-600",
     },
     {
       id: "smart-home",
       name: "Smart Home",
-      icon: <Home className="w-5 h-5" />,
+      icon: <Home />,
       count: electronicDevices.filter((d) => d.category === "smart-home")
         .length,
       gradient: "from-teal-500 to-teal-600",
@@ -2221,21 +2783,21 @@ export const Products = () => {
     {
       id: "cameras",
       name: "Cameras",
-      icon: <CameraAlt className="w-5 h-5" />,
+      icon: <CameraAlt />,
       count: electronicDevices.filter((d) => d.category === "cameras").length,
       gradient: "from-cyan-500 to-cyan-600",
     },
     {
       id: "monitors",
       name: "Monitors",
-      icon: <Computer className="w-5 h-5" />,
+      icon: <Computer />,
       count: electronicDevices.filter((d) => d.category === "monitors").length,
       gradient: "from-blue-500 to-cyan-500",
     },
     {
       id: "accessories",
       name: "Accessories",
-      icon: <SettingsInputAntenna className="w-5 h-5" />,
+      icon: <SettingsInputAntenna />,
       count: electronicDevices.filter((d) => d.category === "accessories")
         .length,
       gradient: "from-gray-500 to-gray-600",
@@ -2281,6 +2843,11 @@ export const Products = () => {
     setCurrentPage(1);
   }, [activeCategory, searchTerm, sortBy]);
 
+  // Load payment methods on component mount
+  useEffect(() => {
+    getPaymentMethods();
+  }, []);
+
   // Cart Handlers
   const handleAddToCartClick = (product) => {
     setSelectedProduct(product);
@@ -2321,33 +2888,34 @@ export const Products = () => {
     setIsLoading(true);
 
     try {
-      // Simulate API call to process payment
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // Create order data
+      const orderData = {
+        orderId: `ORD${Date.now()}`,
+        user: userInfo,
+        items: cart,
+        total: getCartTotal(),
+        createdAt: new Date().toISOString(),
+      };
 
-      // Simulate random payment success (80% success rate)
-      const paymentSuccess = Math.random() > 0.2;
+      // Process payment through API
+      const paymentResult = await processPayment(orderData, paymentData);
 
-      if (paymentSuccess) {
-        const orderData = {
-          orderId: `ORD${Date.now()}`,
-          user: userInfo,
+      if (paymentResult.success) {
+        const completeOrderData = {
+          ...orderData,
           payment: paymentData,
-          items: cart,
-          total: getCartTotal(),
           status: "confirmed",
-          createdAt: new Date().toISOString(),
+          paymentId: paymentResult.data.paymentId,
         };
 
-        setOrderDetails(orderData);
+        setOrderDetails(completeOrderData);
         setCheckoutStep("success");
         clearCart();
-        toast.success("Order placed successfully!");
       } else {
         setPaymentError(
-          "Insufficient funds. Please try a different payment method."
+          paymentResult.error || "Payment failed. Please try again."
         );
         setCheckoutStep("failed");
-        toast.error("Payment failed. Please try again.");
       }
     } catch (error) {
       setPaymentError(
@@ -2377,6 +2945,55 @@ export const Products = () => {
     setShowInvoice(true);
   };
 
+  // Auth Handlers
+  const handleLogin = (token, userData) => {
+    login(token, userData);
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Logged out successfully");
+  };
+
+  // Product Creation Handler
+  const handleCreateProduct = async (productData) => {
+    // Double check permissions
+    if (!canCreateProducts()) {
+      toast.error('You do not have permission to create products');
+      return;
+    }
+
+    setIsCreatingProduct(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(`${API_BASE_URL}/products`, productData, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.data.success) {
+        toast.success('Product created successfully!');
+        setShowCreateProductModal(false);
+        // Refresh the page or update products list
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Product creation failed:', error);
+      if (error.response?.status === 401) {
+        toast.error('Session expired. Please login again.');
+        logout();
+      } else if (error.response?.status === 403) {
+        toast.error('Permission denied. Admin/Manager access required.');
+      } else {
+        toast.error(error.response?.data?.message || 'Failed to create product');
+      }
+    } finally {
+      setIsCreatingProduct(false);
+    }
+  };
+
   // Simulate loading
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 2000);
@@ -2385,17 +3002,16 @@ export const Products = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-blue-900">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading amazing devices...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full min-h-screen mt-2 mb-1 rounded-2xl bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
+    <div className="w-full min-h-screen mt-2 mb-1 rounded-2xl bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 dark:from-gray-900 dark:via-blue-900 dark:to-cyan-900">
       {/* Print Styles */}
       <style jsx global>{`
         @media print {
@@ -2438,6 +3054,78 @@ export const Products = () => {
         </motion.button>
       </div>
 
+      {/* Admin/Create Product Button - Conditionally Rendered */}
+      {canCreateProducts() && (
+        <div className="fixed top-4 right-20 z-40">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setShowCreateProductModal(true)}
+            className="bg-gradient-to-b from-green-500 to-green-600 rounded-full p-3 shadow-lg border border-white/20 relative hover:from-green-600 hover:to-green-700 transition-all duration-200"
+            title="Create New Product"
+          >
+            <Add className="text-white text-2xl" />
+          </motion.button>
+        </div>
+      )}
+
+      {/* Disabled Create Button for Regular Users */}
+      {user && !canCreateProducts() && (
+        <div className="fixed top-4 right-20 z-40">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            className="bg-gradient-to-b from-gray-400 to-gray-500 rounded-full p-3 shadow-lg border border-white/20 relative cursor-not-allowed"
+            title="Create Product (Disabled - Admin/Manager only)"
+            disabled
+          >
+            <Add className="text-white text-2xl" />
+          </motion.button>
+        </div>
+      )}
+
+      {/* Login Button for Non-Logged in Users */}
+      {!user && (
+        <div className="fixed top-4 right-20 z-40">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setShowLoginModal(true)}
+            className="bg-gradient-to-b from-purple-500 to-purple-600 rounded-full p-3 shadow-lg border border-white/20 relative hover:from-purple-600 hover:to-purple-700 transition-all duration-200"
+            title="Login"
+          >
+            <Person className="text-white text-2xl" />
+          </motion.button>
+        </div>
+      )}
+
+      {/* User Info Display */}
+      {user && (
+        <div className="fixed top-4 left-4 z-40">
+          <div className="flex items-center gap-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full px-3 py-2 shadow-lg border border-gray-200 dark:border-gray-700">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm font-bold">
+                {user.firstName?.[0] || user.email?.[0] || 'U'}
+              </span>
+            </div>
+            <div className="hidden sm:block">
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
+                {user.firstName || user.email}
+              </p>
+              <p className="text-xs text-gray-600 dark:text-gray-300 capitalize">
+                {user.status}
+              </p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center justify-center w-8 h-8 bg-gradient-to-b from-red-500 to-red-600 rounded-full hover:from-red-600 hover:to-red-700 transition-all duration-200 ml-2"
+              title="Logout"
+            >
+              <Logout className="text-white text-sm" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <section className="relative py-20 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/40"></div>
@@ -2466,7 +3154,7 @@ export const Products = () => {
 
             {/* Search Bar */}
             <div className="max-w-2xl mx-auto">
-              <div className="relative text-black">
+              <div className="relative">
                 <input
                   type="text"
                   placeholder="Search devices, brands, features..."
@@ -2484,7 +3172,7 @@ export const Products = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="relative py-16 bg-white/80 backdrop-blur-sm">
+      <section className="relative py-16 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             {stats.map((stat, index) => (
@@ -2493,13 +3181,13 @@ export const Products = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="text-center p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-white to-gray-50 shadow-lg border border-gray-100"
+                className="text-center p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 shadow-lg border border-gray-100 dark:border-gray-600"
               >
                 <div className="text-2xl sm:text-3xl mb-2">{stat.icon}</div>
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">
                   {stat.number}
                 </div>
-                <div className="text-xs sm:text-sm text-gray-600 font-medium">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">
                   {stat.label}
                 </div>
               </motion.div>
@@ -2514,8 +3202,8 @@ export const Products = () => {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Categories Sidebar */}
             <div className="lg:w-1/4">
-              <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
-                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sticky top-24 border border-gray-200 dark:border-gray-700">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <span>📂</span>
                   Categories
                 </h3>
@@ -2527,32 +3215,81 @@ export const Products = () => {
                 />
 
                 {/* Sort Options */}
-                <div className="mt-8 text-black">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <span>🔧</span>
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span className="text-2xl">🔧</span>
                     Sort By
                   </h3>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
-                  >
-                    <option value="featured">Featured</option>
-                    <option value="newest">Newest</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="rating">Highest Rated</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="w-full p-4 pr-12 border-2 border-gray-300 rounded-xl 
+                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                 bg-white text-gray-900
+                 font-semibold
+                 transition-all duration-200
+                 hover:border-blue-500
+                 shadow-lg
+                 appearance-none cursor-pointer"
+                    >
+                      <option
+                        value="featured"
+                        className="text-gray-900 bg-white py-2"
+                      >
+                        🏆 Featured
+                      </option>
+                      <option
+                        value="newest"
+                        className="text-gray-900 bg-white py-2"
+                      >
+                        🆕 Newest
+                      </option>
+                      <option
+                        value="price-low"
+                        className="text-gray-900 bg-white py-2"
+                      >
+                        💰 Price: Low to High
+                      </option>
+                      <option
+                        value="price-high"
+                        className="text-gray-900 bg-white py-2"
+                      >
+                        💸 Price: High to Low
+                      </option>
+                      <option
+                        value="rating"
+                        className="text-gray-900 bg-white py-2"
+                      >
+                        ⭐ Highest Rated
+                      </option>
+                    </select>
+                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                      <svg
+                        className="w-5 h-5 text-gray-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Results Count */}
-                <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
-                  <p className="text-sm text-blue-800 font-medium">
+                <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                  <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">
                     Showing {currentProducts.length} of {filteredDevices.length}{" "}
                     products
                   </p>
                   {activeCategory !== "all" && (
-                    <p className="text-xs text-blue-600 mt-1">
+                    <p className="text-xs text-blue-600 dark:text-blue-300 mt-1">
                       in{" "}
                       {
                         categories.find((cat) => cat.id === activeCategory)
@@ -2584,10 +3321,10 @@ export const Products = () => {
               {currentProducts.length === 0 && (
                 <div className="text-center py-16">
                   <div className="text-6xl mb-4">🔍</div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                     No devices found
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-300">
                     Try adjusting your search or filter criteria
                   </p>
                   <button
@@ -2629,7 +3366,7 @@ export const Products = () => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-y-auto text-black"
+              className="bg-white dark:bg-gray-800 rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-y-auto text-black dark:text-white"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-4 sm:p-6 md:p-8">
@@ -2672,16 +3409,16 @@ export const Products = () => {
                             NEW
                           </span>
                         )}
-                        <span className="text-blue-600 font-semibold">
+                        <span className="text-blue-600 dark:text-blue-400 font-semibold">
                           {selectedDevice.brand}
                         </span>
                       </div>
-                      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                         {selectedDevice.name}
                       </h1>
                       <StarRating rating={selectedDevice.rating} />
                       <div className="flex items-center space-x-4 mt-3">
-                        <span className="text-sm text-gray-600 flex items-center gap-1">
+                        <span className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-1">
                           <Favorite className="w-4 h-4 text-red-500" />
                           {getLikes(selectedDevice.id)} likes
                         </span>
@@ -2692,21 +3429,21 @@ export const Products = () => {
                           {isLiked(selectedDevice.id) ? "Liked" : "Like"}
                         </button>
                       </div>
-                      <p className="text-gray-600 mt-3">
+                      <p className="text-gray-600 dark:text-gray-300 mt-3">
                         {selectedDevice.description}
                       </p>
                     </div>
 
                     {/* Pricing */}
-                    <div className="bg-gray-50 rounded-2xl p-4 sm:p-6 mb-6">
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-4 sm:p-6 mb-6">
                       <div className="flex items-center space-x-4 mb-4">
-                        <span className="text-2xl sm:text-3xl font-bold text-gray-900">
+                        <span className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                           ${selectedDevice.price}
                         </span>
                         {selectedDevice.originalPrice >
                           selectedDevice.price && (
                           <>
-                            <span className="text-xl text-gray-500 line-through">
+                            <span className="text-xl text-gray-500 dark:text-gray-400 line-through">
                               ${selectedDevice.originalPrice}
                             </span>
                             <span className="bg-gradient-to-b from-red-500 to-red-600 text-white px-2 py-1 rounded-full text-sm font-bold">
@@ -2731,7 +3468,7 @@ export const Products = () => {
 
                     {/* Key Features */}
                     <div className="mb-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                         Key Features
                       </h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -2741,7 +3478,9 @@ export const Products = () => {
                             className="flex items-center space-x-2"
                           >
                             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                            <span className="text-gray-700">{feature}</span>
+                            <span className="text-gray-700 dark:text-gray-300">
+                              {feature}
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -2749,7 +3488,7 @@ export const Products = () => {
 
                     {/* Specifications */}
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                         Specifications
                       </h3>
                       <div className="space-y-3">
@@ -2757,12 +3496,12 @@ export const Products = () => {
                           ([key, value]) => (
                             <div
                               key={key}
-                              className="flex justify-between border-b border-gray-200 pb-2"
+                              className="flex justify-between border-b border-gray-200 dark:border-gray-600 pb-2"
                             >
-                              <span className="text-gray-600 capitalize">
+                              <span className="text-gray-600 dark:text-gray-300 capitalize">
                                 {key.replace(/([A-Z])/g, " $1")}:
                               </span>
-                              <span className="text-gray-900 font-medium text-right">
+                              <span className="text-gray-900 dark:text-white font-medium text-right">
                                 {value}
                               </span>
                             </div>
@@ -2827,7 +3566,7 @@ export const Products = () => {
                 userInfo={userInfo}
                 onBack={() => setCheckoutStep("user-info")}
                 onSubmit={handlePaymentSubmit}
-                isLoading={isLoading}
+                isLoading={isLoading || isProcessing}
               />
             )}
 
@@ -2849,6 +3588,21 @@ export const Products = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLogin={handleLogin}
+      />
+
+      {/* Create Product Modal */}
+      <CreateProductModal
+        isOpen={showCreateProductModal}
+        onClose={() => setShowCreateProductModal(false)}
+        onSubmit={handleCreateProduct}
+        isLoading={isCreatingProduct}
+      />
 
       {/* Invoice Modal */}
       <Invoice

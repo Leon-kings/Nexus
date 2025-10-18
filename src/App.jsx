@@ -207,13 +207,21 @@ export default function App() {
               <Route path="/cookies" element={<CookiePolicy />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/teams" element={<Team />} />
-              <Route path="/user" element={<UserManagement />} />
+           
               {/* protected */}
               <Route
                 path="/dashboard"
                 element={
                   <DashboardLayout>
                     <Dashboard />
+                  </DashboardLayout>
+                }
+              />
+                            <Route
+                path="/08393/8303i/users/managements"
+                element={
+                  <DashboardLayout>
+                    <UserManagement />
                   </DashboardLayout>
                 }
               />

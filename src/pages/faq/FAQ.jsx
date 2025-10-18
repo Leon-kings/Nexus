@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { faqData } from "../../assets/images/images";
+import axios from "axios";
 
 // Success Modal Component
 const SuccessModal = ({ isOpen, onClose }) => {
@@ -136,14 +137,14 @@ const FAQItem = ({ item, isOpen, onClick, categoryGradient }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group"
+      className=" rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group"
     >
       <button
         onClick={() => onClick(item.id)}
         className="w-full text-left p-6 bg-gradient-to-b from-gray-50 to-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset hover:bg-gray-50 transition-colors duration-200"
       >
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900 pr-4 group-hover:text-blue-700 transition-colors duration-200">
+          <h3 className="text-lg font-semibold pr-4 dark:text-blue-400 text-black transition-colors duration-200">
             {item.question}
           </h3>
           <motion.div
@@ -179,10 +180,10 @@ const FAQItem = ({ item, isOpen, onClick, categoryGradient }) => {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="overflow-hidden"
+            className="overflow-hidden bg-gradient-to-br from-blue-200 to-gray-300 font-medium"
           >
             <div className="px-6 pb-6 border-t border-gray-100 pt-4">
-              <p className="text-gray-700 mb-4 leading-relaxed">
+              <p className="text-black bg-gradient-to-tr italic from-blue-100 to-gray-50 rounded-2xl  mb-4 leading-relaxed">
                 {item.answer}
               </p>
 
@@ -222,16 +223,18 @@ const FAQSection = ({ section, openItems, onItemClick, sectionKey }) => {
       animate={{ opacity: 1, y: 0 }}
       className="mb-12 text-black"
     >
-      <div className="flex items-center space-x-4 mb-6">
+      <div className="flex items-center dark:text-black text-blue-600 space-x-4 mb-6">
         <div
           className={`w-12 h-12 rounded-xl bg-gradient-to-br ${section.gradient} flex items-center justify-center shadow-lg`}
         >
           <span className="text-xl">{section.icon}</span>
         </div>
-        <h2 className="text-3xl font-bold text-gray-900">{section.title}</h2>
+        <h2 className="text-3xl font-bold dark:text-black text-blue-600">
+          {section.title}
+        </h2>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 dark:text-black text-blue-600">
         {section.questions.map((item, index) => (
           <motion.div
             key={item.id}
@@ -266,62 +269,60 @@ const ContactForm = () => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  // Replace this URL with your actual API endpoint
+  const API_URL = "https://nexusbackend-hdyk.onrender.com/questions";
 
-    try {
-      // Simulate API call - replace with actual API call
-      const response = await simulateAPICall(formData);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-      if (response.success) {
-        setShowSuccessModal(true);
-        setFormData({
-          name: "",
-          email: "",
-          subject: "",
-          message: "",
-          category: "general",
-        });
-      } else {
-        setErrorMessage(
-          response.message ||
-            "Failed to submit your question. Please try again."
-        );
-        setShowErrorModal(true);
-      }
-    } catch (error) {
+  try {
+    const response = await axios.post(API_URL, formData);
+
+    const data = response.data;
+
+    if (response.status === 200 && data.success) {
+      setShowSuccessModal(true);
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+        category: "general",
+      });
+    } else {
+      setErrorMessage(
+        data.message || "Failed to submit your question. Please try again."
+      );
+      setShowErrorModal(true);
+    }
+  } catch (error) {
+    console.error("API Error:", error);
+    
+    // Handle different types of Axios errors
+    if (error.response) {
+      // Server responded with error status (4xx, 5xx)
+      setErrorMessage(
+        error.response.data?.message || 
+        `Server error: ${error.response.status} - ${error.response.statusText}`
+      );
+    } else if (error.request) {
+      // Request was made but no response received
       setErrorMessage(
         "Network error. Please check your connection and try again."
       );
-      setShowErrorModal(true);
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      // Something else happened
+      setErrorMessage(
+        "An unexpected error occurred. Please try again."
+      );
     }
-  };
-
-  // Simulate API call - replace with actual API integration
-  const simulateAPICall = async (data) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // Simulate random success/failure (80% success rate for demo)
-        const isSuccess = Math.random() > 0.2;
-
-        if (isSuccess) {
-          resolve({
-            success: true,
-            message: "Your question has been submitted successfully!",
-          });
-        } else {
-          reject({
-            success: false,
-            message:
-              "Server is temporarily unavailable. Please try again in a few moments.",
-          });
-        }
-      }, 2000);
-    });
-  };
+    
+    setShowErrorModal(true);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const handleChange = (e) => {
     setFormData({
@@ -332,134 +333,134 @@ const ContactForm = () => {
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br bg-gray-500 rounded-3xl p-8 text-black shadow-2xl"
+<motion.div
+  initial={{ opacity: 0, y: 30 }}
+  animate={{ opacity: 1, y: 0 }}
+  className="bg-gradient-to-br from-gray-100 to-blue-100 dark:from-gray-800 dark:to-blue-900 rounded-3xl p-8 shadow-2xl"
+>
+  <div className="text-center mb-8">
+    <h3 className="text-3xl text-gray-800 dark:text-white font-bold mb-3">
+      Still Have Questions?
+    </h3>
+    <p className="text-gray-600 dark:text-gray-300 text-lg">
+      Can't find the answer you're looking for? Please reach out to our
+      support team.
+    </p>
+  </div>
+
+  <form
+    onSubmit={handleSubmit}
+    className="space-y-6 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700"
+  >
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          Full Name <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+          placeholder="Enter your name"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          Email Address <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+          placeholder="Enter your email"
+        />
+      </div>
+    </div>
+
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+        Question Category <span className="text-red-500">*</span>
+      </label>
+      <select
+        name="category"
+        value={formData.category}
+        onChange={handleChange}
+        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
       >
-        <div className="text-center mb-8">
-          <h3 className="text-3xl text-white font-bold mb-3">
-            Still Have Questions?
-          </h3>
-          <p className="text-blue-100 text-lg opacity-90">
-            Can't find the answer you're looking for? Please reach out to our
-            support team.
-          </p>
+        <option value="general" className="text-gray-900 dark:text-white">
+          General Inquiry
+        </option>
+        <option value="products" className="text-gray-900 dark:text-white">
+          Products & Services
+        </option>
+        <option value="shipping" className="text-gray-900 dark:text-white">
+          Shipping & Delivery
+        </option>
+        <option value="warranty" className="text-gray-900 dark:text-white">
+          Warranty & Support
+        </option>
+        <option value="payment" className="text-gray-900 dark:text-white">
+          Payment & Financing
+        </option>
+        <option value="technical" className="text-gray-900 dark:text-white">
+          Technical Support
+        </option>
+      </select>
+    </div>
+
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+        Subject <span className="text-red-500">*</span>
+      </label>
+      <input
+        type="text"
+        name="subject"
+        value={formData.subject}
+        onChange={handleChange}
+        required
+        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+        placeholder="Brief subject of your question"
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+        Your Question <span className="text-red-500">*</span>
+      </label>
+      <textarea
+        name="message"
+        value={formData.message}
+        onChange={handleChange}
+        required
+        rows={4}
+        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200"
+        placeholder="Please describe your question in detail..."
+      ></textarea>
+    </div>
+
+    <button
+      type="submit"
+      disabled={isSubmitting}
+      className="w-full text-lg py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+    >
+      {isSubmitting ? (
+        <div className="flex items-center justify-center space-x-3">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+          <span>Submitting...</span>
         </div>
-
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-6 text-white bg-black p-3 rounded-2xl overflow-y-auto"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-semibold text-blue-100 mb-3">
-                Full Name *
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-4 rounded-xl bg-white border  text-black placeholder-black focus:outline-none focus:ring-2 focus:border-transparent backdrop-blur-sm transition-all duration-200"
-                placeholder="Enter your name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-blue-100 mb-3">
-                Email Address *
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-4 rounded-xl bg-white border text-black placeholder-black focus:outline-none focus:ring-2 focus:border-transparent backdrop-blur-sm transition-all duration-200"
-                placeholder="Enter your email"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-blue-100 mb-3">
-              Question Category
-            </label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full px-4 py-4 rounded-xl bg-white border text-black focus:outline-none focus:ring-2 focus:border-transparent backdrop-blur-sm transition-all duration-200"
-            >
-              <option value="general" className="text-black">
-                General Inquiry
-              </option>
-              <option value="products" className="text-black">
-                Products & Services
-              </option>
-              <option value="shipping" className="text-black">
-                Shipping & Delivery
-              </option>
-              <option value="warranty" className="text-black">
-                Warranty & Support
-              </option>
-              <option value="payment" className="text-black">
-                Payment & Financing
-              </option>
-              <option value="technical" className="text-black">
-                Technical Support
-              </option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-blue-100 mb-3">
-              Subject *
-            </label>
-            <input
-              type="text"
-              name="subject"
-              value={formData.subject}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-4 rounded-xl bg-white  text-black placeholder-black focus:outline-none focus:ring-2 focus:border-transparent backdrop-blur-sm transition-all duration-200"
-              placeholder="Brief subject of your question"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-blue-100 mb-3">
-              Your Question *
-            </label>
-            <textarea
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              required
-              rows={4}
-              className="w-full px-4 py-4 rounded-xl bg-white text-black placeholder-black focus:outline-none focus:ring-2 focus:border-transparent backdrop-blur-sm resize-none transition-all duration-200"
-              placeholder="Please describe your question in detail..."
-            ></textarea>
-          </div>  
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full text-lg py-5 bg-gradient-to-tl from-blue-400 to-indigo-500"
-          >
-            {isSubmitting ? (
-              <div className="flex items-center justify-center space-x-3">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                <span>Submitting...</span>
-              </div>
-            ) : (
-              "Submit Your Question"
-            )}
-          </button>
-        </form>
-      </motion.div>
+      ) : (
+        "Submit Your Question"
+      )}
+    </button>
+  </form>
+</motion.div>
 
       {/* Success Modal */}
       <SuccessModal
@@ -555,7 +556,7 @@ export const FAQ = () => {
         theme="light"
       />
 
-      <div className="min-h-screen bg-gradient-to-br mt-2 mb-1 rounded-2xl from-gray-50 via-blue-50 to-indigo-50 py-16 sm:py-24 lg:py-32">
+      <div className="min-h-screen dark:bg-gradient-to-br dark:from-gray-600 dark:to-gray-700 mt-2 mb-1 rounded-2xl py-16 sm:py-24 lg:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header Section */}
           <motion.div
@@ -563,7 +564,7 @@ export const FAQ = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+            <h2 className="text-4xl sm:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-gray-800 to-white mb-6">
               Frequently Asked{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
                 Questions
@@ -574,37 +575,6 @@ export const FAQ = () => {
               services, and support. Can't find what you're looking for? Contact
               our support team.
             </p>
-
-            {/* Search Bar */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="max-w-2xl mx-auto mb-8"
-            >
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search questions..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-6 py-4 pl-12 rounded-2xl border border-gray-200 text-black bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg backdrop-blur-sm transition-all duration-200"
-                />
-                <svg
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </div>
-            </motion.div>
 
             {/* Category Filter */}
             <motion.div
@@ -672,7 +642,7 @@ export const FAQ = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="mb-16"
+            className="mb-16 dark:text-black"
           >
             {Object.entries(filteredSections).map(([key, section]) => (
               <FAQSection
