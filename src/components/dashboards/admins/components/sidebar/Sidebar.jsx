@@ -211,6 +211,12 @@ const sidebarMenu = {
   ],
   operations: [
     {
+      id: "viewers",
+      label: "Viewers",
+      icon: <Message />,
+      path: "/900u/jojkbjo/statistics/managements",
+    },
+    {
       id: "shipping",
       label: "Shipping",
       icon: <LocalShipping />,
@@ -580,5 +586,3 @@ export const Sidebar = ({ isOpen, onToggle, isMobile }) => {
     </motion.div>
   );
 };
-
-

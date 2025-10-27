@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -9,389 +9,223 @@ import {
   FilterList,
   Add,
   Delete,
-  Archive,
-  MarkAsUnread,
-  Star,
-  StarBorder,
-  Label,
-  MoreVert,
+  Edit,
+  Person,
+  Email,
+  Phone,
+  Business,
+  Message,
   Clear,
   Refresh,
-  Person,
-  Group,
-  Business,
-  LocalOffer,
-  Schedule,
   CheckCircle,
   Error as ErrorIcon,
   Warning,
-  Info,
-  Send,
-  AttachFile,
-  EmojiEmotions,
-  Mic,
   Block,
-  Report,
-  Notifications,
-  NotificationsOff,
-  VolumeUp,
-  VolumeOff,
-  Edit,
-  Reply,
-  Forward,
-  Print,
-  Download,
-  ContentCopy,
-  Share,
   Visibility,
   ChatBubble,
-  Email,
-  Sms,
-  Campaign,
-  Inbox,
-  Send as SendIcon,
-  Drafts,
-  Label as LabelIcon,
-  Star as StarIcon,
-  Schedule as ScheduleIcon,
   ContactMail,
-  Settings,
-  Help,
   SpaOutlined,
   TramSharp,
-  SendAndArchive,
-  InboxSharp,
-  Receipt,
+  AttachMoney,
+  Category,
+  Flag,
+  Archive,
+  Unarchive,
+  ChevronLeft,
+  ChevronRight,
+  Close,
+  Brightness4,
+  Brightness7,
 } from "@mui/icons-material";
 
 export const MessagesManagement = () => {
-  const [messages, setMessages] = useState([]);
-  const [conversations, setConversations] = useState([]);
+  const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterType, setFilterType] = useState("all");
-  const [selectedConversation, setSelectedConversation] = useState(null);
-  const [newMessage, setNewMessage] = useState("");
-  const [attachments, setAttachments] = useState([]);
-  const [activeTab, setActiveTab] = useState("inbox");
-  const [composeOpen, setComposeOpen] = useState(false);
-  const [selectedMessages, setSelectedMessages] = useState([]);
-  const [mobileView, setMobileView] = useState("list");
-  const messagesEndRef = useRef(null);
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterInterest, setFilterInterest] = useState("all");
+  const [filterPriority, setFilterPriority] = useState("all");
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({});
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [contactsPerPage] = useState(12);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
-  // Mock data
-  const messageTypes = [
-    { value: "all", label: "All Messages", color: "default" },
-    { value: "inbox", label: "Inbox", color: "blue", icon: <InboxSharp /> },
-    { value: "sent", label: "Sent", icon: <SendAndArchive /> },
-    { value: "drafts", label: "Drafts", icon: <Drafts /> },
-    { value: "spam", label: "Spam", icon: <SpaOutlined /> },
-    { value: "trash", label: "Trash", icon: <TramSharp /> },
-  ];
+  // Toggle dark mode
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    document.documentElement.classList.toggle('dark');
+  };
 
-  const messageCategories = [
-    { value: "all", label: "All Categories", color: "default" },
-    {
-      value: "order",
-      label: "Order Related",
-      color: "blue",
-      icon: <ShoppingCart />,
-    },
-    {
-      value: "support",
-      label: "Customer Support",
-      color: "green",
-      icon: <Support />,
-    },
-    { value: "billing", label: "Billing", color: "orange", icon: <Receipt /> },
-    {
-      value: "technical",
-      label: "Technical",
-      color: "purple",
-      icon: <Build />,
-    },
-    { value: "general", label: "General", color: "gray", icon: <ChatBubble /> },
-  ];
-
-  const priorityLevels = [
-    { value: "low", label: "Low", color: "gray" },
-    { value: "normal", label: "Normal", color: "blue" },
-    { value: "high", label: "High", color: "orange" },
-    { value: "urgent", label: "Urgent", color: "red" },
-  ];
-
-  useEffect(() => {
-    loadMessages();
-    loadConversations();
-  }, []);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [selectedConversation]);
-
-  const loadMessages = async () => {
+  // Fetch contacts from API
+  const fetchContacts = async () => {
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const mockMessages = generateMockMessages();
-      setMessages(mockMessages);
-      toast.success("Messages loaded successfully!");
+      const response = await axios.get("https://nexusbackend-hdyk.onrender.com/contact");
+      setContacts(response.data.data.contacts || []);
+      toast.success("Contacts loaded successfully!");
     } catch (error) {
-      console.error("Error loading messages:", error);
-      toast.error("Failed to load messages.");
+      console.error("Error loading contacts:", error);
+      toast.error("Failed to load contacts.");
     } finally {
       setLoading(false);
     }
   };
 
-  const loadConversations = async () => {
+  useEffect(() => {
+    fetchContacts();
+  }, []);
+
+  // Delete contact
+  const handleDeleteContact = async (contactId) => {
     try {
-      const mockConversations = generateMockConversations();
-      setConversations(mockConversations);
-      if (mockConversations.length > 0 && !selectedConversation) {
-        setSelectedConversation(mockConversations[0]);
+      await axios.delete(`https://nexusbackend-hdyk.onrender.com/contact/${contactId}`);
+      setContacts(contacts.filter(contact => contact._id !== contactId));
+      setDeleteConfirm(null);
+      if (selectedContact?._id === contactId) {
+        setSelectedContact(null);
+        setIsEditing(false);
+        setShowContactModal(false);
       }
+      toast.success("Contact deleted successfully!");
     } catch (error) {
-      console.error("Error loading conversations:", error);
+      console.error("Error deleting contact:", error);
+      toast.error("Failed to delete contact.");
     }
   };
 
-  const generateMockMessages = () => {
-    return Array.from({ length: 25 }, (_, index) => {
-      const types = ["inbox", "sent", "drafts"];
-      const categories = [
-        "order",
-        "support",
-        "billing",
-        "technical",
-        "general",
-      ];
-      const priorities = ["low", "normal", "high", "urgent"];
-      const senders = [
-        {
-          name: "Sarah Johnson",
-          email: "sarah.j@example.com",
-          type: "customer",
-          avatar: "👩",
-        },
-        {
-          name: "Mike Chen",
-          email: "mike.chen@example.com",
-          type: "customer",
-          avatar: "👨",
-        },
-        {
-          name: "Emma Wilson",
-          email: "emma.w@example.com",
-          type: "customer",
-          avatar: "👩",
-        },
-        {
-          name: "Support Team",
-          email: "support@company.com",
-          type: "support",
-          avatar: "🏢",
-        },
-        {
-          name: "Billing Dept",
-          email: "billing@company.com",
-          type: "billing",
-          avatar: "💳",
-        },
-      ];
-
-      const sender = senders[index % senders.length];
-      const isInbox = Math.random() > 0.3;
-
-      return {
-        id: `msg-${1000 + index}`,
-        type: types[index % types.length],
-        category: categories[index % categories.length],
-        priority: priorities[index % priorities.length],
-        sender: isInbox
-          ? sender
-          : { name: "You", email: "me@company.com", type: "me", avatar: "👤" },
-        recipient: isInbox
-          ? { name: "You", email: "me@company.com", type: "me", avatar: "👤" }
-          : sender,
-        subject: `Message about ${categories[index % categories.length]} issue`,
-        preview: `This is a preview of the message content regarding the ${
-          categories[index % categories.length]
-        } topic...`,
-        body: `Dear ${isInbox ? "Customer" : sender.name},
-
-This message is regarding your recent inquiry about ${
-          categories[index % categories.length]
-        }. We wanted to follow up and provide you with the information you requested.
-
-${
-  index % 3 === 0
-    ? "We have successfully processed your request and everything is now complete."
-    : index % 3 === 1
-    ? "We need some additional information to proceed with your request."
-    : "Your issue has been escalated to our technical team for further investigation."
-}
-
-Please let us know if you have any further questions.
-
-Best regards,
-${isInbox ? sender.name : "Your Support Team"}`,
-        timestamp: new Date(
-          Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-        read: index > 5, // First few messages are unread
-        starred: index % 7 === 0,
-        important: index % 5 === 0,
-        hasAttachments: index % 4 === 0,
-        labels:
-          index % 3 === 0
-            ? ["Follow-up", "Urgent"]
-            : index % 3 === 1
-            ? ["Completed"]
-            : [],
-        conversationId: `conv-${Math.floor(index / 5) + 1}`,
-      };
-    });
-  };
-
-  const generateMockConversations = () => {
-    const conversationsMap = {};
-
-    messages.forEach((message) => {
-      if (!conversationsMap[message.conversationId]) {
-        conversationsMap[message.conversationId] = {
-          id: message.conversationId,
-          participants: [message.sender, message.recipient],
-          messages: [],
-          subject: message.subject,
-          lastMessage: message,
-          unreadCount: 0,
-          isStarred: false,
-        };
-      }
-      conversationsMap[message.conversationId].messages.push(message);
-      if (!message.read && message.type === "inbox") {
-        conversationsMap[message.conversationId].unreadCount++;
-      }
-      if (message.starred) {
-        conversationsMap[message.conversationId].isStarred = true;
-      }
-    });
-
-    return Object.values(conversationsMap).sort(
-      (a, b) =>
-        new Date(b.lastMessage.timestamp) - new Date(a.lastMessage.timestamp)
-    );
-  };
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleSendMessage = () => {
-    if (!newMessage.trim() || !selectedConversation) return;
-
-    const newMsg = {
-      id: `msg-${Date.now()}`,
-      type: "sent",
-      category: "general",
-      priority: "normal",
-      sender: {
-        name: "You",
-        email: "me@company.com",
-        type: "me",
-        avatar: "👤",
-      },
-      recipient: selectedConversation.participants.find((p) => p.type !== "me"),
-      subject: selectedConversation.subject,
-      body: newMessage,
-      timestamp: new Date().toISOString(),
-      read: true,
-      starred: false,
-      important: false,
-      hasAttachments: attachments.length > 0,
-      labels: [],
-      conversationId: selectedConversation.id,
-    };
-
-    // Update conversations
-    const updatedConversations = conversations.map((conv) =>
-      conv.id === selectedConversation.id
-        ? {
-            ...conv,
-            messages: [...conv.messages, newMsg],
-            lastMessage: newMsg,
-          }
-        : conv
-    );
-
-    setConversations(updatedConversations);
-    setSelectedConversation(
-      updatedConversations.find((conv) => conv.id === selectedConversation.id)
-    );
-    setNewMessage("");
-    setAttachments([]);
-    toast.success("Message sent!");
-  };
-
-  const handleDeleteMessage = (messageId) => {
-    setMessages(messages.filter((msg) => msg.id !== messageId));
-    toast.success("Message deleted");
-  };
-
-  const handleStarMessage = (messageId) => {
-    setMessages(
-      messages.map((msg) =>
-        msg.id === messageId ? { ...msg, starred: !msg.starred } : msg
-      )
-    );
-  };
-
-  const handleMarkAsRead = (messageId) => {
-    setMessages(
-      messages.map((msg) =>
-        msg.id === messageId ? { ...msg, read: true } : msg
-      )
-    );
-  };
-
-  const formatTime = (timestamp) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diff = now - date;
-
-    if (diff < 60 * 60 * 1000) {
-      return `${Math.floor(diff / (60 * 1000))}m ago`;
-    } else if (diff < 24 * 60 * 60 * 1000) {
-      return `${Math.floor(diff / (60 * 60 * 1000))}h ago`;
-    } else {
-      return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
+  // Update contact
+  const handleUpdateContact = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.put(
+        `https://nexusbackend-hdyk.onrender.com/contact/${selectedContact._id}`,
+        editForm
+      );
+      setContacts(contacts.map(contact => 
+        contact._id === selectedContact._id ? response.data : contact
+      ));
+      setSelectedContact(response.data);
+      setIsEditing(false);
+      toast.success("Contact updated successfully!");
+    } catch (error) {
+      console.error("Error updating contact:", error);
+      toast.error("Failed to update contact.");
     }
   };
 
-  const formatDate = (timestamp) => {
-    return new Date(timestamp).toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+  // Toggle archive status
+  const handleToggleArchive = async (contactId) => {
+    try {
+      const contact = contacts.find(c => c._id === contactId);
+      const response = await axios.put(
+        `https://nexusbackend-hdyk.onrender.com/contact/${contactId}`,
+        { isArchived: !contact.isArchived }
+      );
+      
+      setContacts(contacts.map(c => 
+        c._id === contactId ? response.data : c
+      ));
+      
+      if (selectedContact?._id === contactId) {
+        setSelectedContact(response.data);
+      }
+      
+      toast.success(`Contact ${!contact.isArchived ? 'archived' : 'unarchived'}!`);
+    } catch (error) {
+      console.error("Error updating contact:", error);
+      toast.error("Failed to update contact.");
+    }
+  };
+
+  // Filter contacts based on search and filters
+  const filteredContacts = contacts.filter(contact => {
+    const matchesSearch = 
+      contact.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contact.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contact.subject?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contact.message?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contact.company?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus = filterStatus === "all" || contact.status === filterStatus;
+    const matchesInterest = filterInterest === "all" || contact.interest === filterInterest;
+    const matchesPriority = filterPriority === "all" || contact.priority === filterPriority;
+    
+    return matchesSearch && matchesStatus && matchesInterest && matchesPriority;
+  });
+
+  // Pagination logic
+  const indexOfLastContact = currentPage * contactsPerPage;
+  const indexOfFirstContact = indexOfLastContact - contactsPerPage;
+  const currentContacts = filteredContacts.slice(indexOfFirstContact, indexOfLastContact);
+  const totalPages = Math.ceil(filteredContacts.length / contactsPerPage);
+
+  // Handle contact selection
+  const handleContactSelect = (contact) => {
+    setSelectedContact(contact);
+    setIsEditing(false);
+    setShowContactModal(true);
+  };
+
+  // Status options
+  const statusOptions = [
+    { value: "all", label: "All Status", color: "default" },
+    { value: "new", label: "New", color: "blue" },
+    { value: "read", label: "Read", color: "green" },
+    { value: "replied", label: "Replied", color: "purple" },
+    { value: "archived", label: "Archived", color: "gray" },
+  ];
+
+  // Interest options
+  const interestOptions = [
+    { value: "all", label: "All Interests" },
+    { value: "general", label: "General" },
+    { value: "consulting", label: "Consulting" },
+    { value: "development", label: "Development" },
+    { value: "support", label: "Support" },
+  ];
+
+  // Priority options
+  const priorityOptions = [
+    { value: "all", label: "All Priorities" },
+    { value: "low", label: "Low" },
+    { value: "medium", label: "Medium" },
+    { value: "high", label: "High" },
+    { value: "urgent", label: "Urgent" },
+  ];
+
+  // Budget options
+  const budgetOptions = {
+    "500-1000": "$500-1,000",
+    "1000-5000": "$1,000-5,000",
+    "5000-10000": "$5,000-10,000",
+    "10000-50000": "$10,000-50,000",
+    "50000+": "$50,000+"
+  };
+
+  // Gradient button styles
+  const gradientStyles = {
+    primary: "bg-gradient-to-t from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600",
+    secondary: "bg-gradient-to-t from-gray-600 to-gray-500 hover:from-gray-700 hover:to-gray-600",
+    success: "bg-gradient-to-t from-green-600 to-green-500 hover:from-green-700 hover:to-green-600",
+    warning: "bg-gradient-to-t from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600",
+    danger: "bg-gradient-to-t from-red-600 to-red-500 hover:from-red-700 hover:to-red-600",
+    info: "bg-gradient-to-t from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600",
   };
 
   // Custom Components
   const Chip = ({ label, color = "default", size = "medium", icon }) => {
     const colorClasses = {
-      default: "bg-gray-100 text-gray-800",
-      blue: "bg-blue-100 text-blue-800",
-      green: "bg-green-100 text-green-800",
-      orange: "bg-orange-100 text-orange-800",
-      purple: "bg-purple-100 text-purple-800",
-      red: "bg-red-100 text-red-800",
-      gray: "bg-gray-100 text-gray-800",
+      default: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
+      blue: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+      green: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+      orange: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+      purple: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+      red: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+      gray: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
     };
 
     const sizeClasses = {
@@ -409,6 +243,32 @@ ${isInbox ? sender.name : "Your Support Team"}`,
     );
   };
 
+  const GradientButton = ({
+    children,
+    onClick,
+    className = "",
+    size = "medium",
+    variant = "primary",
+    ...props
+  }) => {
+    const sizeClasses = {
+      xsmall: "px-2 py-1 text-xs",
+      small: "px-3 py-2 text-sm",
+      medium: "px-4 py-2 text-sm",
+      large: "px-6 py-3 text-base",
+    };
+
+    return (
+      <button
+        onClick={onClick}
+        className={`${sizeClasses[size]} ${gradientStyles[variant]} text-white font-medium rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl ${className}`}
+        {...props}
+      >
+        {children}
+      </button>
+    );
+  };
+
   const IconButton = ({
     children,
     onClick,
@@ -419,12 +279,13 @@ ${isInbox ? sender.name : "Your Support Team"}`,
     const sizeClasses = {
       small: "p-1",
       medium: "p-2",
+      large: "p-3",
     };
 
     return (
       <button
         onClick={onClick}
-        className={`rounded-full hover:bg-opacity-10 transition-colors ${sizeClasses[size]} ${className}`}
+        className={`rounded-full hover:bg-opacity-10 transition-colors ${sizeClasses[size]} ${className} dark:text-gray-300 dark:hover:bg-gray-700`}
         {...props}
       >
         {children}
@@ -432,248 +293,519 @@ ${isInbox ? sender.name : "Your Support Team"}`,
     );
   };
 
-  const MessageItem = ({ message, onClick, selected }) => (
+  const Pagination = () => {
+    if (totalPages <= 1) return null;
+
+    return (
+      <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-3 px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-b-2xl">
+        <div className="text-sm text-gray-700 dark:text-gray-300 text-center xs:text-left">
+          Showing {indexOfFirstContact + 1} to {Math.min(indexOfLastContact, filteredContacts.length)} of {filteredContacts.length} results
+        </div>
+        <div className="flex items-center justify-center space-x-1">
+          <GradientButton
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            variant="secondary"
+            size="xsmall"
+            className={currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}
+          >
+            <ChevronLeft className="text-lg" />
+          </GradientButton>
+          
+          {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+            let page;
+            if (totalPages <= 5) {
+              page = i + 1;
+            } else if (currentPage <= 3) {
+              page = i + 1;
+            } else if (currentPage >= totalPages - 2) {
+              page = totalPages - 4 + i;
+            } else {
+              page = currentPage - 2 + i;
+            }
+
+            return (
+              <GradientButton
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                variant={currentPage === page ? "primary" : "secondary"}
+                size="xsmall"
+                className="min-w-[2rem]"
+              >
+                {page}
+              </GradientButton>
+            );
+          })}
+          
+          <GradientButton
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            variant="secondary"
+            size="xsmall"
+            className={currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}
+          >
+            <ChevronRight className="text-lg" />
+          </GradientButton>
+        </div>
+      </div>
+    );
+  };
+
+  const ContactItem = ({ contact, onClick, isSelected }) => (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className={`p-4 border-b border-gray-200 cursor-pointer transition-colors ${
-        selected ? "bg-blue-50" : "hover:bg-gray-50"
-      } ${!message.read ? "bg-blue-50 border-l-4 border-l-blue-500" : ""}`}
+      className={`p-4 border border-gray-200 dark:border-gray-700 rounded-2xl cursor-pointer transition-all duration-300 ${
+        isSelected 
+          ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 ring-2 ring-blue-500" 
+          : "bg-white dark:bg-gray-800 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600"
+      } ${contact.isArchived ? 'opacity-60' : ''}`}
       onClick={onClick}
     >
       <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-          {message.sender.avatar}
+        <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+          <Person />
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center space-x-2">
-              <span
-                className={`font-semibold ${
-                  !message.read ? "text-blue-600" : "text-gray-800"
-                }`}
-              >
-                {message.sender.name}
+          <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2 mb-2">
+            <div className="flex items-center space-x-2 flex-wrap">
+              <span className="font-semibold text-gray-800 dark:text-gray-200 text-base">
+                {contact.name || "Unknown"}
               </span>
-              {message.starred && <Star className="text-yellow-500 text-sm" />}
-              {message.important && (
-                <Warning className="text-orange-500 text-sm" />
+              {contact.isArchived && (
+                <Archive className="text-gray-400 text-sm" />
               )}
+              <Chip 
+                label={contact.status || "new"} 
+                color={
+                  contact.status === "read" ? "green" : 
+                  contact.status === "replied" ? "purple" : 
+                  contact.status === "archived" ? "gray" : "blue"
+                } 
+                size="small" 
+              />
             </div>
-            <div className="flex items-center space-x-2">
-              {message.hasAttachments && (
-                <AttachFile className="text-gray-400 text-sm" />
-              )}
-              <span className="text-sm text-gray-500">
-                {formatTime(message.timestamp)}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-2 mb-1">
-            <span
-              className={`font-medium ${
-                !message.read ? "text-gray-800" : "text-gray-600"
-              }`}
-            >
-              {message.subject}
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              {new Date(contact.createdAt).toLocaleDateString()}
             </span>
-            <Chip label={message.category} color="blue" size="small" />
           </div>
 
-          <p className="text-sm text-gray-600 truncate">{message.preview}</p>
+          <div className="flex items-center space-x-2 mb-2">
+            <Email className="text-gray-400 text-sm" />
+            <span className="text-sm text-gray-600 dark:text-gray-400 truncate">
+              {contact.email || "No email"}
+            </span>
+          </div>
 
-          <div className="flex items-center space-x-2 mt-2">
-            {message.labels.map((label, index) => (
-              <span
-                key={index}
-                className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full"
-              >
-                {label}
-              </span>
-            ))}
+          <div className="flex items-center space-x-2 mb-2">
+            <Category className="text-gray-400 text-sm" />
+            <span className="text-sm text-gray-600 dark:text-gray-400 capitalize">
+              {contact.interest || "general"}
+            </span>
+          </div>
+
+          {contact.subject && (
+            <p className="font-medium text-gray-800 dark:text-gray-200 text-sm mb-2 line-clamp-1">
+              {contact.subject}
+            </p>
+          )}
+
+          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
+            {contact.message || "No message provided"}
+          </p>
+
+          <div className="flex items-center flex-wrap gap-2">
+            {contact.budget && (
+              <Chip 
+                label={budgetOptions[contact.budget] || contact.budget} 
+                color="green" 
+                size="small" 
+                icon={<AttachMoney className="text-xs" />}
+              />
+            )}
+            {contact.priority && (
+              <Chip 
+                label={contact.priority} 
+                color={
+                  contact.priority === "high" ? "orange" : 
+                  contact.priority === "urgent" ? "red" : "gray"
+                } 
+                size="small" 
+                icon={<Flag className="text-xs" />}
+              />
+            )}
           </div>
         </div>
       </div>
     </motion.div>
   );
 
-  const ConversationItem = ({ conversation, onClick, isSelected }) => (
+  const ContactModal = () => {
+    if (!selectedContact) return null;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50 p-2 xs:p-4"
+        onClick={() => setShowContactModal(false)}
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-4xl max-h-[95vh] overflow-hidden flex flex-col"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header - Fixed */}
+          <div className="flex-shrink-0 p-4 xs:p-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                  <Person />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-200 text-xl">
+                    {selectedContact.name || "Unknown"}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {selectedContact.email || "No email"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <IconButton
+                  onClick={() => handleToggleArchive(selectedContact._id)}
+                  className={selectedContact.isArchived ? "text-green-600 hover:bg-green-100 dark:hover:bg-green-900/20" : "text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"}
+                >
+                  {selectedContact.isArchived ? <Unarchive /> : <Archive />}
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    setIsEditing(true);
+                    setEditForm(selectedContact);
+                  }}
+                  className="text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/20"
+                >
+                  <Edit />
+                </IconButton>
+                <IconButton
+                  onClick={() => setDeleteConfirm(selectedContact._id)}
+                  className="text-red-600 hover:bg-red-100 dark:hover:bg-red-900/20"
+                >
+                  <Delete />
+                </IconButton>
+                <IconButton
+                  onClick={() => setShowContactModal(false)}
+                  className="text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <Close />
+                </IconButton>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Details - Scrollable */}
+          <div className="flex-1 overflow-y-auto p-4 xs:p-6">
+            {isEditing ? (
+              <form onSubmit={handleUpdateContact} className="space-y-4">
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Name
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.name || ""}
+                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={editForm.email || ""}
+                      onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      value={editForm.phone || ""}
+                      onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Company
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.company || ""}
+                      onChange={(e) => setEditForm({ ...editForm, company: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Subject
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.subject || ""}
+                    onChange={(e) => setEditForm({ ...editForm, subject: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Message
+                  </label>
+                  <textarea
+                    value={editForm.message || ""}
+                    onChange={(e) => setEditForm({ ...editForm, message: e.target.value })}
+                    rows="4"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Interest
+                    </label>
+                    <select
+                      value={editForm.interest || "general"}
+                      onChange={(e) => setEditForm({ ...editForm, interest: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    >
+                      {interestOptions.slice(1).map(option => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Status
+                    </label>
+                    <select
+                      value={editForm.status || "new"}
+                      onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    >
+                      {statusOptions.slice(1).map(status => (
+                        <option key={status.value} value={status.value}>
+                          {status.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Priority
+                    </label>
+                    <select
+                      value={editForm.priority || "medium"}
+                      onChange={(e) => setEditForm({ ...editForm, priority: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    >
+                      {priorityOptions.slice(1).map(priority => (
+                        <option key={priority.value} value={priority.value}>
+                          {priority.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex flex-col xs:flex-row space-y-3 xs:space-y-0 xs:space-x-3 pt-4">
+                  <GradientButton
+                    type="submit"
+                    variant="success"
+                    className="flex-1"
+                  >
+                    Save Changes
+                  </GradientButton>
+                  <GradientButton
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    variant="secondary"
+                    className="flex-1"
+                  >
+                    Cancel
+                  </GradientButton>
+                </div>
+              </form>
+            ) : (
+              <div className="space-y-6">
+                {/* Contact Information Grid */}
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Email</h4>
+                      <p className="text-gray-800 dark:text-gray-200">{selectedContact.email || "Not provided"}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Phone</h4>
+                      <p className="text-gray-800 dark:text-gray-200">{selectedContact.phone || "Not provided"}</p>
+                    </div>
+                    {selectedContact.company && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Company</h4>
+                        <p className="text-gray-800 dark:text-gray-200">{selectedContact.company}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Status</h4>
+                      <Chip 
+                        label={selectedContact.status || "new"} 
+                        color={
+                          selectedContact.status === "read" ? "green" : 
+                          selectedContact.status === "replied" ? "purple" : 
+                          selectedContact.status === "archived" ? "gray" : "blue"
+                        } 
+                      />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Priority</h4>
+                      <Chip 
+                        label={selectedContact.priority || "medium"} 
+                        color={
+                          selectedContact.priority === "high" ? "orange" : 
+                          selectedContact.priority === "urgent" ? "red" : "gray"
+                        } 
+                      />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Interest</h4>
+                      <Chip 
+                        label={selectedContact.interest || "general"} 
+                        color="purple"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {selectedContact.budget && (
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Budget</h4>
+                    <Chip 
+                      label={budgetOptions[selectedContact.budget] || selectedContact.budget} 
+                      color="green"
+                      icon={<AttachMoney />}
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Subject</h4>
+                  <p className="text-gray-800 dark:text-gray-200 font-medium text-lg">{selectedContact.subject}</p>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Message</h4>
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <p className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
+                      {selectedContact.message || "No message provided"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Received</h4>
+                    <p className="text-gray-800 dark:text-gray-200">
+                      {new Date(selectedContact.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Last Updated</h4>
+                    <p className="text-gray-800 dark:text-gray-200">
+                      {new Date(selectedContact.updatedAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  };
+
+  const DeleteConfirmation = () => (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className={`p-4 border-b border-gray-200 cursor-pointer transition-colors ${
-        isSelected
-          ? "bg-blue-50 border-l-4 border-l-blue-500"
-          : "hover:bg-gray-50"
-      }`}
-      onClick={onClick}
+      className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50 p-4"
     >
-      <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
-          {conversation.participants.find((p) => p.type !== "me")?.avatar ||
-            "💬"}
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center space-x-2">
-              <span className="font-semibold text-gray-800">
-                {conversation.participants.find((p) => p.type !== "me")?.name}
-              </span>
-              {conversation.isStarred && (
-                <Star className="text-yellow-500 text-sm" />
-              )}
-            </div>
-            <div className="flex items-center space-x-2">
-              {conversation.unreadCount > 0 && (
-                <span className="px-2 py-1 bg-red-500 text-white text-xs rounded-full">
-                  {conversation.unreadCount}
-                </span>
-              )}
-              <span className="text-sm text-gray-500">
-                {formatTime(conversation.lastMessage.timestamp)}
-              </span>
-            </div>
-          </div>
-
-          <p className="font-medium text-gray-800 mb-1 truncate">
-            {conversation.subject}
-          </p>
-
-          <p className="text-sm text-gray-600 truncate">
-            {conversation.lastMessage.preview}
-          </p>
-        </div>
-      </div>
-    </motion.div>
-  );
-
-  const ChatMessage = ({ message, isOwn }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-4`}
-    >
-      <div
-        className={`flex max-w-xs lg:max-w-md ${
-          isOwn ? "flex-row-reverse" : "flex-row"
-        } items-end space-x-2`}
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full"
       >
-        <div
-          className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white text-sm ${
-            isOwn
-              ? "bg-gradient-to-br from-blue-500 to-blue-600"
-              : "bg-gradient-to-br from-gray-500 to-gray-600"
-          }`}
-        >
-          {message.sender.avatar}
-        </div>
-
-        <div
-          className={`rounded-2xl px-4 py-2 ${
-            isOwn
-              ? "bg-blue-600 text-white rounded-br-none"
-              : "bg-gray-200 text-gray-800 rounded-bl-none"
-          }`}
-        >
-          <p className="text-sm">{message.body}</p>
-          <p
-            className={`text-xs mt-1 ${
-              isOwn ? "text-blue-200" : "text-gray-500"
-            }`}
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+          Delete Contact
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
+          Are you sure you want to delete this contact? This action cannot be undone.
+        </p>
+        <div className="flex flex-col xs:flex-row space-y-3 xs:space-y-0 xs:space-x-3">
+          <GradientButton
+            onClick={() => setDeleteConfirm(null)}
+            variant="secondary"
+            className="flex-1"
           >
-            {formatTime(message.timestamp)}
-          </p>
-        </div>
-      </div>
-    </motion.div>
-  );
-
-  const ComposeModal = () => (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      className="fixed bottom-0 right-6 w-96 bg-white rounded-t-2xl shadow-2xl border border-gray-200 z-50"
-    >
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-t-2xl">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold">New Message</h3>
-          <button
-            onClick={() => setComposeOpen(false)}
-            className="text-white hover:text-blue-200 transition-colors"
+            Cancel
+          </GradientButton>
+          <GradientButton
+            onClick={() => handleDeleteContact(deleteConfirm)}
+            variant="danger"
+            className="flex-1"
           >
-            <Clear />
-          </button>
+            Delete
+          </GradientButton>
         </div>
-      </div>
-
-      <div className="p-4 space-y-4">
-        <div>
-          <input
-            type="email"
-            placeholder="Recipient"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        <div>
-          <input
-            type="text"
-            placeholder="Subject"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        <div>
-          <textarea
-            placeholder="Type your message..."
-            rows="6"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex space-x-2">
-            <IconButton>
-              <AttachFile className="text-gray-600" />
-            </IconButton>
-            <IconButton>
-              <EmojiEmotions className="text-gray-600" />
-            </IconButton>
-            <IconButton>
-              <Label className="text-gray-600" />
-            </IconButton>
-          </div>
-
-          <div className="flex space-x-2">
-            <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-              Save Draft
-            </button>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              Send
-            </button>
-          </div>
-        </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 md:p-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900 p-4 md:p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-300 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-1">
-                <div className="h-96 bg-gray-300 rounded-2xl"></div>
-              </div>
-              <div className="lg:col-span-2">
-                <div className="h-96 bg-gray-300 rounded-2xl"></div>
-              </div>
+            <div className="h-8 bg-gray-300 dark:bg-gray-700 rounded w-1/4 mb-8"></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="h-48 bg-gray-300 dark:bg-gray-700 rounded-2xl"></div>
+              ))}
             </div>
           </div>
         </div>
@@ -682,7 +814,7 @@ ${isInbox ? sender.name : "Your Support Team"}`,
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900 p-4 md:p-6 transition-colors duration-300">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -691,257 +823,141 @@ ${isInbox ? sender.name : "Your Support Team"}`,
           className="mb-8"
         >
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-3">
-                <div className="p-2 bg-white rounded-2xl shadow-lg">
-                  <ChatBubble className="text-blue-600 text-2xl md:text-3xl" />
-                </div>
-                Messages & Conversations
-              </h1>
-              <p className="text-gray-600 mt-2">
-                Manage your conversations and communicate with customers
-              </p>
-            </div>
-
-            <div className="flex items-center space-x-3 mt-4 lg:mt-0">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setComposeOpen(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl shadow-lg hover:shadow-xl hover:bg-blue-700 transition-all duration-300 font-semibold"
-              >
-                <Add />
-                Compose
-              </motion.button>
+            <div className="flex items-center justify-between w-full">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-200 flex items-center gap-3">
+                  <div className="p-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+                    <ContactMail className="text-blue-600 dark:text-blue-400 text-2xl md:text-3xl" />
+                  </div>
+                  Contact Management
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400 mt-2">
+                  Manage and respond to customer inquiries ({contacts.length} contacts)
+                </p>
+              </div>
+              
+              <div className="flex items-center space-x-3">
+                <IconButton
+                  onClick={toggleDarkMode}
+                  className="text-gray-600 dark:text-gray-400"
+                  size="large"
+                >
+                  {darkMode ? <Brightness7 /> : <Brightness4 />}
+                </IconButton>
+                
+                <GradientButton
+                  onClick={fetchContacts}
+                  variant="info"
+                  className="flex items-center gap-2"
+                >
+                  <Refresh />
+                  Refresh
+                </GradientButton>
+              </div>
             </div>
           </div>
         </motion.div>
 
-        {/* Mobile View Toggle */}
-        <div className="lg:hidden mb-4">
-          <div className="bg-white rounded-2xl p-2 shadow-lg">
-            <div className="flex space-x-1">
-              <button
-                onClick={() => setMobileView("list")}
-                className={`flex-1 px-4 py-2 rounded-2xl font-medium transition-colors ${
-                  mobileView === "list"
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-600 hover:text-gray-800"
-                }`}
-              >
-                Conversations
-              </button>
-              <button
-                onClick={() => setMobileView("chat")}
-                className={`flex-1 px-4 py-2 rounded-2xl font-medium transition-colors ${
-                  mobileView === "chat"
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-600 hover:text-gray-800"
-                }`}
-              >
-                Messages
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Sidebar - Conversations List */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className={`lg:col-span-1 ${
-              mobileView === "list" ? "block" : "hidden lg:block"
-            }`}
-          >
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200">
-              {/* Search and Filters */}
-              <div className="p-4 border-b border-gray-200">
-                <div className="relative mb-3">
+        {/* Search and Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-4">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+              <div className="lg:col-span-1">
+                <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   <input
                     type="text"
-                    placeholder="Search conversations..."
+                    placeholder="Search contacts..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-300"
                   />
-                </div>
-
-                <div className="flex space-x-2">
-                  <select
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  >
-                    {messageTypes.map((type) => (
-                      <option key={type.value} value={type.value}>
-                        {type.label}
-                      </option>
-                    ))}
-                  </select>
-
-                  <button className="p-2 border border-gray-300 text-gray-600 rounded-2xl hover:bg-gray-50 transition-colors">
-                    <FilterList className="text-lg" />
-                  </button>
                 </div>
               </div>
+              
+              <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                >
+                  {statusOptions.map((status) => (
+                    <option key={status.value} value={status.value}>
+                      {status.label}
+                    </option>
+                  ))}
+                </select>
 
-              {/* Conversations List */}
-              <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
-                {conversations.map((conversation) => (
-                  <ConversationItem
-                    key={conversation.id}
-                    conversation={conversation}
-                    isSelected={selectedConversation?.id === conversation.id}
-                    onClick={() => {
-                      setSelectedConversation(conversation);
-                      if (window.innerWidth < 1024) {
-                        setMobileView("chat");
-                      }
-                    }}
-                  />
-                ))}
+                <select
+                  value={filterInterest}
+                  onChange={(e) => setFilterInterest(e.target.value)}
+                  className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                >
+                  {interestOptions.map((interest) => (
+                    <option key={interest.value} value={interest.value}>
+                      {interest.label}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={filterPriority}
+                  onChange={(e) => setFilterPriority(e.target.value)}
+                  className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                >
+                  {priorityOptions.map((priority) => (
+                    <option key={priority.value} value={priority.value}>
+                      {priority.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
-          </motion.div>
+          </div>
+        </motion.div>
 
-          {/* Main Chat Area */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className={`lg:col-span-3 ${
-              mobileView === "chat" ? "block" : "hidden lg:block"
-            }`}
-          >
-            {selectedConversation ? (
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 h-[calc(100vh-200px)] flex flex-col">
-                {/* Chat Header */}
-                <div className="p-4 border-b border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                        {
-                          selectedConversation.participants.find(
-                            (p) => p.type !== "me"
-                          )?.avatar
-                        }
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800">
-                          {
-                            selectedConversation.participants.find(
-                              (p) => p.type !== "me"
-                            )?.name
-                          }
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {selectedConversation.unreadCount > 0
-                            ? `${selectedConversation.unreadCount} unread messages`
-                            : "Online"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <IconButton>
-                        <Phone className="text-gray-600" />
-                      </IconButton>
-                      <IconButton>
-                        <VideoCall className="text-gray-600" />
-                      </IconButton>
-                      <IconButton>
-                        <Info className="text-gray-600" />
-                      </IconButton>
-                    </div>
-                  </div>
+        {/* Contacts Grid */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="mb-6"
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
+            {/* Contacts Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+              {currentContacts.length === 0 ? (
+                <div className="col-span-full p-8 text-center text-gray-500 dark:text-gray-400">
+                  <ContactMail className="text-4xl mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+                  <p className="text-lg">No contacts found</p>
+                  <p className="text-sm mt-2">Try adjusting your search or filters</p>
                 </div>
+              ) : (
+                currentContacts.map((contact) => (
+                  <ContactItem
+                    key={contact._id}
+                    contact={contact}
+                    isSelected={selectedContact?._id === contact._id}
+                    onClick={() => handleContactSelect(contact)}
+                  />
+                ))
+              )}
+            </div>
 
-                {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
-                  <div className="space-y-4">
-                    {selectedConversation.messages.map((message) => (
-                      <ChatMessage
-                        key={message.id}
-                        message={message}
-                        isOwn={message.sender.type === "me"}
-                      />
-                    ))}
-                    <div ref={messagesEndRef} />
-                  </div>
-                </div>
+            {/* Pagination */}
+            <Pagination />
+          </div>
+        </motion.div>
 
-                {/* Message Input */}
-                <div className="p-4 border-t border-gray-200">
-                  <div className="flex items-end space-x-3">
-                    <div className="flex-1">
-                      <textarea
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Type your message..."
-                        rows="2"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                        onKeyPress={(e) => {
-                          if (e.key === "Enter" && !e.shiftKey) {
-                            e.preventDefault();
-                            handleSendMessage();
-                          }
-                        }}
-                      />
-                    </div>
-
-                    <div className="flex space-x-2">
-                      <IconButton>
-                        <AttachFile className="text-gray-600" />
-                      </IconButton>
-                      <IconButton>
-                        <EmojiEmotions className="text-gray-600" />
-                      </IconButton>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={handleSendMessage}
-                        disabled={!newMessage.trim()}
-                        className="p-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                      >
-                        <Send />
-                      </motion.button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 h-96 flex items-center justify-center">
-                <div className="text-center">
-                  <ChatBubble className="text-gray-400 text-6xl mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-600 mb-2">
-                    No Conversation Selected
-                  </h3>
-                  <p className="text-gray-500 mb-6">
-                    Choose a conversation from the list to start messaging
-                  </p>
-                  <button
-                    onClick={() => setComposeOpen(true)}
-                    className="px-6 py-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-colors"
-                  >
-                    Start New Conversation
-                  </button>
-                </div>
-              </div>
-            )}
-          </motion.div>
-        </div>
-
-        {/* Compose Modal */}
-        <AnimatePresence>{composeOpen && <ComposeModal />}</AnimatePresence>
+        {/* Modals */}
+        <AnimatePresence>
+          {showContactModal && <ContactModal />}
+          {deleteConfirm && <DeleteConfirmation />}
+        </AnimatePresence>
       </div>
     </div>
   );
 };
-
-// Additional icons needed
-const ShoppingCart = () => <span>🛒</span>;
-const Support = () => <span>🛟</span>;
-const Build = () => <span>⚙️</span>;
-const VideoCall = () => <span>📹</span>;

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 // src/components/Dashboard.js
 import React, { useState, useEffect } from "react";
@@ -80,9 +81,13 @@ export const DashboardChart = () => {
 
   const [activeChart, setActiveChart] = useState("all");
   const [timeRange, setTimeRange] = useState("monthly");
+  const [activities, setActivities] = useState([]);
+  const [stockItems, setStockItems] = useState([]);
+  const [chartData, setChartData] = useState({});
+  const [usersData, setUsersData] = useState([]);
 
-  // Mock API base URL
-  const API_BASE = "https://jsonplaceholder.typicode.com";
+  // Your actual API base URL - replace with your actual backend URL
+  const API_BASE = "https://nexusbackend-hdyk.onrender.com"; // Change to your actual backend URL
 
   useEffect(() => {
     loadDashboardData();
@@ -91,56 +96,246 @@ export const DashboardChart = () => {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      // Simulate API calls with axios
+      // Fetch all data from your actual APIs
       const [
         usersResponse,
         productsResponse,
         financialResponse,
         activitiesResponse,
+        stockResponse
       ] = await Promise.all([
-        axios.get(`${API_BASE}/users`),
-        axios.get(`${API_BASE}/posts`),
-        axios.get(`${API_BASE}/comments`),
-        axios.get(`${API_BASE}/todos`),
+        axios.get(`${API_BASE}/admin`), // Your actual users endpoint
+        axios.get(`${API_BASE}/products`), // Your products endpoint
+        axios.get(`${API_BASE}/financial`), // Your financial data endpoint
+        axios.get(`${API_BASE}/activities`), // Your activities endpoint
+        axios.get(`${API_BASE}/stock`) // Your stock endpoint
       ]);
 
-      // Transform API data to match our needs
-      const usersData = usersResponse.data;
-      const productsData = productsResponse.data;
-      const financialData = financialResponse.data;
-      const activitiesData = activitiesResponse.data;
+      // Transform actual API data
+      const usersData = usersResponse.data.data.users; // Your actual user data structure
+      const productsData = productsResponse.data.data.products || [];
+      const financialData = financialResponse.data.data || {};
+      const activitiesData = activitiesResponse.data.data || [];
+      const stockData = stockResponse.data.data || [];
 
-      // Update stats with transformed data
+      // Set users data for use in components
+      setUsersData(usersData);
+
+      // Calculate stats from actual API data
+      const totalUsers = usersData.length;
+      // const verifiedUsers = usersData.filter(user => user.isVerified).length;
+      // const activeUsers = usersData.filter(user => user.isActive).length;
+      // const totalLoginCount = usersData.reduce((sum, user) => sum + (user.loginCount || 0), 0);
+
+      // Update stats with actual data
       setStats({
-        users: usersData.length * 124,
-        products: productsData.length,
-        balance: 125430 + financialData.length * 100,
-        stock: 456 + productsData.length * 2,
-        messages: activitiesData.filter((act) => !act.completed).length,
-        bookings: activitiesData.filter((act) => act.completed).length,
-        profit: 45200 + financialData.length * 50,
-        loss: 3200 + productsData.length * 10,
+        users: totalUsers,
+        products: productsData.length || 0,
+        balance: financialData.balance || 0,
+        stock: stockData.length || 0,
+        messages: activitiesData.filter(act => act.type === 'message').length || 0,
+        bookings: activitiesData.filter(act => act.type === 'booking').length || 0,
+        profit: financialData.profit || 0,
+        loss: financialData.loss || 0,
       });
+
+      // Transform activities data from API
+      const transformedActivities = activitiesData.slice(0, 5).map((activity, index) => ({
+        id: activity._id || activity.id,
+        type: activity.type || ["message", "order", "user", "alert", "notification"][index],
+        title: activity.title || `Activity ${index + 1}`,
+        description: activity.description || `Description for activity ${index + 1}`,
+        time: activity.createdAt ? new Date(activity.createdAt).toLocaleTimeString() : `${index * 5 + 2} min ago`,
+        icon: getActivityIcon(activity.type || ["message", "order", "user", "alert", "notification"][index]),
+        status: activity.status || "new",
+      }));
+      setActivities(transformedActivities);
+
+      // Transform stock items from API
+      const transformedStockItems = stockData.slice(0, 5).map((item, index) => ({
+        id: item._id || item.id,
+        name: item.name || `Product ${index + 1}`,
+        category: item.category || "Electronics",
+        stock: item.quantity || item.stock || 0,
+        price: item.price || 0,
+        status: (item.quantity || item.stock) > 15 ? "in-stock" : "low",
+        trend: getStockTrend(item),
+        icon: getProductIcon(item.category || "Electronics"),
+      }));
+      setStockItems(transformedStockItems);
+
+      // Generate chart data from actual API data
+      const generatedChartData = generateChartDataFromAPI(
+        usersData, 
+        productsData, 
+        financialData, 
+        stockData,
+        timeRange
+      );
+      setChartData(generatedChartData);
 
       toast.success("Dashboard data loaded successfully! 🚀");
     } catch (error) {
       console.error("Error loading data:", error);
-      toast.error("Failed to load dashboard data. Using demo data.");
+      toast.error("Failed to load dashboard data. Please check your API endpoints.");
+      
 
-      // Fallback demo data
-      setStats({
-        users: 1245,
-        products: 89,
-        balance: 125430,
-        stock: 456,
-        messages: 23,
-        bookings: 67,
-        profit: 45200,
-        loss: 3200,
-      });
+
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper functions for data transformation
+  const getActivityIcon = (type) => {
+    switch (type) {
+      case 'message': return <Message className="text-blue-600" />;
+      case 'order': return <ShoppingCart className="text-green-600" />;
+      case 'user': return <PersonAdd className="text-purple-600" />;
+      case 'alert': return <Warning className="text-yellow-600" />;
+      case 'notification': return <Notifications className="text-gray-600" />;
+      default: return <Message className="text-blue-600" />;
+    }
+  };
+
+  const getProductIcon = (category) => {
+    switch (category.toLowerCase()) {
+      case 'laptops': return <Laptop className="text-blue-500" />;
+      case 'smartphones': return <Smartphone className="text-green-500" />;
+      case 'tablets': return <Phone className="text-purple-500" />;
+      case 'accessories': return <Headphones className="text-pink-500" />;
+      case 'wearables': return <Watch className="text-orange-500" />;
+      default: return <Laptop className="text-blue-500" />;
+    }
+  };
+
+  const getStockTrend = (item) => {
+    if (item.trend) return item.trend;
+    const stock = item.quantity || item.stock;
+    if (stock > 20) return "up";
+    if (stock < 10) return "down";
+    return "stable";
+  };
+
+  const generateChartDataFromAPI = (users, products, financial, stock, timeRange) => {
+    // Generate realistic chart data based on actual API data
+    const userGrowth = users.map((user, index) => ({
+      month: new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short' }),
+      count: index + 1
+    }));
+
+    const productDistribution = products.reduce((acc, product) => {
+      const category = product.category || 'Other';
+      acc[category] = (acc[category] || 0) + 1;
+      return acc;
+    }, {});
+
+    return {
+      users: {
+        labels: userGrowth.map(item => item.month),
+        datasets: [
+          {
+            label: "Active Users",
+            data: userGrowth.map(item => item.count * 100), // Scale for demonstration
+            borderColor: "rgb(59, 130, 246)",
+            backgroundColor: "rgba(59, 130, 246, 0.1)",
+            tension: 0.4,
+            fill: true,
+            borderWidth: 3,
+          },
+        ],
+      },
+      products: {
+        labels: Object.keys(productDistribution),
+        datasets: [
+          {
+            data: Object.values(productDistribution),
+            backgroundColor: [
+              "rgb(59, 130, 246)",
+              "rgb(16, 185, 129)",
+              "rgb(245, 158, 11)",
+              "rgb(139, 92, 246)",
+            ],
+            borderWidth: 3,
+            borderColor: "#fff",
+            hoverOffset: 15,
+          },
+        ],
+      },
+      revenue: {
+        labels: ["Q1", "Q2", "Q3", "Q4"],
+        datasets: [
+          {
+            label: "Revenue",
+            data: [financial.revenueQ1 || 120000, financial.revenueQ2 || 135000, financial.revenueQ3 || 142000, financial.revenueQ4 || 155000],
+            backgroundColor: "rgba(16, 185, 129, 0.8)",
+            borderColor: "rgb(16, 185, 129)",
+            borderWidth: 2,
+            borderRadius: 8,
+          },
+          {
+            label: "Loss",
+            data: [financial.lossQ1 || 8000, financial.lossQ2 || 6500, financial.lossQ3 || 3200, financial.lossQ4 || 4800],
+            backgroundColor: "rgba(239, 68, 68, 0.8)",
+            borderColor: "rgb(239, 68, 68)",
+            borderWidth: 2,
+            borderRadius: 8,
+          },
+        ],
+      },
+      stock: {
+        labels: stock.map(item => item.category || item.name).slice(0, 5),
+        datasets: [
+          {
+            data: stock.map(item => item.quantity || item.stock).slice(0, 5),
+            backgroundColor: [
+              "rgba(59, 130, 246, 0.7)",
+              "rgba(16, 185, 129, 0.7)",
+              "rgba(245, 158, 11, 0.7)",
+              "rgba(139, 92, 246, 0.7)",
+              "rgba(236, 72, 153, 0.7)",
+            ],
+            borderWidth: 2,
+            borderColor: "#fff",
+          },
+        ],
+      },
+      balance: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        datasets: [
+          {
+            label: "Balance Amount",
+            data: [85000, 92000, 105000, 112000, 118000, financial.balance || 125430],
+            borderColor: "rgb(245, 158, 11)",
+            backgroundColor: "rgba(245, 158, 11, 0.1)",
+            tension: 0.4,
+            fill: true,
+            borderWidth: 3,
+          },
+        ],
+      },
+      profitLoss: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        datasets: [
+          {
+            label: "Profit",
+            data: [38000, 42000, 39500, 45200, 48500, financial.profit || 51000],
+            backgroundColor: "rgba(16, 185, 129, 0.8)",
+            borderColor: "rgb(16, 185, 129)",
+            borderWidth: 2,
+            borderRadius: 6,
+          },
+          {
+            label: "Loss",
+            data: [2800, 3200, 2500, 3100, 2900, financial.loss || 3200],
+            backgroundColor: "rgba(239, 68, 68, 0.8)",
+            borderColor: "rgb(239, 68, 68)",
+            borderWidth: 2,
+            borderRadius: 6,
+          },
+        ],
+      },
+    };
   };
 
   const refreshData = () => {
@@ -151,114 +346,6 @@ export const DashboardChart = () => {
   const exportData = () => {
     toast.success("Exporting dashboard data...");
     // In real app, this would generate and download a file
-  };
-
-  // Chart data configurations
-  const chartData = {
-    users: {
-      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-      datasets: [
-        {
-          label: "Active Users",
-          data: [650, 790, 900, 1020, 1150, 1245],
-          borderColor: "rgb(59, 130, 246)",
-          backgroundColor: "rgba(59, 130, 246, 0.1)",
-          tension: 0.4,
-          fill: true,
-          borderWidth: 3,
-        },
-      ],
-    },
-    products: {
-      labels: ["Laptops", "Smartphones", "Tablets", "Accessories"],
-      datasets: [
-        {
-          data: [35, 25, 20, 20],
-          backgroundColor: [
-            "rgb(59, 130, 246)",
-            "rgb(16, 185, 129)",
-            "rgb(245, 158, 11)",
-            "rgb(139, 92, 246)",
-          ],
-          borderWidth: 3,
-          borderColor: "#fff",
-          hoverOffset: 15,
-        },
-      ],
-    },
-    revenue: {
-      labels: ["Q1", "Q2", "Q3", "Q4"],
-      datasets: [
-        {
-          label: "Revenue",
-          data: [120000, 135000, 142000, 155000],
-          backgroundColor: "rgba(16, 185, 129, 0.8)",
-          borderColor: "rgb(16, 185, 129)",
-          borderWidth: 2,
-          borderRadius: 8,
-        },
-        {
-          label: "Loss",
-          data: [8000, 6500, 3200, 4800],
-          backgroundColor: "rgba(239, 68, 68, 0.8)",
-          borderColor: "rgb(239, 68, 68)",
-          borderWidth: 2,
-          borderRadius: 8,
-        },
-      ],
-    },
-    stock: {
-      labels: ["Laptops", "Phones", "Tablets", "Monitors", "Accessories"],
-      datasets: [
-        {
-          data: [120, 85, 65, 45, 141],
-          backgroundColor: [
-            "rgba(59, 130, 246, 0.7)",
-            "rgba(16, 185, 129, 0.7)",
-            "rgba(245, 158, 11, 0.7)",
-            "rgba(139, 92, 246, 0.7)",
-            "rgba(236, 72, 153, 0.7)",
-          ],
-          borderWidth: 2,
-          borderColor: "#fff",
-        },
-      ],
-    },
-    balance: {
-      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-      datasets: [
-        {
-          label: "Balance Amount",
-          data: [85000, 92000, 105000, 112000, 118000, 125430],
-          borderColor: "rgb(245, 158, 11)",
-          backgroundColor: "rgba(245, 158, 11, 0.1)",
-          tension: 0.4,
-          fill: true,
-          borderWidth: 3,
-        },
-      ],
-    },
-    profitLoss: {
-      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-      datasets: [
-        {
-          label: "Profit",
-          data: [38000, 42000, 39500, 45200, 48500, 51000],
-          backgroundColor: "rgba(16, 185, 129, 0.8)",
-          borderColor: "rgb(16, 185, 129)",
-          borderWidth: 2,
-          borderRadius: 6,
-        },
-        {
-          label: "Loss",
-          data: [2800, 3200, 2500, 3100, 2900, 3200],
-          backgroundColor: "rgba(239, 68, 68, 0.8)",
-          borderColor: "rgb(239, 68, 68)",
-          borderWidth: 2,
-          borderRadius: 6,
-        },
-      ],
-    },
   };
 
   const chartOptions = {
@@ -329,6 +416,8 @@ export const DashboardChart = () => {
   ];
 
   const renderChart = (chartKey, title, type) => {
+    if (!chartData[chartKey]) return <div>Loading chart...</div>;
+
     const options = {
       ...chartOptions,
       plugins: {
@@ -409,109 +498,6 @@ export const DashboardChart = () => {
     activeChart === "all"
       ? charts
       : charts.filter((chart) => chart.key === activeChart);
-
-  // Recent Activities Data
-  const activities = [
-    {
-      id: 1,
-      type: "message",
-      title: "New customer message",
-      description: "John Doe sent a new inquiry about MacBook Pro",
-      time: "2 min ago",
-      icon: <Message className="text-blue-600" />,
-      status: "new",
-    },
-    {
-      id: 2,
-      type: "order",
-      title: "New order placed",
-      description: 'Order #12345 for MacBook Pro 16"',
-      time: "5 min ago",
-      icon: <ShoppingCart className="text-green-600" />,
-      status: "completed",
-    },
-    {
-      id: 3,
-      type: "user",
-      title: "New user registered",
-      description: "Sarah Johnson joined the platform",
-      time: "10 min ago",
-      icon: <PersonAdd className="text-purple-600" />,
-      status: "new",
-    },
-    {
-      id: 4,
-      type: "alert",
-      title: "Low stock alert",
-      description: "iPhone 14 Pro running low (12 units left)",
-      time: "15 min ago",
-      icon: <Warning className="text-yellow-600" />,
-      status: "warning",
-    },
-    {
-      id: 5,
-      type: "notification",
-      title: "System update completed",
-      description: "Dashboard updated to v2.1 with new features",
-      time: "1 hour ago",
-      icon: <Notifications className="text-gray-600" />,
-      status: "info",
-    },
-  ];
-
-  // Stock Items Data
-  const stockItems = [
-    {
-      id: 1,
-      name: 'MacBook Pro 16"',
-      category: "Laptops",
-      stock: 45,
-      price: 2499,
-      status: "in-stock",
-      trend: "up",
-      icon: <Laptop className="text-blue-500" />,
-    },
-    {
-      id: 2,
-      name: "iPhone 15 Pro",
-      category: "Smartphones",
-      stock: 12,
-      price: 1199,
-      status: "low",
-      trend: "down",
-      icon: <Smartphone className="text-green-500" />,
-    },
-    {
-      id: 3,
-      name: "iPad Air",
-      category: "Tablets",
-      stock: 28,
-      price: 799,
-      status: "in-stock",
-      trend: "stable",
-      icon: <Phone className="text-purple-500" />,
-    },
-    {
-      id: 4,
-      name: "AirPods Pro",
-      category: "Accessories",
-      stock: 65,
-      price: 249,
-      status: "in-stock",
-      trend: "up",
-      icon: <Headphones className="text-pink-500" />,
-    },
-    {
-      id: 5,
-      name: "Apple Watch",
-      category: "Wearables",
-      stock: 8,
-      price: 399,
-      status: "low",
-      trend: "down",
-      icon: <Watch className="text-orange-500" />,
-    },
-  ];
 
   const StatCard = ({ title, value, icon, change, changeType, loading }) => (
     <motion.div
