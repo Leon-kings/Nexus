@@ -1,15 +1,15 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import axios from "axios";
 import "./App.css";
-import { AuthProvider } from "./components/navbar/Navbar";
+import { AuthProvider, useAuth } from "./components/navbar/Navbar";
 import { Navbar } from "./components/navbar/Navbar";
 import { About } from "./pages/about/About";
 import { Services } from "./pages/services/Services";
 import { FAQ } from "./pages/faq/FAQ";
 import { Products } from "./pages/electronics/Products";
 import { Home } from "./pages/home/Home";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { NotFound } from "./pages/notfound/NotFound";
 import { Footer } from "./components/footer/Footer";
@@ -27,6 +27,9 @@ import { TransactionManagement } from "./components/dashboards/admins/components
 import { ReportsAnalytics } from "./components/dashboards/admins/components/managements/report/ReportData";
 import { ShoppingDetails } from "./components/dashboards/admins/components/managements/shoping/ShoppingDetails";
 import { MessagesManagement } from "./components/dashboards/admins/components/managements/message/MessageManagement";
+import { ContactManagement } from "./components/dashboards/admins/components/managements/contacts/ContactsManagements";
+import { UserStatsDashboard } from "./components/dashboards/admins/components/managements/viewers/UserViewsManagement";
+import { StockManagement } from "./components/dashboards/admins/components/managements/stocks/StockManagements";
 
 // Create DarkMode Context
 const DarkModeContext = createContext();
@@ -73,6 +76,26 @@ const useDarkMode = () => {
   return context;
 };
 
+// Private Route Component
+const PrivateRoute = ({ children, showMessage = true }) => {
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated && showMessage) {
+      toast.info("Please sign in to access this page. Check the navbar to create an account or login.", {
+        position: "top-center",
+        autoClose: 5000,
+      });
+    }
+  }, [isAuthenticated, showMessage]);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
+
 // Dark Mode Toggle Button Component
 const DarkModeToggle = () => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
@@ -80,7 +103,7 @@ const DarkModeToggle = () => {
   return (
     <div
       onClick={toggleDarkMode}
-      className="fixed top-20 right-8 z-50 p-3 rounded-full bg-gradient-to-b from-blue-400 to-violet-400 shadow-lg transition-all duration-300 transform hover:scale-110"
+      className="fixed top-20 right-8 z-50 p-3 rounded-full bg-gradient-to-b from-blue-400 to-violet-400 shadow-lg transition-all duration-300 transform hover:scale-110 cursor-pointer"
       aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
     >
       {isDarkMode ? (
@@ -111,7 +134,7 @@ const DarkModeToggle = () => {
 };
 
 // API configuration
-const API_BASE_URL = "https://your-api-endpoint.com/api";
+const API_BASE_URL = "https://nexusbackend-hdyk.onrender.com";
 
 // Back to Top Button Component
 const BackToTop = () => {
@@ -165,26 +188,42 @@ const BackToTop = () => {
 };
 
 // View Counter Hook
-const useViewCounter = () => {
-  const sendViewData = async (page) => {
+const useViewCounter = (userId = null) => {
+  const sendViewData = async () => {
     try {
+      // Create a unique browser fingerprint (fallback for guests)
+      const fingerprint = localStorage.getItem("visitor_fingerprint") || crypto.randomUUID();
+      localStorage.setItem("visitor_fingerprint", fingerprint);
+
       const viewData = {
-        page: page,
+        userId, // will be null for guests
+        fingerprint,
         timestamp: new Date().toISOString(),
         userAgent: navigator.userAgent,
         language: navigator.language,
         referrer: document.referrer || "direct",
       };
 
-      await axios.post(`${API_BASE_URL}/views`, viewData);
+      await axios.post(`${API_BASE_URL}/views`, viewData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("✅ View data sent successfully");
     } catch (error) {
-      console.error("Error sending view data:", error);
+      console.error("❌ Error sending view data:", error.message);
     }
   };
 
+  // Automatically send once on page load
+  useEffect(() => {
+    sendViewData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return { sendViewData };
 };
-
 export default function App() {
   const { sendViewData } = useViewCounter();
 
@@ -207,86 +246,137 @@ export default function App() {
               <Route path="/cookies" element={<CookiePolicy />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/teams" element={<Team />} />
-           
-              {/* protected */}
+
+              {/* Protected Routes */}
               <Route
                 path="/dashboard"
                 element={
-                  <DashboardLayout>
-                    <Dashboard />
-                  </DashboardLayout>
+                  <PrivateRoute>
+                    <DashboardLayout>
+                      <Dashboard />
+                    </DashboardLayout>
+                  </PrivateRoute>
                 }
               />
-                            <Route
+              <Route
                 path="/08393/8303i/users/managements"
                 element={
-                  <DashboardLayout>
-                    <UserManagement />
-                  </DashboardLayout>
+                  <PrivateRoute>
+                    <DashboardLayout>
+                      <UserManagement />
+                    </DashboardLayout>
+                  </PrivateRoute>
                 }
               />
               <Route
                 path="/analytics"
                 element={
-                  <DashboardLayout>
-                    <DashboardChart />
-                  </DashboardLayout>
+                  <PrivateRoute>
+                    <DashboardLayout>
+                      <DashboardChart />
+                    </DashboardLayout>
+                  </PrivateRoute>
                 }
               />
               <Route
                 path="/7833/8303i/products/managements"
                 element={
-                  <DashboardLayout>
-                    <ProductInventoryManagement />
-                  </DashboardLayout>
+                  <PrivateRoute>
+                    <DashboardLayout>
+                      <ProductInventoryManagement />
+                    </DashboardLayout>
+                  </PrivateRoute>
                 }
               />
               <Route
                 path="/23833/8038i/orders/managements"
                 element={
-                  <DashboardLayout>
-                    <ElectronicOrdersManagement />
-                  </DashboardLayout>
+                  <PrivateRoute>
+                    <DashboardLayout>
+                      <ElectronicOrdersManagement />
+                    </DashboardLayout>
+                  </PrivateRoute>
                 }
               />
               <Route
                 path="/20000/3hd903/checkout/managements"
                 element={
-                  <DashboardLayout>
-                    <CheckoutManagement />
-                  </DashboardLayout>
+                  <PrivateRoute>
+                    <DashboardLayout>
+                      <CheckoutManagement />
+                    </DashboardLayout>
+                  </PrivateRoute>
                 }
               />
               <Route
                 path="/637is9393/3hd903/transaction/managements"
                 element={
-                  <DashboardLayout>
-                    <TransactionManagement />
-                  </DashboardLayout>
+                  <PrivateRoute>
+                    <DashboardLayout>
+                      <TransactionManagement />
+                    </DashboardLayout>
+                  </PrivateRoute>
                 }
               />
               <Route
                 path="/h92978/hsj8292/reports/managements"
                 element={
-                  <DashboardLayout>
-                    <ReportsAnalytics />
-                  </DashboardLayout>
+                  <PrivateRoute>
+                    <DashboardLayout>
+                      <ReportsAnalytics />
+                    </DashboardLayout>
+                  </PrivateRoute>
                 }
               />
               <Route
                 path="/u020d/jhsd03/shoping/managements"
                 element={
-                  <DashboardLayout>
-                    <ShoppingDetails />
-                  </DashboardLayout>
+                  <PrivateRoute>
+                    <DashboardLayout>
+                      <ShoppingDetails />
+                    </DashboardLayout>
+                  </PrivateRoute>
                 }
               />
               <Route
                 path="/729ns/jo7392j/messages/managements"
                 element={
-                  <DashboardLayout>
-                    <MessagesManagement />
-                  </DashboardLayout>
+                  // <PrivateRoute>
+                    <DashboardLayout>
+                      <MessagesManagement />
+                    </DashboardLayout>
+                  // </PrivateRoute>
+                }
+              />
+              <Route
+                path="/729ns/jojkbjo/contat/managements"
+                element={
+                  <PrivateRoute>
+                    <DashboardLayout>
+                      <ContactManagement />
+                    </DashboardLayout>
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path="/900u/jojkbjo/statistics/managements"
+                element={
+                  // <PrivateRoute>
+                    <DashboardLayout>
+                      <UserStatsDashboard />
+                    </DashboardLayout>
+                 
+                }
+              /> {/* </PrivateRoute> */}
+                            <Route
+                path="/900u/syock/managements"
+                element={
+                  // <PrivateRoute>
+                    <DashboardLayout>
+                      <StockManagement />
+                    </DashboardLayout>
+                 
                 }
               />
 

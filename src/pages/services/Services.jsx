@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { services, testimonials } from "../../assets/images/images";
+import { services, testimonials } from "../../assets/images/images"; // Assuming this path is correct
 
 // API Base URL
 const API_BASE_URL = "https://nexusbackend-hdyk.onrender.com";
@@ -140,7 +140,7 @@ export const Services = () => {
       // For demo, simulate success
       
       // const response = {
-      //   data: { success: true, bookingId: `BK${Date.now()}` },
+      //    data: { success: true, bookingId: `BK${Date.now()}` },
       // };
 
       if (response.data.success) {
@@ -185,7 +185,7 @@ export const Services = () => {
 
       // const isSuccess = Math.random() > 0.2;
       // const response = {
-      //   data: { success: isSuccess, transactionId: `TXN${Date.now()}` },
+      //    data: { success: isSuccess, transactionId: `TXN${Date.now()}` },
       // };
 
       if (response.data.success) {
@@ -204,7 +204,10 @@ export const Services = () => {
     }
   };
 
-  // Reset all modals
+  /**
+   * @description Resets all modal and form states to close any open modal
+   * and clear data, ensuring a clean slate for the next interaction.
+   */
   const resetModals = () => {
     setBookingModal(null);
     setPaymentStatus(null);
@@ -268,6 +271,40 @@ export const Services = () => {
     );
   };
 
+  // Testimonial Card Component
+  const TestimonialCard = ({ testimonial }) => (
+    <motion.div
+      key={testimonial.client}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5 }}
+      className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 relative max-w-2xl mx-auto"
+    >
+      <div className="absolute top-0 left-0 text-9xl font-serif text-blue-100 opacity-5">
+        &ldquo;
+      </div>
+      <p className="text-xl italic text-gray-700 mb-6 relative z-10">
+        &quot;{testimonial.quote}&quot;
+      </p>
+      <div className="flex items-center space-x-4">
+        <img
+          src={testimonial.avatar}
+          alt={testimonial.client}
+          className="w-16 h-16 rounded-full object-cover border-4 border-blue-500/50"
+        />
+        <div>
+          <p className="font-bold text-gray-900 text-lg">
+            {testimonial.client}
+          </p>
+          <p className="text-sm text-blue-600 font-medium">
+            {testimonial.position}
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br mt-2 mb-1 rounded-2xl from-slate-50 via-blue-50 to-cyan-50 overflow-hidden">
       {/* Hero Section */}
@@ -327,6 +364,8 @@ export const Services = () => {
         </div>
       </section>
 
+      ---
+
       {/* Stats Section */}
       <section className="relative py-20 bg-white/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -356,6 +395,8 @@ export const Services = () => {
           </div>
         </div>
       </section>
+
+      ---
 
       {/* Services Grid */}
       <section className="relative py-24">
@@ -516,7 +557,7 @@ export const Services = () => {
                         e.stopPropagation();
                         setActiveService(service);
                       }}
-                      className="flex-1 bg-gradient-to-tr from-blue-400 to-indigo-400 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center space-x-2"
+                      className="flex-1 bg-gradient-to-tr from-blue-400 to-indigo-400 text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center space-x-2"
                     >
                       <span>Learn More</span>
                       <span>🔍</span>
@@ -528,7 +569,7 @@ export const Services = () => {
                         e.stopPropagation();
                         openBookingModal(service);
                       }}
-                      className="px-4 bg-gradient-to-br from-blue-300 to-violet-400 border rounded-xl font-semibold transition-colors duration-300 flex items-center justify-center"
+                      className="px-4 text-white bg-gradient-to-br from-blue-600 to-violet-600 rounded-xl font-semibold transition-colors duration-300 flex items-center justify-center"
                     >
                       <span>⚡</span>
                     </motion.button>
@@ -546,6 +587,52 @@ export const Services = () => {
         </div>
       </section>
 
+      ---
+
+      {/* Testimonials Section */}
+      <section className="relative py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              What Our Clients Say
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Trusted by industry leaders and satisfied customers worldwide.
+            </p>
+          </div>
+
+          <div className="relative h-64">
+            <AnimatePresence initial={false} mode="wait">
+              <div className="absolute w-full">
+                {testimonials.map((testimonial, index) =>
+                  index === currentTestimonial ? (
+                    <TestimonialCard key={index} testimonial={testimonial} />
+                  ) : null
+                )}
+              </div>
+            </AnimatePresence>
+          </div>
+
+          <div className="flex justify-center mt-12 space-x-3">
+            {testimonials.map((_, index) => (
+              <motion.button
+                key={index}
+                onClick={() => setCurrentTestimonial(index)}
+                className={`w-3 h-3 rounded-full transition-colors duration-300 ${
+                  index === currentTestimonial
+                    ? "bg-blue-600 w-8"
+                    : "bg-gray-300"
+                }`}
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      ---
+
       {/* Service Detail Modal */}
       <AnimatePresence>
         {activeService && (
@@ -554,7 +641,7 @@ export const Services = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setActiveService(null)}
+            onClick={resetModals} // Click outside to close
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -578,8 +665,8 @@ export const Services = () => {
                   {activeService.graphic}
                 </motion.div>
                 <button
-                  onClick={() => setActiveService(true)}
-                  className="absolute top-6 right-6 bg-gradient-to-tr from-red-500 to-red-700 text-2xl z-10"
+                  onClick={resetModals} // Close button implementation
+                  className="absolute top-6 right-6 w-10 h-10 bg-gradient-to-tr from-red-500 to-red-700 text-white rounded-full text-2xl z-10 shadow-lg hover:from-red-600 hover:to-red-800 transition-all duration-300 flex items-center justify-center"
                 >
                   ✕
                 </button>
@@ -685,7 +772,7 @@ export const Services = () => {
         )}
       </AnimatePresence>
 
-      {/* Booking Modal */}
+      {/* Booking Modal (Step 1: Form) */}
       <AnimatePresence>
         {bookingModal && bookingModal.step === "booking" && (
           <motion.div
@@ -693,7 +780,7 @@ export const Services = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setBookingModal(null)}
+            onClick={resetModals} // Click outside to close
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -717,8 +804,8 @@ export const Services = () => {
                   {bookingModal.graphic}
                 </motion.div>
                 <button
-                  onClick={() => setBookingModal(null)}
-                  className="absolute top-4 right-4 bg-gradient-to-br from-red-500 to-red-600 text-2xl z-10"
+                  onClick={resetModals} // Close button implementation
+                  className="absolute top-4 right-4 w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-full text-2xl z-10 shadow-lg hover:from-red-600 hover:to-red-800 transition-all duration-300 flex items-center justify-center"
                 >
                   ✕
                 </button>
@@ -825,86 +912,78 @@ export const Services = () => {
                       <option value="Custom Quote">Custom Quote</option>
                     </select>
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Target Timeline
+                    </label>
+                    <select
+                      name="timeline"
+                      value={bookingForm.timeline}
+                      onChange={handleBookingInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                    >
+                      <option value="">Select timeline</option>
+                      <option value="1-2 Weeks">1-2 Weeks</option>
+                      <option value="2-4 Weeks">2-4 Weeks</option>
+                      <option value="1-3 Months">1-3 Months</option>
+                      <option value="3+ Months">3+ Months</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Timeline
-                  </label>
-                  <select
-                    name="timeline"
-                    value={bookingForm.timeline}
-                    onChange={handleBookingInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                  >
-                    <option value="">Select preferred timeline</option>
-                    <option value="ASAP">As soon as possible</option>
-                    <option value="1-2 weeks">Within 1-2 weeks</option>
-                    <option value="2-4 weeks">Within 2-4 weeks</option>
-                    <option value="1-2 months">Within 1-2 months</option>
-                    <option value="Flexible">Flexible</option>
-                  </select>
-                </div>
-
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Project Requirements
+                    Project Requirements / Details *
                   </label>
                   <textarea
                     name="requirements"
                     value={bookingForm.requirements}
                     onChange={handleBookingInputChange}
+                    required
                     rows="4"
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                    placeholder="Describe your project requirements, specific needs, or any special considerations..."
-                  />
+                    placeholder="Describe your project, specific needs, or any initial questions..."
+                  ></textarea>
                 </div>
 
-                <div className="flex space-x-4">
-                  <motion.button
-                    type="button"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setBookingModal(null)}
-                    className="flex-1 bg-gradient-to-tl from-red-500 to-red-700 py-4 rounded-xl font-semibold  transition-colors duration-300"
-                  >
-                    Cancel
-                  </motion.button>
-                  <motion.button
-                    type="submit"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    disabled={isSubmitting}
-                    className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <LoadingSpinner size="small" />
-                        <span>Submitting...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Continue to Payment</span>
-                        <span>💰</span>
-                      </>
-                    )}
-                  </motion.button>
-                </div>
+                <motion.button
+                  type="submit"
+                  disabled={isSubmitting}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`w-full py-3 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center space-x-3 ${
+                    isSubmitting
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600 shadow-lg"
+                  }`}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <LoadingSpinner size="small" />
+                      <span>Submitting Request...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Submit Request & Proceed to Payment</span>
+                      <span>➡️</span>
+                    </>
+                  )}
+                </motion.button>
               </form>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Payment Modal */}
+      {/* Booking Modal (Step 2: Payment) */}
       <AnimatePresence>
-        {bookingModal && bookingModal.step === "payment" && !paymentStatus && (
+        {bookingModal && bookingModal.step === "payment" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setBookingModal(null)}
+            onClick={resetModals} // Click outside to close
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -925,433 +1004,277 @@ export const Services = () => {
                     ease: "linear",
                   }}
                 >
-                  💳
+                  {bookingModal.graphic}
                 </motion.div>
                 <button
-                  onClick={() => setBookingModal(null)}
-                  className="absolute top-4 right-4 text-white hover:text-gray-200 text-2xl z-10"
+                  onClick={resetModals} // Close button implementation
+                  className="absolute top-4 right-4 w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-full text-2xl z-10 shadow-lg hover:from-red-600 hover:to-red-800 transition-all duration-300 flex items-center justify-center"
                 >
                   ✕
                 </button>
-                <div className="flex items-center space-x-4 relative z-10">
-                  <div className="text-4xl">💳</div>
-                  <div>
-                    <h2 className="text-2xl font-bold">Complete Payment</h2>
-                    <p className="text-blue-100">
-                      Secure payment for {bookingModal.title}
-                    </p>
+                <div className="flex items-center justify-between relative z-10">
+                  <div className="flex items-center space-x-4">
+                    <div className="text-4xl">💳</div>
+                    <div>
+                      <h2 className="text-2xl font-bold">Secure Payment</h2>
+                      <p className="text-blue-100">
+                        Finalize your booking: {bookingModal.title}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-3xl font-bold text-yellow-300">
+                    {bookingModal.price}
                   </div>
                 </div>
               </div>
 
-              <div className="p-6">
-                {/* Payment Summary */}
-                <div className="bg-gray-50 rounded-2xl p-6 mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Order Summary
+              {paymentStatus === "success" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-6 text-center bg-green-50 rounded-b-3xl"
+                >
+                  <div className="text-6xl mb-4">🎉</div>
+                  <h3 className="text-2xl font-bold text-green-700 mb-2">
+                    Payment Confirmed!
                   </h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Service</span>
-                      <span className="font-semibold">
-                        {bookingModal.title}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Amount</span>
-                      <span className="text-2xl font-bold text-green-600">
-                        {bookingModal.price}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Duration</span>
-                      <span className="font-semibold">
-                        {bookingModal.duration}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Payment Method Selection */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-4">
-                    Select Payment Method
-                  </label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <motion.button
-                      type="button"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setPaymentMethod("card")}
-                      className={`p-4 border-2 rounded-xl text-center transition-all duration-300 ${
-                        paymentMethod === "card"
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-300 hover:border-gray-400"
-                      }`}
-                    >
-                      <div className="text-2xl mb-2">💳</div>
-                      <div className="font-semibold">Credit Card</div>
-                    </motion.button>
-                    <motion.button
-                      type="button"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setPaymentMethod("mobile")}
-                      className={`p-4 border-2 rounded-xl text-center transition-all duration-300 ${
-                        paymentMethod === "mobile"
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-300 hover:border-gray-400"
-                      }`}
-                    >
-                      <div className="text-2xl mb-2">📱</div>
-                      <div className="font-semibold">Mobile Money</div>
-                    </motion.button>
-                  </div>
-                </div>
-
-                {/* Payment Form */}
-                <form onSubmit={handlePaymentSubmit}>
-                  {paymentMethod === "card" ? (
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Card Number
-                        </label>
-                        <input
-                          type="text"
-                          name="cardNumber"
-                          value={formatCardNumber(paymentForm.cardNumber)}
-                          onChange={(e) =>
-                            setPaymentForm((prev) => ({
-                              ...prev,
-                              cardNumber: e.target.value.replace(/\s/g, ""),
-                            }))
-                          }
-                          maxLength={19}
-                          placeholder="1234 5678 9012 3456"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                          required
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Expiry Date
-                          </label>
-                          <input
-                            type="text"
-                            name="expiryDate"
-                            value={formatExpiryDate(paymentForm.expiryDate)}
-                            onChange={(e) =>
-                              setPaymentForm((prev) => ({
-                                ...prev,
-                                expiryDate: e.target.value.replace(/\//g, ""),
-                              }))
-                            }
-                            maxLength={5}
-                            placeholder="MM/YY"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            CVV
-                          </label>
-                          <input
-                            type="text"
-                            name="cvv"
-                            value={paymentForm.cvv}
-                            onChange={handlePaymentInputChange}
-                            maxLength={4}
-                            placeholder="123"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Card Holder Name
-                        </label>
-                        <input
-                          type="text"
-                          name="cardHolder"
-                          value={paymentForm.cardHolder}
-                          onChange={handlePaymentInputChange}
-                          placeholder="John Doe"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                          required
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Mobile Network
-                        </label>
-                        <select
-                          name="provider"
-                          value={paymentForm.provider}
-                          onChange={handlePaymentInputChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                        >
-                          <option value="mtn">MTN Mobile Money</option>
-                          <option value="airtel">Airtel Money</option>
-                          <option value="vodafone">Vodafone Cash</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Mobile Number
-                        </label>
-                        <input
-                          type="tel"
-                          name="mobileNumber"
-                          value={paymentForm.mobileNumber}
-                          onChange={handlePaymentInputChange}
-                          placeholder="055 123 4567"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                          required
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex space-x-4 mt-8">
-                    <motion.button
-                      type="button"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() =>
-                        setBookingModal({ ...bookingModal, step: "booking" })
-                      }
-                      className="flex-1 bg-gray-300 text-gray-700 py-4 rounded-xl font-semibold hover:bg-gray-400 transition-colors duration-300"
-                    >
-                      Back
-                    </motion.button>
-                    <motion.button
-                      type="submit"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      disabled={isSubmitting}
-                      className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <LoadingSpinner size="small" />
-                          <span>Processing...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Pay {bookingModal.price}</span>
-                          <span>🚀</span>
-                        </>
-                      )}
-                    </motion.button>
-                  </div>
-                </form>
-
-                <div className="mt-6 text-center">
-                  <div className="flex items-center justify-center space-x-2 text-gray-500 text-sm">
-                    <span>🔒</span>
-                    <span>Secure payment encrypted and processed securely</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Payment Status Modal */}
-      <AnimatePresence>
-        {paymentStatus && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-3xl max-w-md w-full text-center p-8"
-            >
-              {paymentStatus === "success" ? (
-                <>
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", duration: 0.5 }}
-                    className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"
-                  >
-                    <span className="text-4xl">✅</span>
-                  </motion.div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                    Payment Successful!
-                  </h3>
-                  <p className="text-gray-600 mb-6">
-                    Thank you for your payment. Your service has been booked
-                    successfully.
+                  <p className="text-gray-600 mb-4">
+                    Your service has been successfully booked. We've sent a
+                    confirmation email to **{bookingForm.email}**.
                   </p>
-                  <div className="bg-gray-50 rounded-2xl p-4 mb-6">
-                    <div className="text-sm text-gray-600">
-                      Booking Reference
-                    </div>
-                    <div className="font-mono font-bold text-gray-900">
-                      {bookingModal?.bookingId}
-                    </div>
-                  </div>
                   <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
                     onClick={resetModals}
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="bg-green-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-green-700 transition-colors duration-300"
                   >
-                    Continue to Dashboard
+                    Close & Go to Dashboard
                   </motion.button>
-                </>
-              ) : (
-                <>
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", duration: 0.5 }}
-                    className="w-20 h-20 bg-gradient-to-tr from-gray-gray-400 t  rounded-full flex items-center justify-center mx-auto mb-6"
-                  >
-                    <span className="text-4xl">❌</span>
-                  </motion.div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                </motion.div>
+              )}
+
+              {paymentStatus === "failed" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-6 text-center bg-red-50 rounded-b-3xl"
+                >
+                  <div className="text-6xl mb-4">❌</div>
+                  <h3 className="text-2xl font-bold text-red-700 mb-2">
                     Payment Failed
                   </h3>
-                  <p className="text-gray-600 mb-6">
-                    We couldn't process your payment. Please check your payment
-                    details and try again.
+                  <p className="text-gray-600 mb-4">
+                    There was an issue processing your payment. Please check your
+                    details or try a different method.
                   </p>
-                  <div className="flex space-x-4">
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setPaymentStatus(null)}
-                      className="flex-1 bg-gray-300 text-gray-700 py-4 rounded-xl font-semibold hover:bg-gray-400 transition-colors duration-300"
-                    >
-                      Try Again
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={resetModals}
-                      className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
-                    >
-                      Cancel
-                    </motion.button>
+                  <motion.button
+                    onClick={() => setPaymentStatus(null)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="bg-red-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-red-700 transition-colors duration-300 mr-3"
+                  >
+                    Try Again
+                  </motion.button>
+                  <motion.button
+                    onClick={resetModals}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="bg-gray-200 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-300 transition-colors duration-300"
+                  >
+                    Cancel Booking
+                  </motion.button>
+                </motion.div>
+              )}
+
+              {paymentStatus === null && (
+                <form onSubmit={handlePaymentSubmit} className="p-6 text-black">
+                  {/* Payment Method Selector */}
+                  <div className="mb-6">
+                    <h3 className="text-lg font-bold text-gray-800 mb-3">
+                      Choose Payment Method
+                    </h3>
+                    <div className="flex space-x-4">
+                      <motion.button
+                        type="button"
+                        onClick={() => setPaymentMethod("card")}
+                        className={`flex-1 p-4 rounded-xl font-semibold border-2 transition-all duration-300 ${
+                          paymentMethod === "card"
+                            ? "bg-blue-500 text-white border-blue-600 shadow-md"
+                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                        }`}
+                        whileHover={{ y: -2 }}
+                      >
+                        💳 Credit/Debit Card
+                      </motion.button>
+                      <motion.button
+                        type="button"
+                        onClick={() => setPaymentMethod("mobile")}
+                        className={`flex-1 p-4 rounded-xl font-semibold border-2 transition-all duration-300 ${
+                          paymentMethod === "mobile"
+                            ? "bg-purple-500 text-white border-purple-600 shadow-md"
+                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                        }`}
+                        whileHover={{ y: -2 }}
+                      >
+                        📱 Mobile Money
+                      </motion.button>
+                    </div>
                   </div>
-                </>
+
+                  {/* Card Payment Form */}
+                  <AnimatePresence mode="wait">
+                    {paymentMethod === "card" && (
+                      <motion.div
+                        key="card-form"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <div className="grid md:grid-cols-2 gap-4 mb-6">
+                          <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Card Number *
+                            </label>
+                            <input
+                              type="text"
+                              name="cardNumber"
+                              value={formatCardNumber(paymentForm.cardNumber)}
+                              onChange={handlePaymentInputChange}
+                              maxLength="19"
+                              required
+                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                              placeholder="XXXX XXXX XXXX XXXX"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Expiry Date (MM/YY) *
+                            </label>
+                            <input
+                              type="text"
+                              name="expiryDate"
+                              value={formatExpiryDate(paymentForm.expiryDate)}
+                              onChange={handlePaymentInputChange}
+                              maxLength="5"
+                              required
+                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                              placeholder="MM/YY"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              CVV *
+                            </label>
+                            <input
+                              type="text"
+                              name="cvv"
+                              value={paymentForm.cvv}
+                              onChange={handlePaymentInputChange}
+                              maxLength="4"
+                              required
+                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                              placeholder="CVV"
+                            />
+                          </div>
+                          <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Card Holder Name *
+                            </label>
+                            <input
+                              type="text"
+                              name="cardHolder"
+                              value={paymentForm.cardHolder}
+                              onChange={handlePaymentInputChange}
+                              required
+                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                              placeholder="Card Holder Name"
+                            />
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Mobile Money Form */}
+                  <AnimatePresence mode="wait">
+                    {paymentMethod === "mobile" && (
+                      <motion.div
+                        key="mobile-form"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <div className="grid md:grid-cols-2 gap-4 mb-6">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Mobile Number *
+                            </label>
+                            <input
+                              type="tel"
+                              name="mobileNumber"
+                              value={paymentForm.mobileNumber}
+                              onChange={handlePaymentInputChange}
+                              required
+                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                              placeholder="e.g., +250 788 XXX XXX"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Provider *
+                            </label>
+                            <select
+                              name="provider"
+                              value={paymentForm.provider}
+                              onChange={handlePaymentInputChange}
+                              required
+                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                            >
+                              <option value="mtn">MTN Mobile Money</option>
+                              <option value="airtel">Airtel Money</option>
+                              <option value="vodacom">Vodacom MPesa</option>
+                            </select>
+                          </div>
+                        </div>
+                        <p className="text-sm text-purple-600 bg-purple-50 p-3 rounded-xl mb-4 border border-purple-100">
+                          Note: You will receive a prompt on your phone to confirm
+                          the payment after submission.
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <motion.button
+                    type="submit"
+                    disabled={isSubmitting}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`w-full py-3 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center space-x-3 ${
+                      isSubmitting
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-xl"
+                    }`}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <LoadingSpinner size="small" />
+                        <span>Processing Payment...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Pay {bookingModal.price}</span>
+                        <span>💸</span>
+                      </>
+                    )}
+                  </motion.button>
+                </form>
               )}
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Testimonials Slider Section */}
-<section className="relative py-24 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900 overflow-hidden">
-  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      className="text-center mb-16"
-    >
-      <motion.div
-        initial={{ scale: 0 }}
-        whileInView={{ scale: 1 }}
-        transition={{ delay: 0.2, type: "spring" }}
-        className="inline-block mb-4"
-      >
-        <div className="text-4xl">💬</div>
-      </motion.div>
-      <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-        What Our Clients Say
-      </h2>
-      <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-        Don't just take our word for it. Here's what our satisfied
-        customers have to say about our services.
-      </p>
-    </motion.div>
-
-    <div className="relative">
-      {/* Testimonial Cards */}
-      <div className="overflow-hidden">
-        <motion.div
-          key={currentTestimonial}
-          initial={{ opacity: 0, x: 100 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -100 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl dark:shadow-gray-900/30 p-8 md:p-12 max-w-4xl mx-auto border border-gray-200 dark:border-gray-700"
-        >
-          <div className="flex flex-col md:flex-row items-center md:items-start space-y-8 md:space-y-0 md:space-x-12">
-            {/* Client Image */}
-            <div className="flex-shrink-0">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-gray-800 shadow-lg"
-              >
-                <img
-                  src={testimonials[currentTestimonial].image}
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
-              </motion.div>
-            </div>
-
-            {/* Testimonial Content */}
-            <div className="flex-1 text-center md:text-left">
-              {/* Rating */}
-              <div className="flex justify-center md:justify-start space-x-1 mb-4">
-                {[...Array(testimonials[currentTestimonial].rating)].map(
-                  (_, i) => (
-                    <motion.span
-                      key={i}
-                      className="text-yellow-400 text-2xl"
-                      whileHover={{ scale: 1.2 }}
-                    >
-                      ⭐
-                    </motion.span>
-                  )
-                )}
-              </div>
-
-              {/* Quote */}
-              <blockquote className="text-2xl md:text-3xl font-light text-gray-700 dark:text-gray-200 mb-6 leading-relaxed">
-                "{testimonials[currentTestimonial].text}"
-              </blockquote>
-
-              {/* Client Info */}
-              <div>
-                <div className="text-xl font-bold text-gray-900 dark:text-white">
-                  {testimonials[currentTestimonial].name}
-                </div>
-                <div className="text-gray-600 dark:text-gray-400 mb-2">
-                  {testimonials[currentTestimonial].company}
-                </div>
-                <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 px-4 py-2 rounded-full border border-blue-200 dark:border-blue-800">
-                  <span className="text-blue-600 dark:text-blue-400">🎯</span>
-                  <span className="text-blue-700 dark:text-blue-300 font-semibold">
-                    {testimonials[currentTestimonial].service}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </div>
-  </div>
-</section>
     </div>
   );
 };

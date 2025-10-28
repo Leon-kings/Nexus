@@ -308,18 +308,53 @@ const usePayment = () => {
   const [availableMethods, setAvailableMethods] = useState([]);
 
   // Get available payment methods
-  const getPaymentMethods = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/payments/methods`);
-      setAvailableMethods(response.data.data.paymentMethods || []);
-      return response.data.data.paymentMethods || [];
-    } catch (error) {
-      console.error("Failed to fetch payment methods:", error);
-      toast.error("Failed to load payment methods");
-      return [];
-    }
-  };
+const getPaymentMethods = async () => {
+  try {
+    const paymentMethods = [];
 
+    // Stripe payment method
+    paymentMethods.push({
+      id: 'stripe',
+      name: 'Credit/Debit Card',
+      type: 'card',
+      currencies: ['USD', 'EUR', 'GBP'],
+      supportedCards: ['visa', 'mastercard', 'amex'],
+      enabled: true
+    });
+
+    // Mobile Money payment method
+    paymentMethods.push({
+      id: 'paypack',
+      name: 'Mobile Money',
+      type: 'mobile',
+      currencies: ['RWF'],
+      providers: ['mtn', 'airtel', 'tigo'],
+      enabled: true
+    });
+
+    // PayPal payment method
+    paymentMethods.push({
+      id: 'paypal',
+      name: 'PayPal',
+      type: 'digital_wallet',
+      currencies: ['USD', 'EUR', 'GBP'],
+      enabled: true
+    });
+
+    console.log('Available payment methods:', paymentMethods);
+    
+    setAvailableMethods(paymentMethods);
+    return paymentMethods;
+
+  } catch (error) {
+    console.error("Failed to load payment methods:", error);
+    toast.error("Failed to load payment methods");
+    
+    // Return empty array as fallback
+    setAvailableMethods([]);
+    return [];
+  }
+};
   // Process payment
   const processPayment = async (orderData, paymentData) => {
     setIsProcessing(true);
