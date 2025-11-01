@@ -43,6 +43,7 @@ import { UserMessagesManagement } from "./components/dashboards/users/components
 import { UserContactManagement } from "./components/dashboards/users/components/management/contacts/UserContactsManagements";
 import { UserBookingManagement } from "./components/dashboards/users/components/management/bookings/UserBookingManagement";
 import { UserCheckoutManagement } from "./components/dashboards/users/components/management/revenue/UserRevenueManagement";
+import { TestimonyDashboard } from "./components/dashboards/admins/components/managements/testimony/TestimonyManagement";
 
 // Create DarkMode Context
 const DarkModeContext = createContext();
@@ -335,6 +336,16 @@ export default function App() {
                       <ElectronicOrdersManagement />
                     </DashboardLayout>
                   </PrivateRoute>
+                }
+              />
+                            <Route
+                path="/23833/testimony/managements"
+                element={
+                  // <PrivateRoute>
+                    <DashboardLayout>
+                      <TestimonyDashboard />
+                    </DashboardLayout>
+                  // </PrivateRoute>
                 }
               />
               <Route

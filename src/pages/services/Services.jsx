@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { services, testimonials } from "../../assets/images/images"; // Assuming this path is correct
+import { services } from "../../assets/images/images"; // Assuming this path is correct
 
 // API Base URL
 const API_BASE_URL = "https://nexusbackend-hdyk.onrender.com";
@@ -17,6 +17,8 @@ export const Services = () => {
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [hoveredService, setHoveredService] = useState(null);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [testimonials, setTestimonials] = useState([]);
+  const [loadingTestimonials, setLoadingTestimonials] = useState(true);
 
   const [bookingForm, setBookingForm] = useState({
     name: "",
@@ -67,15 +69,36 @@ export const Services = () => {
     },
   ];
 
+  // Fetch testimonials from API
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        setLoadingTestimonials(true);
+        const response = await axios.get(`${API_BASE_URL}/testimonials`);
+        setTestimonials(response.data);
+      } catch (error) {
+        console.error("Error fetching testimonials:", error);
+        toast.error("Failed to load testimonials");
+        // Fallback to empty array if API fails
+        setTestimonials([]);
+      } finally {
+        setLoadingTestimonials(false);
+      }
+    };
+
+    fetchTestimonials();
+  }, []);
+
   // Auto-rotate testimonials
   useEffect(() => {
+    if (testimonials.length === 0) return;
+    
     const interval = setInterval(() => {
       setCurrentTestimonial((prev) =>
         prev === testimonials.length - 1 ? 0 : prev + 1
       );
     }, 5000);
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [testimonials.length]);
 
   // Handle booking form input changes
@@ -601,38 +624,56 @@ export const Services = () => {
             </p>
           </div>
 
-          <div className="relative h-64">
-            <AnimatePresence initial={false} mode="wait">
-              <div className="absolute w-full">
-                {testimonials.map((testimonial, index) =>
-                  index === currentTestimonial ? (
-                    <TestimonialCard key={index} testimonial={testimonial} />
-                  ) : null
-                )}
+          {loadingTestimonials ? (
+            <div className="flex justify-center items-center h-64">
+              <LoadingSpinner size="large" />
+              <span className="ml-3 text-gray-600">Loading testimonials...</span>
+            </div>
+          ) : testimonials.length > 0 ? (
+            <>
+              <div className="relative h-64">
+                <AnimatePresence initial={false} mode="wait">
+                  <div className="absolute w-full">
+                    {testimonials.map((testimonial, index) =>
+                      index === currentTestimonial ? (
+                        <TestimonialCard key={index} testimonial={testimonial} />
+                      ) : null
+                    )}
+                  </div>
+                </AnimatePresence>
               </div>
-            </AnimatePresence>
-          </div>
 
-          <div className="flex justify-center mt-12 space-x-3">
-            {testimonials.map((_, index) => (
-              <motion.button
-                key={index}
-                onClick={() => setCurrentTestimonial(index)}
-                className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                  index === currentTestimonial
-                    ? "bg-blue-600 w-8"
-                    : "bg-gray-300"
-                }`}
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
-              />
-            ))}
-          </div>
+              <div className="flex justify-center mt-12 space-x-3">
+                {testimonials.map((_, index) => (
+                  <motion.button
+                    key={index}
+                    onClick={() => setCurrentTestimonial(index)}
+                    className={`w-3 h-3 rounded-full transition-colors duration-300 ${
+                      index === currentTestimonial
+                        ? "bg-blue-600 w-8"
+                        : "bg-gray-300"
+                    }`}
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.9 }}
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">😊</div>
+              <h3 className="text-2xl font-bold text-gray-700 mb-2">
+                No Testimonials Yet
+              </h3>
+              <p className="text-gray-600">
+                Be the first to share your experience with our services!
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
-      ---
-
+      
       {/* Service Detail Modal */}
       <AnimatePresence>
         {activeService && (
