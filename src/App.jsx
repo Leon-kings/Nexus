@@ -1,5 +1,10 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import axios from "axios";
 import "./App.css";
 import { AuthProvider, useAuth } from "./components/navbar/Navbar";
@@ -30,6 +35,15 @@ import { MessagesManagement } from "./components/dashboards/admins/components/ma
 import { ContactManagement } from "./components/dashboards/admins/components/managements/contacts/ContactsManagements";
 import { UserStatsDashboard } from "./components/dashboards/admins/components/managements/viewers/UserViewsManagement";
 import { StockManagement } from "./components/dashboards/admins/components/managements/stocks/StockManagements";
+import { QuestionAdmin } from "./components/dashboards/admins/components/managements/question/QuestionManagement";
+import { UserDashboardLayout } from "./components/dashboards/users/components/layout/UserDashboardLayout";
+import { UserDashboard } from "./components/dashboards/users/UserDashboard";
+import { UserDashboardManagement } from "./components/dashboards/users/components/management/Users/UserDashManagement";
+import { UserMessagesManagement } from "./components/dashboards/users/components/management/message/UserMessageManagement";
+import { UserContactManagement } from "./components/dashboards/users/components/management/contacts/UserContactsManagements";
+import { UserBookingManagement } from "./components/dashboards/users/components/management/bookings/UserBookingManagement";
+import { UserCheckoutManagement } from "./components/dashboards/users/components/management/revenue/UserRevenueManagement";
+import { TestimonyDashboard } from "./components/dashboards/admins/components/managements/testimony/TestimonyManagement";
 
 // Create DarkMode Context
 const DarkModeContext = createContext();
@@ -82,10 +96,13 @@ const PrivateRoute = ({ children, showMessage = true }) => {
 
   useEffect(() => {
     if (!isAuthenticated && showMessage) {
-      toast.info("Please sign in to access this page. Check the navbar to create an account or login.", {
-        position: "top-center",
-        autoClose: 5000,
-      });
+      toast.info(
+        "Please sign in to access this page. Check the navbar to create an account or login.",
+        {
+          position: "top-center",
+          autoClose: 5000,
+        }
+      );
     }
   }, [isAuthenticated, showMessage]);
 
@@ -192,7 +209,8 @@ const useViewCounter = (userId = null) => {
   const sendViewData = async () => {
     try {
       // Create a unique browser fingerprint (fallback for guests)
-      const fingerprint = localStorage.getItem("visitor_fingerprint") || crypto.randomUUID();
+      const fingerprint =
+        localStorage.getItem("visitor_fingerprint") || crypto.randomUUID();
       localStorage.setItem("visitor_fingerprint", fingerprint);
 
       const viewData = {
@@ -210,8 +228,30 @@ const useViewCounter = (userId = null) => {
         },
       });
 
+      // Success toast
+      toast.success("View data sent successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+      });
+
       console.log("✅ View data sent successfully");
     } catch (error) {
+      // Error toast
+      toast.error(`Failed to send view data: ${error.message}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+      });
+
       console.error("❌ Error sending view data:", error.message);
     }
   };
@@ -224,6 +264,7 @@ const useViewCounter = (userId = null) => {
 
   return { sendViewData };
 };
+
 export default function App() {
   const { sendViewData } = useViewCounter();
 
@@ -246,16 +287,15 @@ export default function App() {
               <Route path="/cookies" element={<CookiePolicy />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/teams" element={<Team />} />
-
               {/* Protected Routes */}
               <Route
                 path="/dashboard"
                 element={
-                  <PrivateRoute>
-                    <DashboardLayout>
-                      <Dashboard />
-                    </DashboardLayout>
-                  </PrivateRoute>
+                  // <PrivateRoute>
+                  <DashboardLayout>
+                    <Dashboard />
+                  </DashboardLayout>
+                  // </PrivateRoute>
                 }
               />
               <Route
@@ -296,6 +336,16 @@ export default function App() {
                       <ElectronicOrdersManagement />
                     </DashboardLayout>
                   </PrivateRoute>
+                }
+              />
+                            <Route
+                path="/23833/testimony/managements"
+                element={
+                  // <PrivateRoute>
+                    <DashboardLayout>
+                      <TestimonyDashboard />
+                    </DashboardLayout>
+                  // </PrivateRoute>
                 }
               />
               <Route
@@ -342,9 +392,9 @@ export default function App() {
                 path="/729ns/jo7392j/messages/managements"
                 element={
                   // <PrivateRoute>
-                    <DashboardLayout>
-                      <MessagesManagement />
-                    </DashboardLayout>
+                  <DashboardLayout>
+                    <MessagesManagement />
+                  </DashboardLayout>
                   // </PrivateRoute>
                 }
               />
@@ -358,28 +408,97 @@ export default function App() {
                   </PrivateRoute>
                 }
               />
-
+              <Route
+                path="/729ns/jojkbjo/question/managements"
+                element={
+                  // <PrivateRoute>
+                  <DashboardLayout>
+                    <QuestionAdmin />
+                  </DashboardLayout>
+                  // </PrivateRoute>
+                }
+              />
               <Route
                 path="/900u/jojkbjo/statistics/managements"
                 element={
-                  // <PrivateRoute>
+                  <PrivateRoute>
                     <DashboardLayout>
                       <UserStatsDashboard />
                     </DashboardLayout>
-                 
+                  </PrivateRoute>
                 }
-              /> {/* </PrivateRoute> */}
-                            <Route
+              />{" "}
+              {/* </PrivateRoute> */}
+              <Route
                 path="/900u/syock/managements"
                 element={
                   // <PrivateRoute>
-                    <DashboardLayout>
-                      <StockManagement />
-                    </DashboardLayout>
-                 
+                  <DashboardLayout>
+                    <StockManagement />
+                  </DashboardLayout>
                 }
               />
-
+              {/* ************************************* */}
+              <Route
+                path="/user-dashboard"
+                element={
+                  <PrivateRoute>
+                    <UserDashboardLayout>
+                      <UserDashboard />
+                    </UserDashboardLayout>
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/838929/user/dashboard"
+                element={
+                  // <PrivateRoute>
+                  <UserDashboardLayout>
+                    <UserDashboardManagement />
+                  </UserDashboardLayout>
+                  // </PrivateRoute>
+                }
+              />
+              <Route
+                path="/898920/user/messages/dashboard"
+                element={
+                  // <PrivateRoute>
+                  <UserDashboardLayout>
+                    <UserMessagesManagement />
+                  </UserDashboardLayout>
+                  // </PrivateRoute>
+                }
+              />
+              <Route
+                path="/898920/user/contacts/dashboard"
+                element={
+                  // <PrivateRoute>
+                  <UserDashboardLayout>
+                    <UserContactManagement />
+                  </UserDashboardLayout>
+                  // </PrivateRoute>
+                }
+              />
+              <Route
+                path="/898920/user/bookings/dashboard"
+                element={
+                  // <PrivateRoute>
+                  <UserDashboardLayout>
+                    <UserBookingManagement />
+                  </UserDashboardLayout>
+                  // </PrivateRoute>
+                }
+              />
+              <Route
+                path="/898920/user/checkout/dashboard"
+                element={
+                  // <PrivateRoute>
+                  <UserDashboardLayout>
+                    <UserCheckoutManagement />
+                  </UserDashboardLayout>
+                  // </PrivateRoute>
+                }
+              />
               {/* 404 route - should be last */}
               <Route path="*" element={<NotFound />} />
             </Routes>

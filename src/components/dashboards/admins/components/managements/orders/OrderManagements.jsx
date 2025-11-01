@@ -32,7 +32,9 @@ import {
 
 export const ElectronicOrdersManagement = () => {
   const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [productsLoading, setProductsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterPayment, setFilterPayment] = useState('all');
@@ -60,8 +62,9 @@ export const ElectronicOrdersManagement = () => {
     notes: ''
   });
 
-  // Mock API base URL
-  const API_BASE = 'https://jsonplaceholder.typicode.com';
+  // API base URLs
+  const ORDERS_API = 'https://nexusbackend-hdyk.onrender.com/orders';
+  const PRODUCTS_API = 'https://nexusbackend-hdyk.onrender.com/products';
 
   // Status options
   const statusOptions = [
@@ -85,20 +88,6 @@ export const ElectronicOrdersManagement = () => {
     { value: 'partially_paid', label: 'Partially Paid', color: 'warning' }
   ];
 
-  // Electronic products for order items
-  const electronicProducts = [
-    { id: 1, name: 'iPhone 15 Pro', category: 'Smartphones', price: 999, sku: 'IP15P-256' },
-    { id: 2, name: 'Samsung Galaxy S24', category: 'Smartphones', price: 849, sku: 'SGS24-256' },
-    { id: 3, name: 'MacBook Pro 16"', category: 'Laptops', price: 2399, sku: 'MBP16-1TB' },
-    { id: 4, name: 'Dell XPS 15', category: 'Laptops', price: 1799, sku: 'DXPS15-512' },
-    { id: 5, name: 'iPad Air', category: 'Tablets', price: 599, sku: 'IPAIR-128' },
-    { id: 6, name: 'Samsung Tab S9', category: 'Tablets', price: 799, sku: 'STS9-256' },
-    { id: 7, name: 'Sony WH-1000XM5', category: 'Audio', price: 399, sku: 'SONY-XM5' },
-    { id: 8, name: 'Apple Watch Series 9', category: 'Wearables', price: 399, sku: 'AWS9-45' },
-    { id: 9, name: 'PlayStation 5', category: 'Gaming', price: 499, sku: 'PS5-STD' },
-    { id: 10, name: 'Nintendo Switch OLED', category: 'Gaming', price: 349, sku: 'NSW-OLED' }
-  ];
-
   // Shipping methods
   const shippingMethods = [
     { value: 'standard', label: 'Standard Shipping', cost: 9.99, days: '5-7' },
@@ -109,108 +98,139 @@ export const ElectronicOrdersManagement = () => {
 
   useEffect(() => {
     loadOrders();
+    loadProducts();
   }, []);
 
   const loadOrders = async () => {
     setLoading(true);
     try {
-      // Simulate API call with axios
-      const response = await axios.get(`${API_BASE}/posts?_limit=25`);
+      const response = await axios.get(ORDERS_API);
       
-      // Transform API data to match our order structure
-      const ordersData = response.data.map((item, index) => {
-        const statusIndex = index % statusOptions.length;
-        const paymentIndex = index % paymentOptions.length;
-        const productCount = Math.floor(Math.random() * 3) + 1;
-        const products = Array.from({ length: productCount }, (_, i) => {
-          const product = electronicProducts[(index + i) % electronicProducts.length];
-          const quantity = Math.floor(Math.random() * 2) + 1;
-          return {
-            ...product,
-            quantity,
-            total: product.price * quantity
-          };
-        });
-        
-        const subtotal = products.reduce((sum, product) => sum + product.total, 0);
-        const shippingCost = shippingMethods[index % shippingMethods.length].cost;
-        const tax = subtotal * 0.08;
-        const totalAmount = subtotal + shippingCost + tax;
+      // Handle different response formats
+      let ordersData = [];
+      
+      if (Array.isArray(response.data)) {
+        ordersData = response.data;
+      } else if (response.data && Array.isArray(response.data.orders)) {
+        ordersData = response.data.orders;
+      } else if (response.data && Array.isArray(response.data.data)) {
+        ordersData = response.data.data;
+      } else {
+        console.warn('Unexpected API response format:', response.data);
+        toast.error('Unexpected data format from orders API');
+        setOrders([]);
+        return;
+      }
+
+      // Transform API data to match our expected structure
+      const transformedOrders = ordersData.map((order, index) => {
+        // Ensure products array exists and has proper structure
+        const products = order.products && Array.isArray(order.products) 
+          ? order.products.map(product => ({
+              id: product.id || product._id || Math.random(),
+              name: product.name || 'Unknown Product',
+              category: product.category || 'Electronics',
+              price: product.price || 0,
+              sku: product.sku || `SKU-${Math.random().toString(36).substr(2, 9)}`,
+              quantity: product.quantity || 1,
+              total: (product.price || 0) * (product.quantity || 1)
+            }))
+          : [];
+
+        // Calculate totals if not provided
+        const subtotal = order.subtotal || products.reduce((sum, product) => sum + product.total, 0);
+        const shippingCost = order.shippingCost || shippingMethods.find(m => m.value === (order.shippingMethod || 'standard'))?.cost || 0;
+        const tax = order.tax || subtotal * 0.08;
+        const totalAmount = order.totalAmount || subtotal + shippingCost + tax;
 
         return {
-          id: item.id,
-          orderNumber: `ORD-${1000 + item.id}`,
-          customerName: `Customer ${item.id}`,
-          customerEmail: `customer${item.id}@example.com`,
-          customerPhone: `+1 (555) ${100 + item.id}-${1000 + item.id}`,
-          shippingAddress: `${index + 100} Main St, City ${item.id}, State ${item.id % 50}, ${10000 + item.id}`,
+          id: order.id || order._id,
+          orderNumber: order.orderNumber || `ORD-${1000 + index}`,
+          customerName: order.customerName || '',
+          customerEmail: order.customerEmail || '',
+          customerPhone: order.customerPhone || '',
+          shippingAddress: order.shippingAddress || '',
           products,
           subtotal,
           shippingCost,
           tax,
           totalAmount,
-          paymentStatus: paymentOptions[paymentIndex].value,
-          orderStatus: statusOptions[statusIndex].value,
-          shippingMethod: shippingMethods[index % shippingMethods.length].value,
-          trackingNumber: `TRK${1000000000 + item.id}`,
-          notes: item.body.substring(0, 100) + '...',
-          createdAt: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
-          updatedAt: new Date(Date.now() - Math.random() * 5000000000).toISOString(),
-          estimatedDelivery: new Date(Date.now() + (Math.random() * 10 + 2) * 24 * 60 * 60 * 1000).toISOString()
+          paymentStatus: order.paymentStatus || 'pending',
+          orderStatus: order.orderStatus || 'pending',
+          shippingMethod: order.shippingMethod || 'standard',
+          trackingNumber: order.trackingNumber || '',
+          notes: order.notes || '',
+          createdAt: order.createdAt || new Date().toISOString(),
+          updatedAt: order.updatedAt || new Date().toISOString(),
+          estimatedDelivery: order.estimatedDelivery || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
         };
       });
 
-      setOrders(ordersData);
+      setOrders(transformedOrders);
       toast.success('Orders loaded successfully!');
     } catch (error) {
       console.error('Error loading orders:', error);
-      toast.error('Failed to load orders. Using demo data.');
-      setOrders(generateDemoOrders());
+      toast.error('Failed to load orders from API.');
+      setOrders([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const generateDemoOrders = () => {
-    return Array.from({ length: 20 }, (_, index) => {
-      const productCount = Math.floor(Math.random() * 3) + 1;
-      const products = Array.from({ length: productCount }, (_, i) => {
-        const product = electronicProducts[(index + i) % electronicProducts.length];
-        const quantity = Math.floor(Math.random() * 2) + 1;
-        return {
-          ...product,
-          quantity,
-          total: product.price * quantity
-        };
-      });
+  const loadProducts = async () => {
+    setProductsLoading(true);
+    try {
+      const response = await axios.get(PRODUCTS_API);
       
-      const subtotal = products.reduce((sum, product) => sum + product.total, 0);
-      const shippingCost = shippingMethods[index % shippingMethods.length].cost;
-      const tax = subtotal * 0.08;
-      const totalAmount = subtotal + shippingCost + tax;
+      // Handle different response formats
+      let productsData = [];
+      
+      if (Array.isArray(response.data)) {
+        productsData = response.data;
+      } else if (response.data && Array.isArray(response.data.products)) {
+        productsData = response.data.products;
+      } else if (response.data && Array.isArray(response.data.data)) {
+        productsData = response.data.data;
+      } else {
+        console.warn('Unexpected API response format:', response.data);
+        toast.error('Unexpected data format from products API');
+        setProducts([]);
+        return;
+      }
 
-      return {
-        id: index + 1,
-        orderNumber: `ORD-${1000 + index + 1}`,
-        customerName: `Customer ${index + 1}`,
-        customerEmail: `customer${index + 1}@example.com`,
-        customerPhone: `+1 (555) ${100 + index + 1}-${1000 + index + 1}`,
-        shippingAddress: `${index + 100} Main St, City ${index + 1}, State ${index % 50}, ${10000 + index + 1}`,
-        products,
-        subtotal,
-        shippingCost,
-        tax,
-        totalAmount,
-        paymentStatus: paymentOptions[index % paymentOptions.length].value,
-        orderStatus: statusOptions[index % statusOptions.length].value,
-        shippingMethod: shippingMethods[index % shippingMethods.length].value,
-        trackingNumber: `TRK${1000000000 + index + 1}`,
-        notes: `Order notes for customer ${index + 1}. Special instructions or requirements.`,
-        createdAt: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
-        updatedAt: new Date(Date.now() - Math.random() * 5000000000).toISOString(),
-        estimatedDelivery: new Date(Date.now() + (Math.random() * 10 + 2) * 24 * 60 * 60 * 1000).toISOString()
-      };
-    });
+      // Transform products to match your schema structure
+      const transformedProducts = productsData.map(product => ({
+        id: product.id || product._id,
+        name: product.name || 'Unknown Product',
+        description: product.description || '',
+        sku: product.sku || '',
+        category: product.category || 'electronics',
+        price: product.price || 0,
+        comparePrice: product.comparePrice || null,
+        cost: product.cost || null,
+        stock: product.stock || 0,
+        lowStockAlert: product.lowStockAlert || 10,
+        images: product.images || [],
+        variants: product.variants || [],
+        tags: product.tags || [],
+        isActive: product.isActive !== undefined ? product.isActive : true,
+        isDigital: product.isDigital !== undefined ? product.isDigital : false,
+        weight: product.weight || null,
+        dimensions: product.dimensions || {},
+        seo: product.seo || {},
+        metadata: product.metadata || {},
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt
+      }));
+
+      setProducts(transformedProducts);
+    } catch (error) {
+      console.error('Error loading products:', error);
+      toast.error('Failed to load products from API.');
+      setProducts([]);
+    } finally {
+      setProductsLoading(false);
+    }
   };
 
   // Filter and sort orders
@@ -245,33 +265,63 @@ export const ElectronicOrdersManagement = () => {
   // CRUD Operations
   const handleCreateOrder = async () => {
     try {
-      const newOrderData = {
-        ...newOrder,
-        id: Date.now(),
-        orderNumber: `ORD-${1000 + Date.now()}`,
-        subtotal: newOrder.products.reduce((sum, product) => sum + (product.price * product.quantity), 0),
-        tax: 0,
-        shippingCost: shippingMethods.find(m => m.value === newOrder.shippingMethod)?.cost || 0,
-        totalAmount: 0,
+      // Calculate order details
+      const selectedShipping = shippingMethods.find(m => m.value === newOrder.shippingMethod);
+      const subtotal = newOrder.products.reduce((sum, product) => sum + (product.price * product.quantity), 0);
+      const tax = subtotal * 0.08;
+      const totalAmount = subtotal + (selectedShipping?.cost || 0) + tax;
+
+      const orderData = {
+        customerName: newOrder.customerName,
+        customerEmail: newOrder.customerEmail,
+        customerPhone: newOrder.customerPhone,
+        shippingAddress: newOrder.shippingAddress,
+        products: newOrder.products.map(product => ({
+          productId: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: product.quantity,
+          sku: product.sku
+        })),
+        subtotal,
+        shippingCost: selectedShipping?.cost || 0,
+        tax,
+        totalAmount,
+        paymentStatus: newOrder.paymentStatus,
+        orderStatus: newOrder.orderStatus,
+        shippingMethod: newOrder.shippingMethod,
+        trackingNumber: newOrder.trackingNumber,
+        notes: newOrder.notes
+      };
+
+      const response = await axios.post(ORDERS_API, orderData);
+      
+      // Add the new order to state with the ID from response
+      const createdOrder = {
+        ...orderData,
+        id: response.data.id || response.data._id,
+        orderNumber: response.data.orderNumber || `ORD-${1000 + Date.now()}`,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
       };
 
-      newOrderData.tax = newOrderData.subtotal * 0.08;
-      newOrderData.totalAmount = newOrderData.subtotal + newOrderData.shippingCost + newOrderData.tax;
-
-      setOrders(prev => [newOrderData, ...prev]);
+      setOrders(prev => [createdOrder, ...prev]);
       setIsCreateModalOpen(false);
       resetNewOrderForm();
       toast.success('Order created successfully!');
     } catch (error) {
+      console.error('Error creating order:', error);
       toast.error('Failed to create order');
     }
   };
 
   const handleUpdateOrder = async (orderId, updates) => {
     try {
+      // Send PUT request to update the order
+      await axios.put(`${ORDERS_API}/${orderId}`, updates);
+      
+      // Update local state
       setOrders(prev => 
         prev.map(order => 
           order.id === orderId ? { ...order, ...updates, updatedAt: new Date().toISOString() } : order
@@ -280,17 +330,23 @@ export const ElectronicOrdersManagement = () => {
       setEditingOrder(null);
       toast.success('Order updated successfully!');
     } catch (error) {
+      console.error('Error updating order:', error);
       toast.error('Failed to update order');
     }
   };
 
   const handleDeleteOrder = async (orderId) => {
     try {
+      // Send DELETE request
+      await axios.delete(`${ORDERS_API}/${orderId}`);
+      
+      // Update local state
       setOrders(prev => prev.filter(order => order.id !== orderId));
       setIsDeleteModalOpen(false);
       setOrderToDelete(null);
       toast.success('Order deleted successfully!');
     } catch (error) {
+      console.error('Error deleting order:', error);
       toast.error('Failed to delete order');
     }
   };
@@ -317,6 +373,60 @@ export const ElectronicOrdersManagement = () => {
       trackingNumber: '',
       notes: ''
     });
+  };
+
+  // Add product to new order
+  const addProductToOrder = (product) => {
+    const existingProduct = newOrder.products.find(p => p.id === product.id);
+    if (existingProduct) {
+      // Increase quantity if product already exists
+      setNewOrder(prev => ({
+        ...prev,
+        products: prev.products.map(p =>
+          p.id === product.id ? { ...p, quantity: p.quantity + 1, total: p.price * (p.quantity + 1) } : p
+        )
+      }));
+    } else {
+      // Add new product with complete structure
+      setNewOrder(prev => ({
+        ...prev,
+        products: [...prev.products, { 
+          id: product.id,
+          name: product.name,
+          description: product.description,
+          category: product.category,
+          price: product.price,
+          sku: product.sku,
+          stock: product.stock,
+          quantity: 1, 
+          total: product.price,
+          images: product.images || []
+        }]
+      }));
+    }
+  };
+
+  // Remove product from new order
+  const removeProductFromOrder = (productId) => {
+    setNewOrder(prev => ({
+      ...prev,
+      products: prev.products.filter(p => p.id !== productId)
+    }));
+  };
+
+  // Update product quantity in new order
+  const updateProductQuantity = (productId, quantity) => {
+    if (quantity < 1) {
+      removeProductFromOrder(productId);
+      return;
+    }
+    
+    setNewOrder(prev => ({
+      ...prev,
+      products: prev.products.map(p =>
+        p.id === productId ? { ...p, quantity, total: p.price * quantity } : p
+      )
+    }));
   };
 
   // Utility functions
@@ -358,6 +468,15 @@ export const ElectronicOrdersManagement = () => {
       style: 'currency',
       currency: 'USD'
     }).format(amount);
+  };
+
+  // Get primary image URL
+  const getProductImage = (product) => {
+    if (product.images && product.images.length > 0) {
+      const primaryImage = product.images.find(img => img.isPrimary);
+      return primaryImage ? primaryImage.url : product.images[0].url;
+    }
+    return null;
   };
 
   // Custom Components
@@ -482,6 +601,20 @@ export const ElectronicOrdersManagement = () => {
         <div className="h-8 bg-gray-300 rounded w-20"></div>
         <div className="h-8 bg-gray-300 rounded w-24"></div>
       </div>
+    </div>
+  );
+
+  // Product Skeleton
+  const ProductSkeleton = () => (
+    <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-200 animate-pulse">
+      <div className="flex items-center space-x-3">
+        <div className="w-12 h-12 bg-gray-300 rounded-lg"></div>
+        <div className="flex-1">
+          <div className="h-4 bg-gray-300 rounded w-32 mb-2"></div>
+          <div className="h-3 bg-gray-300 rounded w-24"></div>
+        </div>
+      </div>
+      <div className="h-8 bg-gray-300 rounded w-16"></div>
     </div>
   );
 
@@ -797,132 +930,282 @@ export const ElectronicOrdersManagement = () => {
       <Modal
         open={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        maxWidth="2xl"
+        maxWidth="4xl"
       >
         <ModalHeader onClose={() => setIsCreateModalOpen(false)}>
           Create New Order
         </ModalHeader>
         <ModalContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Customer Information */}
-            <div className="md:col-span-2">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <Person />
-                Customer Information
-              </h3>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Customer Name</label>
-              <input
-                type="text"
-                value={newOrder.customerName}
-                onChange={(e) => setNewOrder({ ...newOrder, customerName: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                placeholder="Enter customer name"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-              <input
-                type="email"
-                value={newOrder.customerEmail}
-                onChange={(e) => setNewOrder({ ...newOrder, customerEmail: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                placeholder="Enter email address"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-              <input
-                type="tel"
-                value={newOrder.customerPhone}
-                onChange={(e) => setNewOrder({ ...newOrder, customerPhone: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                placeholder="Enter phone number"
-              />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Customer Information & Order Details */}
+            <div className="space-y-6">
+              {/* Customer Information */}
+              <div className="bg-gray-50 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Person />
+                  Customer Information
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Customer Name *</label>
+                    <input
+                      type="text"
+                      value={newOrder.customerName}
+                      onChange={(e) => setNewOrder({ ...newOrder, customerName: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      placeholder="Enter customer name"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                    <input
+                      type="email"
+                      value={newOrder.customerEmail}
+                      onChange={(e) => setNewOrder({ ...newOrder, customerEmail: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      placeholder="Enter email address"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                    <input
+                      type="tel"
+                      value={newOrder.customerPhone}
+                      onChange={(e) => setNewOrder({ ...newOrder, customerPhone: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      placeholder="Enter phone number"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Shipping Address *</label>
+                    <textarea
+                      value={newOrder.shippingAddress}
+                      onChange={(e) => setNewOrder({ ...newOrder, shippingAddress: e.target.value })}
+                      rows={3}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      placeholder="Enter complete shipping address"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Details */}
+              <div className="bg-gray-50 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Assignment />
+                  Order Details
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Order Status</label>
+                    <select
+                      value={newOrder.orderStatus}
+                      onChange={(e) => setNewOrder({ ...newOrder, orderStatus: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                    >
+                      {statusOptions.filter(opt => opt.value !== 'all').map(option => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Payment Status</label>
+                    <select
+                      value={newOrder.paymentStatus}
+                      onChange={(e) => setNewOrder({ ...newOrder, paymentStatus: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                    >
+                      {paymentOptions.filter(opt => opt.value !== 'all').map(option => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Shipping Method</label>
+                    <select
+                      value={newOrder.shippingMethod}
+                      onChange={(e) => setNewOrder({ ...newOrder, shippingMethod: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                    >
+                      {shippingMethods.map(method => (
+                        <option key={method.value} value={method.value}>{method.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Tracking Number</label>
+                    <input
+                      type="text"
+                      value={newOrder.trackingNumber}
+                      onChange={(e) => setNewOrder({ ...newOrder, trackingNumber: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      placeholder="Enter tracking number"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Order Notes</label>
+                    <textarea
+                      value={newOrder.notes}
+                      onChange={(e) => setNewOrder({ ...newOrder, notes: e.target.value })}
+                      rows={3}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      placeholder="Enter any special notes or instructions"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Shipping Address</label>
-              <textarea
-                value={newOrder.shippingAddress}
-                onChange={(e) => setNewOrder({ ...newOrder, shippingAddress: e.target.value })}
-                rows={3}
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                placeholder="Enter complete shipping address"
-              />
-            </div>
+            {/* Products Selection & Order Summary */}
+            <div className="space-y-6">
+              {/* Products Selection */}
+              <div className="bg-gray-50 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Inventory />
+                  Add Products
+                </h3>
+                <div className="space-y-3 max-h-60 overflow-y-auto">
+                  {productsLoading ? (
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <ProductSkeleton key={index} />
+                    ))
+                  ) : products.length === 0 ? (
+                    <p className="text-gray-500 text-center py-4">No products available</p>
+                  ) : (
+                    products.map(product => (
+                      <div key={product.id} className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-200">
+                        <div className="flex items-center space-x-3">
+                          {getProductImage(product) ? (
+                            <img 
+                              src={getProductImage(product)} 
+                              alt={product.name}
+                              className="w-12 h-12 rounded-lg object-cover"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                              <Inventory className="text-gray-400" />
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-semibold text-gray-800">{product.name}</p>
+                            <p className="text-sm text-gray-600">{product.category} • {formatCurrency(product.price)}</p>
+                            {product.sku && (
+                              <p className="text-xs text-gray-500">SKU: {product.sku}</p>
+                            )}
+                            <p className="text-xs text-gray-500">Stock: {product.stock}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => addProductToOrder(product)}
+                          disabled={product.stock === 0}
+                          className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300 text-sm font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        >
+                          {product.stock === 0 ? 'Out of Stock' : 'Add'}
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
 
-            {/* Order Details */}
-            <div className="md:col-span-2">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <Assignment />
-                Order Details
-              </h3>
-            </div>
+              {/* Selected Products */}
+              <div className="bg-gray-50 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Receipt />
+                  Selected Products ({newOrder.products.length})
+                </h3>
+                {newOrder.products.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">No products selected</p>
+                ) : (
+                  <div className="space-y-3">
+                    {newOrder.products.map(product => (
+                      <div key={product.id} className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-200">
+                        <div className="flex items-center space-x-3">
+                          {product.images && product.images.length > 0 ? (
+                            <img 
+                              src={getProductImage(product)} 
+                              alt={product.name}
+                              className="w-10 h-10 rounded-lg object-cover"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
+                              <Inventory className="text-gray-400 text-sm" />
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <p className="font-semibold text-gray-800">{product.name}</p>
+                            <p className="text-sm text-gray-600">{formatCurrency(product.price)} each</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => updateProductQuantity(product.id, product.quantity - 1)}
+                            className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors duration-300"
+                          >
+                            -
+                          </button>
+                          <span className="w-8 text-center font-semibold">{product.quantity}</span>
+                          <button
+                            onClick={() => updateProductQuantity(product.id, product.quantity + 1)}
+                            disabled={product.quantity >= product.stock}
+                            className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors duration-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                          >
+                            +
+                          </button>
+                          <button
+                            onClick={() => removeProductFromOrder(product.id)}
+                            className="ml-2 p-1 text-red-600 hover:bg-red-50 rounded transition-colors duration-300"
+                          >
+                            <Clear fontSize="small" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Order Status</label>
-              <select
-                value={newOrder.orderStatus}
-                onChange={(e) => setNewOrder({ ...newOrder, orderStatus: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-              >
-                {statusOptions.filter(opt => opt.value !== 'all').map(option => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Payment Status</label>
-              <select
-                value={newOrder.paymentStatus}
-                onChange={(e) => setNewOrder({ ...newOrder, paymentStatus: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-              >
-                {paymentOptions.filter(opt => opt.value !== 'all').map(option => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Shipping Method</label>
-              <select
-                value={newOrder.shippingMethod}
-                onChange={(e) => setNewOrder({ ...newOrder, shippingMethod: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-              >
-                {shippingMethods.map(method => (
-                  <option key={method.value} value={method.value}>{method.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tracking Number</label>
-              <input
-                type="text"
-                value={newOrder.trackingNumber}
-                onChange={(e) => setNewOrder({ ...newOrder, trackingNumber: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                placeholder="Enter tracking number"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Order Notes</label>
-              <textarea
-                value={newOrder.notes}
-                onChange={(e) => setNewOrder({ ...newOrder, notes: e.target.value })}
-                rows={3}
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                placeholder="Enter any special notes or instructions"
-              />
+              {/* Order Summary */}
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Order Summary</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Subtotal:</span>
+                    <span className="font-semibold">
+                      {formatCurrency(newOrder.products.reduce((sum, product) => sum + product.total, 0))}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Shipping:</span>
+                    <span className="font-semibold">
+                      {formatCurrency(shippingMethods.find(m => m.value === newOrder.shippingMethod)?.cost || 0)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Tax (8%):</span>
+                    <span className="font-semibold">
+                      {formatCurrency(newOrder.products.reduce((sum, product) => sum + product.total, 0) * 0.08)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between border-t border-gray-200 pt-2">
+                    <span className="text-lg font-bold text-gray-800">Total:</span>
+                    <span className="text-lg font-bold text-blue-600">
+                      {formatCurrency(
+                        newOrder.products.reduce((sum, product) => sum + product.total, 0) +
+                        (shippingMethods.find(m => m.value === newOrder.shippingMethod)?.cost || 0) +
+                        (newOrder.products.reduce((sum, product) => sum + product.total, 0) * 0.08)
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </ModalContent>
@@ -935,8 +1218,8 @@ export const ElectronicOrdersManagement = () => {
           </button>
           <button
             onClick={handleCreateOrder}
-            className="px-6 py-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-colors duration-300"
-            disabled={!newOrder.customerName || !newOrder.customerEmail}
+            className="px-6 py-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!newOrder.customerName || !newOrder.customerEmail || !newOrder.shippingAddress || newOrder.products.length === 0}
           >
             Create Order
           </button>

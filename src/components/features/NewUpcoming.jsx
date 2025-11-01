@@ -236,19 +236,19 @@ export const UpcomingElectronics = () => {
     if (daysUntilRelease <= 15) {
       return {
         text: 'Coming Soon',
-        color: 'bg-orange-500',
+        color: 'bg-gradient-to-b from-orange-500 to-orange-600',
         textColor: 'text-white'
       };
     } else if (daysUntilRelease <= 30) {
       return {
         text: 'Pre-Order',
-        color: 'bg-blue-500',
+        color: 'bg-gradient-to-b from-blue-500 to-blue-600',
         textColor: 'text-white'
       };
     } else {
       return {
         text: 'Upcoming',
-        color: 'bg-purple-500',
+        color: 'bg-gradient-to-b from-purple-500 to-purple-600',
         textColor: 'text-white'
       };
     }
@@ -491,7 +491,7 @@ export const UpcomingElectronics = () => {
             onClick={() => setFilter('all')}
             className={`px-4 py-2 rounded-full transition-all ${
               filter === 'all' 
-                ? 'bg-purple-600 text-white shadow-lg' 
+                ? 'bg-gradient-to-b from-purple-600 to-purple-700 text-white shadow-lg' 
                 : 'bg-white text-gray-700 hover:bg-gray-100'
             }`}
           >
@@ -501,7 +501,7 @@ export const UpcomingElectronics = () => {
             onClick={() => setFilter('soon')}
             className={`px-4 py-2 rounded-full transition-all ${
               filter === 'soon' 
-                ? 'bg-orange-500 text-white shadow-lg' 
+                ? 'bg-gradient-to-b from-orange-500 to-orange-600 text-white shadow-lg' 
                 : 'bg-white text-gray-700 hover:bg-gray-100'
             }`}
           >
@@ -511,7 +511,7 @@ export const UpcomingElectronics = () => {
             onClick={() => setFilter('later')}
             className={`px-4 py-2 rounded-full transition-all ${
               filter === 'later' 
-                ? 'bg-blue-500 text-white shadow-lg' 
+                ? 'bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-lg' 
                 : 'bg-white text-gray-700 hover:bg-gray-100'
             }`}
           >
@@ -628,7 +628,7 @@ export const UpcomingElectronics = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handlePreOrder(device)}
-                      className="flex-1 bg-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
+                      className="flex-1 bg-gradient-to-b from-purple-600 to-purple-700 text-white py-3 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-purple-800 transition-all flex items-center justify-center gap-2"
                     >
                       <LocalShipping className="w-5 h-5" />
                       Request Pre-Order
@@ -641,8 +641,8 @@ export const UpcomingElectronics = () => {
                       disabled={loadingNotifications[device.id]}
                       className={`p-3 rounded-lg border transition-colors flex items-center justify-center ${
                         device.isNotified
-                          ? 'bg-green-100 border-green-500 text-green-700'
-                          : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-gradient-to-b from-green-500 to-green-600 border-green-600 text-white'
+                          : 'bg-gradient-to-b from-gray-100 to-gray-200 border-gray-300 text-gray-700 hover:from-gray-200 hover:to-gray-300'
                       } ${loadingNotifications[device.id] ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       {loadingNotifications[device.id] ? (
@@ -901,7 +901,7 @@ export const UpcomingElectronics = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex-1 bg-gradient-to-b from-purple-600 to-purple-700 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-purple-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (
                       <>
@@ -965,7 +965,7 @@ export const UpcomingElectronics = () => {
                 
                 <button
                   onClick={closeSuccessModal}
-                  className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                  className="w-full bg-gradient-to-b from-green-600 to-green-700 text-white py-3 px-6 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all"
                 >
                   Continue Browsing
                 </button>
@@ -1008,7 +1008,7 @@ export const UpcomingElectronics = () => {
                 <div className="flex gap-3">
                   <button
                     onClick={closeErrorModal}
-                    className="flex-1 bg-gray-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-600 transition-colors"
+                    className="flex-1 bg-gradient-to-b from-gray-500 to-gray-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-gray-600 hover:to-gray-700 transition-all"
                   >
                     Cancel
                   </button>
@@ -1019,7 +1019,7 @@ export const UpcomingElectronics = () => {
                         setIsOrderModalOpen(true);
                       }
                     }}
-                    className="flex-1 bg-red-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+                    className="flex-1 bg-gradient-to-b from-red-600 to-red-700 text-white py-3 px-6 rounded-lg font-semibold hover:from-red-700 hover:to-red-800 transition-all"
                   >
                     Try Again
                   </button>

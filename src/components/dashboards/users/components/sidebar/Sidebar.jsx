@@ -152,14 +152,13 @@ const sidebarMenu = {
       label: "Dashboard",
       icon: <Dashboard />,
       path: "/dashboard",
-      badge: null,
+      badge: "+",
     },
     {
       id: "analytics",
       label: "Analytics",
       icon: <Analytics />,
-      path: "/analytics",
-      badge: null,
+      badge: "+",
     },
   ],
   store: [
@@ -168,22 +167,22 @@ const sidebarMenu = {
       label: "Products",
       icon: <Inventory />,
       path: "/7833/8303i/products/managements",
-      badge: "156",
+      badge: "+",
     },
 
     {
-      id: "orders",
-      label: "Orders",
+      id: "Bookings",
+      label: "Bookings",
       icon: <ShoppingCart />,
-      path: "/23833/8038i/orders/managements",
-      badge: "45",
+      path: "/898920/user/bookings/dashboard",
+      badge: "+",
     },
     {
-      id: "customers",
-      label: "Customers",
+      id: "Me",
+      label: "Me",
       icon: <People />,
-      path: "/08393/8303i/users/managements",
-      badge: "8.4K",
+      path: "/838929/user/dashboard",
+      badge: "+",
     },
   ],
   financial: [
@@ -191,22 +190,22 @@ const sidebarMenu = {
       id: "revenue",
       label: "Revenue",
       icon: <AttachMoney />,
-      path: "/20000/3hd903/checkout/managements",
-      badge: null,
+      path: "/898920/user/checkout/dashboard",
+      badge: "+",
     },
     {
       id: "transactions",
       label: "Transactions",
       icon: <Receipt />,
       path: "/637is9393/3hd903/transaction/managements",
-      badge: null,
+      badge: "+",
     },
     {
       id: "reports",
       label: "Reports",
       icon: <BarChart />,
       path: "/h92978/hsj8292/reports/managements",
-      badge: null,
+      badge: "+",
     },
   ],
   operations: [
@@ -215,36 +214,37 @@ const sidebarMenu = {
       label: "Viewers",
       icon: <Message />,
       path: "/900u/jojkbjo/statistics/managements",
+      badge: "+",
     },
     {
-      id: "shipping",
-      label: "Shipping",
+      id: "contacts",
+      label: "Contacts",
       icon: <LocalShipping />,
-      path: "/u020d/jhsd03/shoping/managements",
-      badge: "23",
+      path: "/898920/user/contacts/dashboard",
+      badge: "+",
     },
     {
       id: "messages",
       label: "Messages",
       icon: <Message />,
-      path: "/729ns/jo7392j/messages/managements",
-      badge: "15",
+      path: "/898920/user/messages/dashboard",
+      badge: "+",
     },
     {
       id: "support",
       label: "Support",
       icon: <Support />,
       path: "/support",
-      badge: null,
+      badge: "+",
     },
-        {
+    {
       id: "questions",
       label: "Inqueries",
       icon: <LocalShipping />,
       path: "/729ns/jojkbjo/question/managements",
+      badge: "+",
     },
   ],
-
 };
 
 // Sidebar Item Component
@@ -316,43 +316,43 @@ export const Sidebar = ({ isOpen, onToggle, isMobile }) => {
     const getUserData = () => {
       try {
         // Check different possible storage keys
-        const user = localStorage.getItem('user');
-        const userEmail = localStorage.getItem('userEmail');
-        const userStatus = localStorage.getItem('userStatus');
-        const authToken = localStorage.getItem('authToken');
-        
+        const user = localStorage.getItem("user");
+        const userEmail = localStorage.getItem("userEmail");
+        const userStatus = localStorage.getItem("userStatus");
+        const authToken = localStorage.getItem("authToken");
+
         if (user) {
           const userObj = JSON.parse(user);
           setUserData({
             email: userObj.email || userObj.userEmail || userEmail,
-            status: userObj.status || userStatus || 'Active'
+            status: userObj.status || userStatus || "Active",
           });
         } else if (userEmail) {
           setUserData({
             email: userEmail,
-            status: userStatus || 'Active'
+            status: userStatus || "Active",
           });
         } else if (authToken) {
           // If only auth token exists, show generic user
           setUserData({
-            email: 'user@example.com',
-            status: 'Active'
+            email: "user@example.com",
+            status: "Active",
           });
         }
       } catch (error) {
-        console.log('No user data found in localStorage');
+        console.log("No user data found in localStorage");
       }
     };
 
     getUserData();
-    
+
     // Listen for storage changes
     const handleStorageChange = () => {
       getUserData();
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const toggleSection = (section) => {
@@ -587,7 +587,9 @@ export const Sidebar = ({ isOpen, onToggle, isMobile }) => {
                       exit={{ opacity: 0, x: -20 }}
                       className="flex-1 min-w-0"
                     >
-                      <p className="text-sm font-medium truncate">{userData.email}</p>
+                      <p className="text-sm font-medium truncate">
+                        {userData.email}
+                      </p>
                       <p className="text-xs text-gray-400 truncate">
                         Status: {userData.status}
                       </p>

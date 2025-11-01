@@ -1,3 +1,4 @@
+
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable no-unused-vars */
@@ -181,13 +182,14 @@ const apiService = {
     }
   },
 
-  // Register API call - FIXED
-  register: async (name, email, password) => {
+  // Register API call - UPDATED TO INCLUDE CONFIRM PASSWORD
+  register: async (name, email, password, confirmPassword) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/auth/register`, {
         name,
         email,
         password,
+        confirmPassword
       });
       return response.data;
     } catch (error) {
@@ -304,29 +306,44 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
-  const register = async (name, email, password) => {
+  
+  const register = async (name, email, password, confirmPassword) => {
     try {
       setIsLoading(true);
-      const response = await apiService.register(name, email, password);
+      const response = await apiService.register(name, email, password, confirmPassword);
 
-      // FIXED: Proper response handling
-      if (response && response.success) {
-        const userData = response.data.user;
-        setUser(userData);
-        setIsAuthenticated(true);
-        localStorage.setItem("user", JSON.stringify(userData));
-        localStorage.setItem("token", response.data.token);
+      // FIXED: Handle different response structures
+      if (response) {
+        // If registration is successful but doesn't auto-login
+        if (response.success) {
+          // Check if user data is returned (auto-login scenario)
+          if (response.data && response.data.user) {
+            const userData = response.data.user;
+            setUser(userData);
+            setIsAuthenticated(true);
+            localStorage.setItem("user", JSON.stringify(userData));
+            localStorage.setItem("token", response.data.token);
 
-        // Set default authorization header for future requests
-        axios.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${response.data.token}`;
+            // Set default authorization header for future requests
+            axios.defaults.headers.common[
+              "Authorization"
+            ] = `Bearer ${response.data.token}`;
 
-        return { success: true, user: userData };
+            return { success: true, user: userData, autoLoggedIn: true };
+          } else {
+            // Registration successful but no auto-login
+            return { success: true, autoLoggedIn: false, message: response.message || "Registration successful" };
+          }
+        } else {
+          return {
+            success: false,
+            error: response?.message || "Registration failed",
+          };
+        }
       } else {
         return {
           success: false,
-          error: response?.message || "Registration failed",
+          error: "No response from server",
         };
       }
     } catch (error) {
@@ -992,24 +1009,43 @@ export const Navbar = () => {
     const result = await register(
       registerForm.name,
       registerForm.email,
-      registerForm.password
+      registerForm.password,
+      registerForm.confirmPassword
     );
+    
     if (result.success) {
-      toast.success(`Welcome to Nexus, ${result.user.name}! 🚀`);
-      setTimeout(() => {
-        setIsRegisterOpen(false);
-        setIsLoginOpen(true);
-        setLoginForm({
-          email: registerForm.email,
-          password: "",
-        });
-        setIsSubmitting(false);
-        toast.info("Please login with your new account");
-      }, 1500);
+      if (result.autoLoggedIn) {
+        // Auto-login scenario - user is already logged in
+        toast.success(`Welcome to Nexus, ${result.user.name}! 🚀`);
+        setTimeout(() => {
+          closeModals();
+          const dashboardPath = getDashboardPath(result.user);
+          navigate(dashboardPath);
+        }, 1500);
+      } else {
+        // Registration successful but no auto-login - switch to login modal
+        toast.success("Account created successfully! Please login with your credentials. ✅");
+        setTimeout(() => {
+          setIsRegisterOpen(false);
+          setIsLoginOpen(true);
+          // Pre-fill the login form with registration email
+          setLoginForm({
+            email: registerForm.email,
+            password: "",
+          });
+          // Clear registration form
+          setRegisterForm({
+            name: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+          });
+        }, 1000);
+      }
     } else {
       toast.error(result.error || "Registration failed! Please try again.");
-      setIsSubmitting(false);
     }
+    setIsSubmitting(false);
   };
 
   const handleForgotPasswordSubmit = async (e) => {

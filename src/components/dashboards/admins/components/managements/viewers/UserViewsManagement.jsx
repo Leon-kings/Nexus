@@ -9,6 +9,8 @@ export const UserStatsDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5); // Number of items per page
 
   const fetchViewerStats = async () => {
     try {
@@ -83,7 +85,7 @@ export const UserStatsDashboard = () => {
           <h2 className="text-xl font-semibold text-gray-800 mb-2">{error}</h2>
           <button
             onClick={fetchViewerStats}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity shadow-md"
           >
             Retry
           </button>
@@ -198,7 +200,12 @@ export const UserStatsDashboard = () => {
             </span>
           </div>
           
-          <RecentViewsTable views={stats?.recentViews || []} />
+          <RecentViewsTable 
+            views={stats?.recentViews || []} 
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+          />
         </motion.div>
 
         {/* Analytics Chart */}
@@ -262,7 +269,7 @@ export const UserStatsDashboard = () => {
       >
         <button
           onClick={fetchViewerStats}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-sm"
+          className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2 shadow-md"
         >
           <RefreshIcon className="w-5 h-5" />
           Refresh Data
@@ -272,8 +279,13 @@ export const UserStatsDashboard = () => {
   );
 };
 
-// Recent Views Table Component
-const RecentViewsTable = ({ views }) => {
+// Recent Views Table Component with Pagination
+const RecentViewsTable = ({ views, currentPage, itemsPerPage, onPageChange }) => {
+  // Calculate pagination
+  const totalPages = Math.ceil(views.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentViews = views.slice(startIndex, startIndex + itemsPerPage);
+
   if (!views || views.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
@@ -284,48 +296,79 @@ const RecentViewsTable = ({ views }) => {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-gray-200">
-            <th className="text-left py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-            <th className="text-left py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
-            <th className="text-left py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Viewed At</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200">
-          {views.map((view, index) => (
-            <motion.tr
-              key={view._id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="hover:bg-gray-50"
-            >
-              <td className="py-3">
-                {view.userId ? (
-                  <span className="inline-flex items-center gap-1">
-                    <UserIcon className="w-4 h-4 text-green-500" />
-                    <span className="text-sm font-medium">User</span>
-                    <span className="text-xs text-gray-400">({view.userId.slice(-6)})</span>
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 text-orange-600">
-                    <GuestIcon className="w-4 h-4" />
-                    <span className="text-sm">Guest</span>
-                  </span>
-                )}
-              </td>
-              <td className="py-3 text-sm text-gray-600 font-mono">
-                {view.ipAddress}
-              </td>
-              <td className="py-3 text-sm text-gray-600">
-                {new Date(view.viewedAt).toLocaleString()}
-              </td>
-            </motion.tr>
-          ))}
-        </tbody>
-      </table>
+    <div>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-gray-200">
+              <th className="text-left py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+              <th className="text-left py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
+              <th className="text-left py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Viewed At</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {currentViews.map((view, index) => (
+              <motion.tr
+                key={view._id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="hover:bg-gray-50"
+              >
+                <td className="py-3">
+                  {view.userId ? (
+                    <span className="inline-flex items-center gap-1">
+                      <UserIcon className="w-4 h-4 text-green-500" />
+                      <span className="text-sm font-medium">User</span>
+                      <span className="text-xs text-gray-400">({view.userId.slice(-6)})</span>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-orange-600">
+                      <GuestIcon className="w-4 h-4" />
+                      <span className="text-sm">Guest</span>
+                    </span>
+                  )}
+                </td>
+                <td className="py-3 text-sm text-gray-600 font-mono">
+                  {view.ipAddress}
+                </td>
+                <td className="py-3 text-sm text-gray-600">
+                  {new Date(view.viewedAt).toLocaleString()}
+                </td>
+              </motion.tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`bg-gradient-to-r from-gray-500 to-gray-600 text-white px-4 py-2 rounded-lg transition-opacity ${
+              currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+            }`}
+          >
+            Previous
+          </button>
+          
+          <span className="text-sm text-gray-600">
+            Page {currentPage} of {totalPages}
+          </span>
+          
+          <button
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`bg-gradient-to-r from-blue-500 to-teal-500 text-white px-4 py-2 rounded-lg transition-opacity ${
+              currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+            }`}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -343,7 +386,7 @@ const ViewDistributionChart = ({ uniqueUsers, guestViews, totalViews }) => {
           initial={{ width: 0 }}
           animate={{ width: `${userPercentage}%` }}
           transition={{ duration: 1, delay: 0.5 }}
-          className="h-full bg-green-500 flex items-center justify-start px-2"
+          className="h-full bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-start px-2"
         >
           {userPercentage > 15 && (
             <span className="text-white text-xs font-medium">
@@ -355,7 +398,7 @@ const ViewDistributionChart = ({ uniqueUsers, guestViews, totalViews }) => {
           initial={{ width: 0 }}
           animate={{ width: `${guestPercentage}%` }}
           transition={{ duration: 1, delay: 0.7 }}
-          className="h-full bg-orange-500 flex items-center justify-start px-2 -mt-8"
+          className="h-full bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-start px-2 -mt-8"
         >
           {guestPercentage > 15 && (
             <span className="text-white text-xs font-medium">
@@ -368,22 +411,22 @@ const ViewDistributionChart = ({ uniqueUsers, guestViews, totalViews }) => {
       {/* Legend */}
       <div className="flex justify-center gap-6 text-sm">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-green-500 rounded"></div>
+          <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded"></div>
           <span>Users: {uniqueUsers}</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-orange-500 rounded"></div>
+          <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-red-500 rounded"></div>
           <span>Guests: {guestViews}</span>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 text-center mt-4">
-        <div className="bg-green-50 p-3 rounded-lg">
+        <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-3 rounded-lg border border-green-200">
           <div className="text-2xl font-bold text-green-600">{uniqueUsers}</div>
           <div className="text-xs text-green-800">Registered Users</div>
         </div>
-        <div className="bg-orange-50 p-3 rounded-lg">
+        <div className="bg-gradient-to-br from-orange-50 to-red-100 p-3 rounded-lg border border-orange-200">
           <div className="text-2xl font-bold text-orange-600">{guestViews}</div>
           <div className="text-xs text-orange-800">Guest Views</div>
         </div>
@@ -435,4 +478,3 @@ const RefreshIcon = ({ className }) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
   </svg>
 );
-

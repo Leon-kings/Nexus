@@ -26,7 +26,9 @@ import {
   Notifications,
   Close,
   Security,
-  AccountCircle
+  AccountCircle,
+  Email,
+  VerifiedUser
 } from '@mui/icons-material';
 
 // DashboardData Class to manage all data from APIs
@@ -181,7 +183,9 @@ const dashboardAPI = {
           activeUsers: users.filter(user => user.isActive !== false).length, // Default to active if not specified
           verifiedUsers: users.filter(user => user.isVerified).length,
           adminUsers: users.filter(user => user.status === 'admin').length,
-          regularUsers: users.filter(user => user.status === 'user').length
+          regularUsers: users.filter(user => user.status === 'user').length,
+          // Get current user info (first user or find by specific criteria)
+          currentUser: users.length > 0 ? users[0] : null
         };
         
         console.log('Processed admin stats:', stats);
@@ -199,7 +203,8 @@ const dashboardAPI = {
           activeUsers: users.filter(user => user.isActive !== false).length,
           verifiedUsers: users.filter(user => user.isVerified).length,
           adminUsers: users.filter(user => user.status === 'admin').length,
-          regularUsers: users.filter(user => user.status === 'user').length
+          regularUsers: users.filter(user => user.status === 'user').length,
+          currentUser: users.length > 0 ? users[0] : null
         };
         
         console.log('Processed admin stats (alternative structure):', stats);
@@ -215,7 +220,8 @@ const dashboardAPI = {
           activeUsers: 0,
           verifiedUsers: 0,
           adminUsers: 0,
-          regularUsers: 0
+          regularUsers: 0,
+          currentUser: null
         };
       }
     } catch (error) {
@@ -278,7 +284,22 @@ const dashboardAPI = {
         activeUsers: 3,
         verifiedUsers: 2,
         adminUsers: 1,
-        regularUsers: 2
+        regularUsers: 2,
+        currentUser: {
+          profile: { avatar: null, phone: null },
+          preferences: { notifications: { email: true, sms: false } },
+          _id: "68ecfebc0ce304962e40182f",
+          name: "leon",
+          email: "akingeneyeleon@gmail.com",
+          status: "user",
+          isVerified: true,
+          isActive: true,
+          loginCount: 1,
+          createdAt: "2025-10-13T13:29:32.496Z",
+          updatedAt: "2025-10-13T13:39:19.797Z",
+          __v: 0,
+          lastLogin: "2025-10-13T13:39:19.782Z"
+        }
       };
       
       console.log('Using fallback admin data:', fallbackData);
@@ -360,7 +381,7 @@ const dashboardAPI = {
     }
   },
 
-  // Get overview data from all APIs - UPDATED to use proper customer count
+  // Get overview data from all APIs - UPDATED to include user info
   getOverview: async () => {
     try {
       const [ordersStats, adminStats, bookingsStats, products] = await Promise.all([
@@ -386,6 +407,12 @@ const dashboardAPI = {
       const totalRevenue = bookingsStats.totalRevenue || bookingsStats.revenue || bookingsStats.amount || 0;
       const totalProducts = products.length || 0;
 
+      // Get current user info
+      const currentUser = adminStats.currentUser || {};
+      const userEmail = currentUser.email || 'No email available';
+      const userStatus = currentUser.status || 'Unknown';
+      const isVerified = currentUser.isVerified || false;
+
       // Calculate growth percentages
       const revenueGrowth = 12;
       const orderGrowth = 8;
@@ -403,7 +430,12 @@ const dashboardAPI = {
         productGrowth,
         // Additional customer metrics
         activeCustomers: adminStats.activeUsers || 0,
-        verifiedCustomers: adminStats.verifiedUsers || 0
+        verifiedCustomers: adminStats.verifiedUsers || 0,
+        // User info for display
+        userEmail,
+        userStatus,
+        isVerified,
+        userName: currentUser.name || 'User'
       };
 
       console.log('Final overview data:', overviewData);
@@ -421,7 +453,11 @@ const dashboardAPI = {
         totalProducts: 0,
         productGrowth: 0,
         activeCustomers: 0,
-        verifiedCustomers: 0
+        verifiedCustomers: 0,
+        userEmail: 'user@example.com',
+        userStatus: 'user',
+        isVerified: false,
+        userName: 'User'
       };
     }
   },
@@ -930,8 +966,8 @@ const NotificationsModal = ({ isOpen, onClose, notifications, onNotificationClic
   );
 };
 
-// Stat Card Component
-const StatCard = ({ title, value, growth, icon, color, delay = 0 }) => (
+// UPDATED Stat Card Component to handle email/status display
+const StatCard = ({ title, value, growth, icon, color, delay = 0, userEmail, userStatus, isVerified }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -941,14 +977,37 @@ const StatCard = ({ title, value, growth, icon, color, delay = 0 }) => (
     <div className="flex items-center justify-between">
       <div className="flex-1">
         <p className="text-sm font-medium text-gray-600">{title}</p>
-        <p className="text-2xl font-bold text-gray-900 mt-2">
-          {typeof value === 'number' && title.includes('Revenue') ? `$${value.toLocaleString()}` : value.toLocaleString()}
-        </p>
-        <div className={`flex items-center mt-2 ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-          <TrendingUp className={`w-4 h-4 mr-1 ${growth < 0 ? 'rotate-180' : ''}`} />
-          <span className="text-sm font-medium">{Math.abs(growth)}%</span>
-          <span className="text-sm text-gray-500 ml-1">from last month</span>
-        </div>
+        
+        {/* Show email and status instead of customer count for the user card */}
+        {title === "Total Customers" ? (
+          <div className="mt-2 space-y-2">
+            <div className="flex items-center">
+              <Email className="w-4 h-4 text-gray-500 mr-2" />
+              <p className="text-sm font-medium text-gray-900 truncate">{userEmail}</p>
+            </div>
+            <div className="flex items-center">
+              <VerifiedUser className="w-4 h-4 text-gray-500 mr-2" />
+              <div className="flex items-center">
+                <span className="text-sm font-medium text-gray-900 capitalize">{userStatus}</span>
+                {isVerified && (
+                  <CheckCircle className="w-4 h-4 text-green-500 ml-1" />
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          // Regular number display for other cards
+          <>
+            <p className="text-2xl font-bold text-gray-900 mt-2">
+              {typeof value === 'number' && title.includes('Revenue') ? `$${value.toLocaleString()}` : value.toLocaleString()}
+            </p>
+            <div className={`flex items-center mt-2 ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <TrendingUp className={`w-4 h-4 mr-1 ${growth < 0 ? 'rotate-180' : ''}`} />
+              <span className="text-sm font-medium">{Math.abs(growth)}%</span>
+              <span className="text-sm text-gray-500 ml-1">from last month</span>
+            </div>
+          </>
+        )}
       </div>
       <div className={`p-3 rounded-xl ${color} ml-4`}>
         {React.cloneElement(icon, { className: "w-6 h-6 text-white" })}
@@ -1101,7 +1160,7 @@ const MetricCard = ({ title, value, subtitle, icon, color, status }) => (
 );
 
 // Dashboard Component
-export const Dashboard = () => {
+export const UserDashboard = () => {
   const [timeRange, setTimeRange] = useState('monthly');
   const [dashboardData, setDashboardData] = useState(new DashboardData());
   const [lastUpdated, setLastUpdated] = useState(null);
@@ -1312,7 +1371,7 @@ export const Dashboard = () => {
         </motion.div>
       </div>
 
-      {/* Main Stats Grid */}
+      {/* Main Stats Grid - UPDATED to pass user info to the customer card */}
       {dashboardData.overview && (
         <div className="grid grid-cols-1 xsm:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 xsm:gap-3 sm:gap-4 md:gap-6 mb-8">
           <StatCard
@@ -1338,6 +1397,10 @@ export const Dashboard = () => {
             icon={<People />}
             color="bg-gradient-to-br from-purple-500 to-purple-600"
             delay={0.3}
+            // Pass user info for display
+            userEmail={dashboardData.overview.userEmail}
+            userStatus={dashboardData.overview.userStatus}
+            isVerified={dashboardData.overview.isVerified}
           />
           <StatCard
             title="Total Products"
