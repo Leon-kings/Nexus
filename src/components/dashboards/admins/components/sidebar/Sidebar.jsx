@@ -231,20 +231,26 @@ const sidebarMenu = {
       badge: "15",
     },
     {
+      id: "testimony",
+      label: "Testimony",
+      icon: <Message />,
+      path: "/23833/testimony/managements",
+      badge: "+",
+    },
+    {
       id: "support",
       label: "Support",
       icon: <Support />,
       path: "/support",
       badge: null,
     },
-        {
+    {
       id: "questions",
       label: "Inqueries",
       icon: <LocalShipping />,
       path: "/729ns/jojkbjo/question/managements",
     },
   ],
-
 };
 
 // Sidebar Item Component
@@ -316,43 +322,43 @@ export const Sidebar = ({ isOpen, onToggle, isMobile }) => {
     const getUserData = () => {
       try {
         // Check different possible storage keys
-        const user = localStorage.getItem('user');
-        const userEmail = localStorage.getItem('userEmail');
-        const userStatus = localStorage.getItem('userStatus');
-        const authToken = localStorage.getItem('authToken');
-        
+        const user = localStorage.getItem("user");
+        const userEmail = localStorage.getItem("userEmail");
+        const userStatus = localStorage.getItem("userStatus");
+        const authToken = localStorage.getItem("authToken");
+
         if (user) {
           const userObj = JSON.parse(user);
           setUserData({
             email: userObj.email || userObj.userEmail || userEmail,
-            status: userObj.status || userStatus || 'Active'
+            status: userObj.status || userStatus || "Active",
           });
         } else if (userEmail) {
           setUserData({
             email: userEmail,
-            status: userStatus || 'Active'
+            status: userStatus || "Active",
           });
         } else if (authToken) {
           // If only auth token exists, show generic user
           setUserData({
-            email: 'user@example.com',
-            status: 'Active'
+            email: "user@example.com",
+            status: "Active",
           });
         }
       } catch (error) {
-        console.log('No user data found in localStorage');
+        console.log("No user data found in localStorage");
       }
     };
 
     getUserData();
-    
+
     // Listen for storage changes
     const handleStorageChange = () => {
       getUserData();
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const toggleSection = (section) => {
@@ -587,7 +593,9 @@ export const Sidebar = ({ isOpen, onToggle, isMobile }) => {
                       exit={{ opacity: 0, x: -20 }}
                       className="flex-1 min-w-0"
                     >
-                      <p className="text-sm font-medium truncate">{userData.email}</p>
+                      <p className="text-sm font-medium truncate">
+                        {userData.email}
+                      </p>
                       <p className="text-xs text-gray-400 truncate">
                         Status: {userData.status}
                       </p>

@@ -194,6 +194,13 @@ const sidebarMenu = {
       badge: "+",
     },
     {
+      id: "testimonials",
+      label: "Testimonials",
+      icon: <Message />,
+      path: "/2fh797/testimony/dashboard",
+      badge: "+",
+    },
+    {
       id: "transactions",
       label: "Transactions",
       icon: <Receipt />,
@@ -216,6 +223,7 @@ const sidebarMenu = {
       path: "/900u/jojkbjo/statistics/managements",
       badge: "+",
     },
+
     {
       id: "contacts",
       label: "Contacts",
