@@ -50,12 +50,23 @@ button {
 .dark {
   --tw-bg-opacity: 1;
   background-color: rgba(17, 24, 39, var(--tw-bg-opacity));
-  color: rgba(255, 255, 255, 0.87);
+  color: rgba(52, 25, 25, 0.87);
 }
 
+/* Text colors */
 .dark .text-gray-900 {
   --tw-text-opacity: 1;
   color: rgba(255, 255, 255, var(--tw-text-opacity));
+}
+
+.dark .text-gray-800 {
+  --tw-text-opacity: 1;
+  color: rgba(243, 244, 246, var(--tw-text-opacity));
+}
+
+.dark .text-gray-700 {
+  --tw-text-opacity: 1;
+  color: rgba(229, 231, 235, var(--tw-text-opacity));
 }
 
 .dark .text-gray-600 {
@@ -63,15 +74,109 @@ button {
   color: rgba(156, 163, 175, var(--tw-text-opacity));
 }
 
+.dark .text-gray-500 {
+  --tw-text-opacity: 1;
+  color: rgba(107, 114, 128, var(--tw-text-opacity));
+}
+
+.dark .text-gray-400 {
+  --tw-text-opacity: 1;
+  color: rgba(156, 163, 175, var(--tw-text-opacity));
+}
+
+.dark .text-gray-300 {
+  --tw-text-opacity: 1;
+  color: rgba(209, 213, 219, var(--tw-text-opacity));
+}
+
+/* Background colors */
 .dark .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
 }
 
+.dark .bg-gray-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
+}
+
+.dark .bg-gray-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
+}
+
+/* Border colors */
 .dark .border-gray-200 {
   --tw-border-opacity: 1;
   border-color: rgba(55, 65, 81, var(--tw-border-opacity));
 }
 
+.dark .border-gray-300 {
+  --tw-border-opacity: 1;
+  border-color: rgba(75, 85, 99, var(--tw-border-opacity));
+}
+
+.dark .border-gray-400 {
+  --tw-border-opacity: 1;
+  border-color: rgba(156, 163, 175, var(--tw-border-opacity));
+}
+
+/* Shadow utilities */
+.dark .shadow-sm {
+  --tw-shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+.dark .shadow {
+  --tw-shadow-color: rgba(0, 0, 0, 0.4);
+}
+
+.dark .shadow-md {
+  --tw-shadow-color: rgba(0, 0, 0, 0.5);
+}
+
+.dark .shadow-lg {
+  --tw-shadow-color: rgba(0, 0, 0, 0.6);
+}
+
+.dark .shadow-xl {
+  --tw-shadow-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Specific shadow classes */
+.dark .shadow-gray-800\/20 {
+  --tw-shadow-color: rgba(31, 41, 55, 0.2);
+}
+
+/* Additional utility classes for common patterns */
+.dark .bg-opacity-10 {
+  --tw-bg-opacity: 0.1;
+}
+
+.dark .text-opacity-90 {
+  --tw-text-opacity: 0.9;
+}
+
+/* Ensure images don't get too bright in dark mode */
+.dark img {
+  filter: brightness(0.9);
+}
+
+/* Custom scrollbar for dark mode */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.7);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.7);
+}
 
 @import "tailwindcss";

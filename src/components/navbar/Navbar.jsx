@@ -1,4 +1,3 @@
-
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable no-unused-vars */
@@ -149,6 +148,33 @@ const SvgIcons = {
       strokeWidth="2"
     >
       <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+    </svg>
+  ),
+  Success: () => (
+    <svg
+      width="64"
+      height="64"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+      <path d="m9 11 3 3L22 4" />
+    </svg>
+  ),
+  Error: () => (
+    <svg
+      width="64"
+      height="64"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="m15 9-6 6" />
+      <path d="m9 9 6 6" />
     </svg>
   ),
 };
@@ -462,6 +488,64 @@ const ModalCloseButton = ({ onClose }) => (
   >
     <Close className="size-4" />
   </button>
+);
+
+// Success Modal Component
+const SuccessModal = ({ onClose }) => (
+  <motion.div
+    initial={{ scale: 0.9, opacity: 0 }}
+    animate={{ scale: 1, opacity: 1 }}
+    exit={{ scale: 0.9, opacity: 0 }}
+    transition={{ type: "spring", damping: 25 }}
+    className="bg-white rounded-2xl w-full max-w-md p-8 relative shadow-2xl mx-4 text-center"
+    onClick={(e) => e.stopPropagation()}
+  >
+    <ModalCloseButton onClose={onClose} />
+    <div className="w-20 h-20 bg-gradient-to-tr from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+      <SvgIcons.Success />
+    </div>
+    <h3 className="text-2xl font-bold text-gray-800 mb-4">Message Sent Successfully!</h3>
+    <p className="text-gray-600 mb-6">
+      Thank you for contacting us. We'll get back to you within 24 hours.
+    </p>
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={onClose}
+      className="bg-gradient-to-tr from-green-500 to-emerald-600 text-white py-3 px-8 rounded-xl font-semibold shadow-lg shadow-green-500/25 transition-all duration-200"
+    >
+      Close
+    </motion.button>
+  </motion.div>
+);
+
+// Fail Modal Component
+const FailModal = ({ onClose, errorMessage }) => (
+  <motion.div
+    initial={{ scale: 0.9, opacity: 0 }}
+    animate={{ scale: 1, opacity: 1 }}
+    exit={{ scale: 0.9, opacity: 0 }}
+    transition={{ type: "spring", damping: 25 }}
+    className="bg-white rounded-2xl w-full max-w-md p-8 relative shadow-2xl mx-4 text-center"
+    onClick={(e) => e.stopPropagation()}
+  >
+    <ModalCloseButton onClose={onClose} />
+    <div className="w-20 h-20 bg-gradient-to-tr from-red-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+      <SvgIcons.Error />
+    </div>
+    <h3 className="text-2xl font-bold text-gray-800 mb-4">Message Failed to Send</h3>
+    <p className="text-gray-600 mb-4">
+      {errorMessage || "There was an error sending your message. Please try again."}
+    </p>
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={onClose}
+      className="bg-gradient-to-tr from-red-500 to-pink-600 text-white py-3 px-8 rounded-xl font-semibold shadow-lg shadow-red-500/25 transition-all duration-200"
+    >
+      Try Again
+    </motion.button>
+  </motion.div>
 );
 
 // Login Form Component - ENHANCED WITH FORGOT PASSWORD
@@ -866,8 +950,11 @@ export const Navbar = () => {
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isFailModalOpen, setIsFailModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [registerForm, setRegisterForm] = useState({
@@ -942,11 +1029,14 @@ export const Navbar = () => {
     setIsForgotPasswordOpen(false);
     setIsResetPasswordOpen(false);
     setIsContactOpen(false);
+    setIsSuccessModalOpen(false);
+    setIsFailModalOpen(false);
     setLoginForm({ email: "", password: "" });
     setRegisterForm({ name: "", email: "", password: "", confirmPassword: "" });
     setForgotPasswordForm({ email: "" });
     setResetPasswordForm({ password: "", confirmPassword: "", token: "" });
     setContactForm({ name: "", email: "", subject: "", message: "" });
+    setErrorMessage("");
   };
 
   // Function to handle switching from login to register
@@ -1113,19 +1203,25 @@ export const Navbar = () => {
     try {
       const result = await apiService.contact(contactForm);
       if (result.success) {
-        toast.success(
-          "Message sent successfully! We'll get back to you soon. 📧"
-        );
-        setTimeout(() => {
-          closeModals();
-        }, 2000);
+        // Close contact modal and open success modal
+        setIsContactOpen(false);
+        setIsSuccessModalOpen(true);
+        // Reset contact form
+        setContactForm({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
       } else {
-        toast.error(
-          result.error || "Failed to send message. Please try again."
-        );
+        setErrorMessage(result.error || "Failed to send message. Please try again.");
+        setIsContactOpen(false);
+        setIsFailModalOpen(true);
       }
     } catch (error) {
-      toast.error(error.message || "Failed to send message. Please try again.");
+      setErrorMessage(error.message || "Failed to send message. Please try again.");
+      setIsContactOpen(false);
+      setIsFailModalOpen(true);
     }
     setIsSubmitting(false);
   };
@@ -1226,15 +1322,13 @@ export const Navbar = () => {
                     <img
                       src={
                         user?.avatar ||
-                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          user?.name || "User"
-                        )}&background=random`
+                        `https://getdrawings.com/free-icon-bw/red-person-icon-8.png`
                       }
-                      alt={user?.name}
+                      alt=''
                       className="w-8 h-8 rounded-full border-2 border-blue-500 flex-shrink-0"
                     />
                     <div className="text-right min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate max-w-32">
+                      <p className="text-sm font-medium text-indigo-900 truncate max-w-32">
                         {user?.name.slice(0, 8)}
                       </p>
                       <p className="text-xs text-gray-500 capitalize font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">
@@ -1369,15 +1463,13 @@ export const Navbar = () => {
                       <img
                         src={
                           user?.avatar ||
-                          `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                            user?.name || "User"
-                          )}&background=random`
+                          `https://getdrawings.com/free-icon-bw/red-person-icon-8.png`
                         }
-                        alt={user?.name}
+                        alt=''
                         className="w-10 h-10 rounded-full border-2 border-blue-500"
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className="text-sm text-green-500 font-medium text-gray-900 truncate">
                           {user?.name}
                         </p>
                         <p className="text-xs text-gray-500 capitalize font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">
@@ -1557,6 +1649,24 @@ export const Navbar = () => {
                 isSubmitting={isSubmitting}
               />
             </motion.div>
+          </ModalOverlay>
+        )}
+      </AnimatePresence>
+
+      {/* Success Modal */}
+      <AnimatePresence>
+        {isSuccessModalOpen && (
+          <ModalOverlay onClose={closeModals}>
+            <SuccessModal onClose={closeModals} />
+          </ModalOverlay>
+        )}
+      </AnimatePresence>
+
+      {/* Fail Modal */}
+      <AnimatePresence>
+        {isFailModalOpen && (
+          <ModalOverlay onClose={closeModals}>
+            <FailModal onClose={closeModals} errorMessage={errorMessage} />
           </ModalOverlay>
         )}
       </AnimatePresence>

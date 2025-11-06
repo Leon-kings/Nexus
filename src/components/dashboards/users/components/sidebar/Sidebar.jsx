@@ -397,7 +397,7 @@ export const Sidebar = ({ isOpen, onToggle, isMobile }) => {
               </div>
               <div>
                 <h1 className="text-lg font-bold">Future Electronics</h1>
-                <p className="text-xs text-gray-400">Admin Panel</p>
+                <p className="text-xs text-gray-400">User Panel</p>
               </div>
             </motion.div>
           )}

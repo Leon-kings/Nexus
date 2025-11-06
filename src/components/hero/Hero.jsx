@@ -89,6 +89,38 @@ const ProductIcon = () => (
   </svg>
 );
 
+const SuccessIcon = () => (
+  <svg
+    className="w-16 h-16"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
+  </svg>
+);
+
+const ErrorIcon = () => (
+  <svg
+    className="w-16 h-16"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
+  </svg>
+);
+
 const LoadingSpinner = ({ size = "md", text = "" }) => (
   <div className="flex items-center justify-center space-x-2">
     <div
@@ -98,6 +130,80 @@ const LoadingSpinner = ({ size = "md", text = "" }) => (
     ></div>
     {text && <span className="text-white text-sm">{text}</span>}
   </div>
+);
+
+// Success Modal Component
+const SuccessModal = ({ isOpen, onClose }) => (
+  <AnimatePresence>
+    {isOpen && (
+      <ModalOverlay onClose={onClose}>
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="bg-white text-black rounded-2xl w-full max-w-md p-8 text-center"
+        >
+          <div className="w-20 h-20 bg-gradient-to-tr from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <SuccessIcon />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-4">Message Sent Successfully!</h3>
+          <p className="text-gray-600 mb-6">
+            Thank you for contacting us. We'll get back to you within 24 hours.
+          </p>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onClose}
+            className="bg-gradient-to-tr from-green-500 to-emerald-600 text-white py-3 px-8 rounded-xl font-semibold shadow-lg shadow-green-500/25 transition-all duration-200"
+          >
+            Close
+          </motion.button>
+        </motion.div>
+      </ModalOverlay>
+    )}
+  </AnimatePresence>
+);
+
+// Fail Modal Component
+const FailModal = ({ isOpen, onClose, errorMessage, onContactDirectly }) => (
+  <AnimatePresence>
+    {isOpen && (
+      <ModalOverlay onClose={onClose}>
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="bg-white text-black rounded-2xl w-full max-w-md p-8 text-center"
+        >
+          <div className="w-20 h-20 bg-gradient-to-tr from-red-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <ErrorIcon />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-4">Message Failed to Send</h3>
+          <p className="text-gray-600 mb-4">
+            {errorMessage || "There was an error sending your message. Please try again."}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onClose}
+              className="bg-gradient-to-tr from-red-500 to-pink-600 text-white py-3 px-6 rounded-xl font-semibold shadow-lg shadow-red-500/25 transition-all duration-200 flex-1"
+            >
+              Try Again
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onContactDirectly}
+              className="bg-gradient-to-tr from-blue-500 to-blue-600 text-white py-3 px-6 rounded-xl font-semibold shadow-lg shadow-blue-500/25 transition-all duration-200 flex-1"
+            >
+              Contact Directly
+            </motion.button>
+          </div>
+        </motion.div>
+      </ModalOverlay>
+    )}
+  </AnimatePresence>
 );
 
 // Product Details Modal Component
@@ -112,7 +218,7 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+            className="bg-white text-black rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
           >
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
@@ -121,7 +227,7 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
                 </h2>
                 <button
                   onClick={onClose}
-                  className="bg-gradient-to-tl from-red-500 to-red-700 transition-colors"
+                  className="bg-gradient-to-tl from-red-500 to-red-700 text-white p-2 rounded-lg transition-colors"
                 >
                   <CloseIcon />
                 </button>
@@ -236,7 +342,7 @@ const ProductsModal = ({ isOpen, onClose }) => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto"
+              className="bg-white text-black rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto"
             >
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
@@ -245,7 +351,7 @@ const ProductsModal = ({ isOpen, onClose }) => {
                   </h2>
                   <button
                     onClick={onClose}
-                    className="bg-gradient-to-br from-red-600 to-red-700 transition-colors"
+                    className="bg-gradient-to-br from-red-600 to-red-700 text-white p-2 rounded-lg transition-colors"
                   >
                     <CloseIcon />
                   </button>
@@ -346,8 +452,6 @@ const ProductsModal = ({ isOpen, onClose }) => {
 
 // Company Info Modal Component
 const CompanyInfoModal = ({ isOpen, onClose }) => {
-
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -356,7 +460,7 @@ const CompanyInfoModal = ({ isOpen, onClose }) => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+            className="bg-white text-black rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
           >
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
@@ -365,7 +469,7 @@ const CompanyInfoModal = ({ isOpen, onClose }) => {
                 </h2>
                 <button
                   onClick={onClose}
-                  className="bg-gradient-to-bl from-red-600 to-red-700 transition-colors"
+                  className="bg-gradient-to-bl from-red-600 to-red-700 text-white p-2 rounded-lg transition-colors"
                 >
                   <CloseIcon />
                 </button>
@@ -448,8 +552,6 @@ const CompanyInfoModal = ({ isOpen, onClose }) => {
 
 // Gallery Modal Component
 const GalleryModal = ({ isOpen, onClose }) => {
-
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -458,7 +560,7 @@ const GalleryModal = ({ isOpen, onClose }) => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto"
+            className="bg-white text-black rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto"
           >
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
@@ -467,7 +569,7 @@ const GalleryModal = ({ isOpen, onClose }) => {
                 </h2>
                 <button
                   onClick={onClose}
-                  className="bg-gradient-to-l from-red-500 to-red-700 transition-colors"
+                  className="bg-gradient-to-l from-red-500 to-red-700 text-white p-2 rounded-lg transition-colors"
                 >
                   <CloseIcon />
                 </button>
@@ -517,6 +619,9 @@ const ContactModal = ({ isOpen, onClose }) => {
     budget: "500-1000",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isFailModalOpen, setIsFailModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -528,8 +633,12 @@ const ContactModal = ({ isOpen, onClose }) => {
         formData
       );
 
-      if (response.data.success) {
-        toast.success("Message sent successfully! We'll contact you soon.");
+      // Check if the response indicates success
+      if (response.data && response.data.success) {
+        // Close contact modal and open success modal
+        onClose();
+        setIsSuccessModalOpen(true);
+        // Reset form data
         setFormData({
           name: "",
           email: "",
@@ -540,12 +649,26 @@ const ContactModal = ({ isOpen, onClose }) => {
           interest: "general",
           budget: "500-1000",
         });
-        onClose();
       } else {
-        toast.error("Failed to send message. Please try again.");
+        // If response exists but success is false
+        setErrorMessage(response.data?.message || "Failed to send message. Please try again.");
+        onClose();
+        setIsFailModalOpen(true);
       }
     } catch (error) {
-      toast.error("Failed to send message. Please try again.");
+      // Handle different types of errors
+      if (error.response) {
+        // Server responded with error status
+        setErrorMessage(error.response.data?.message || "Server error. Please try again later.");
+      } else if (error.request) {
+        // Request was made but no response received
+        setErrorMessage("No response from server. Please check your connection and try again.");
+      } else {
+        // Other errors
+        setErrorMessage("Failed to send message. Please try again.");
+      }
+      onClose();
+      setIsFailModalOpen(true);
       console.error("Contact form error:", error);
     } finally {
       setIsSubmitting(false);
@@ -559,175 +682,208 @@ const ContactModal = ({ isOpen, onClose }) => {
     });
   };
 
+  const closeSuccessModal = () => {
+    setIsSuccessModalOpen(false);
+  };
+
+  const closeFailModal = () => {
+    setIsFailModalOpen(false);
+  };
+
+  const handleContactDirectly = () => {
+    // Close the fail modal and reopen contact modal
+    setIsFailModalOpen(false);
+    // Open email client for direct contact
+    setTimeout(() => {
+      window.open('mailto:support@nexuscomputers.com', '_blank');
+    }, 100);
+  };
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <ModalOverlay onClose={onClose}>
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white text-black rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-          >
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-3xl font-bold text-gray-800">Contact Us</h2>
-                <button
-                  onClick={onClose}
-                  className="bg-gradient-to-b from-red-600 to-red-700 transition-colors"
-                >
-                  <CloseIcon />
-                </button>
+    <>
+      <AnimatePresence>
+        {isOpen && (
+          <ModalOverlay onClose={onClose}>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white text-black rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            >
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-3xl font-bold text-gray-800">Contact Us</h2>
+                  <button
+                    onClick={onClose}
+                    className="bg-gradient-to-b from-red-600 to-red-700 text-white p-2 rounded-lg transition-colors"
+                  >
+                    <CloseIcon />
+                  </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Full Name *
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
+                        placeholder="Enter your name"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Email Address *
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
+                        placeholder="Enter your email"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
+                        placeholder="Enter your phone"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Company
+                      </label>
+                      <input
+                        type="text"
+                        name="company"
+                        value={formData.company}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
+                        placeholder="Company name"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Area of Interest
+                      </label>
+                      <select
+                        name="interest"
+                        value={formData.interest}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
+                      >
+                        <option value="general">General Inquiry</option>
+                        <option value="gaming">Gaming Computers</option>
+                        <option value="business">Business Solutions</option>
+                        <option value="creative">Creative Workstations</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Budget Range
+                      </label>
+                      <select
+                        name="budget"
+                        value={formData.budget}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
+                      >
+                        <option value="500-1000">$500 - $1,000</option>
+                        <option value="1000-2500">$1,000 - $2,500</option>
+                        <option value="2500-5000">$2,500 - $5,000</option>
+                        <option value="5000+">$5,000+</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Subject *
+                    </label>
+                    <input
+                      type="text"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
+                      placeholder="Enter subject"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Message *
+                    </label>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      rows={4}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black resize-none"
+                      placeholder="Enter your message"
+                    ></textarea>
+                  </div>
+
+                  <motion.button
+                    type="submit"
+                    disabled={isSubmitting}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <LoadingSpinner text="Sending..." />
+                    ) : (
+                      "Send Message"
+                    )}
+                  </motion.button>
+                </form>
               </div>
+            </motion.div>
+          </ModalOverlay>
+        )}
+      </AnimatePresence>
 
-              <form onSubmit={handleSubmit} className="space-y-4 text-black">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your name"
-                    />
-                  </div>
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={isSuccessModalOpen}
+        onClose={closeSuccessModal}
+      />
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your email"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your phone"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Company
-                    </label>
-                    <input
-                      type="text"
-                      name="company"
-                      value={formData.company}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Company name"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Area of Interest
-                    </label>
-                    <select
-                      name="interest"
-                      value={formData.interest}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="general">General Inquiry</option>
-                      <option value="gaming">Gaming Computers</option>
-                      <option value="business">Business Solutions</option>
-                      <option value="creative">Creative Workstations</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Budget Range
-                    </label>
-                    <select
-                      name="budget"
-                      value={formData.budget}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="500-1000">$500 - $1,000</option>
-                      <option value="1000-2500">$1,000 - $2,500</option>
-                      <option value="2500-5000">$2,500 - $5,000</option>
-                      <option value="5000+">$5,000+</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Subject *
-                  </label>
-                  <input
-                    type="text"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter subject"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Message *
-                  </label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                    placeholder="Enter your message"
-                  ></textarea>
-                </div>
-
-                <motion.button
-                  type="submit"
-                  disabled={isSubmitting}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <LoadingSpinner text="Sending..." />
-                  ) : (
-                    "Send Message"
-                  )}
-                </motion.button>
-              </form>
-            </div>
-          </motion.div>
-        </ModalOverlay>
-      )}
-    </AnimatePresence>
+      {/* Fail Modal */}
+      <FailModal
+        isOpen={isFailModalOpen}
+        onClose={closeFailModal}
+        errorMessage={errorMessage}
+        onContactDirectly={handleContactDirectly}
+      />
+    </>
   );
 };
 
@@ -749,7 +905,7 @@ const HoverInfoBoard = () => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    className="absolute top-20 right-4 bg-white/95 dark:text-black backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20 max-w-xs z-20"
+    className="absolute top-20 right-4 bg-white/95 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20 max-w-xs z-20"
   >
     <h3 className="text-lg font-bold text-blue-400 mb-3">
       Why Choose Nexus Computers?

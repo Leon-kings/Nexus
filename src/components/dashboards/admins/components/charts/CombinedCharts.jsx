@@ -86,8 +86,8 @@ export const DashboardChart = () => {
   const [chartData, setChartData] = useState({});
   const [usersData, setUsersData] = useState([]);
 
-  // Your actual API base URL - replace with your actual backend URL
-  const API_BASE = "https://nexusbackend-hdyk.onrender.com"; // Change to your actual backend URL
+  // Your actual API base URL
+  const API_BASE = "https://nexusbackend-hdyk.onrender.com";
 
   useEffect(() => {
     loadDashboardData();
@@ -100,67 +100,109 @@ export const DashboardChart = () => {
       const [
         usersResponse,
         productsResponse,
-        financialResponse,
-        activitiesResponse,
-        stockResponse
+        bookingsResponse,
+        messagesResponse
       ] = await Promise.all([
-        axios.get(`${API_BASE}/admin`), // Your actual users endpoint
-        axios.get(`${API_BASE}/products`), // Your products endpoint
-        axios.get(`${API_BASE}/financial`), // Your financial data endpoint
-        axios.get(`${API_BASE}/activities`), // Your activities endpoint
-        axios.get(`${API_BASE}/stock`) // Your stock endpoint
+        axios.get(`${API_BASE}/admin`),
+        axios.get(`${API_BASE}/products`),
+        axios.get(`${API_BASE}/bookings`),
+        axios.get(`${API_BASE}/contact`)
       ]);
 
-      // Transform actual API data
-      const usersData = usersResponse.data.data.users; // Your actual user data structure
-      const productsData = productsResponse.data.data.products || [];
-      const financialData = financialResponse.data.data || {};
-      const activitiesData = activitiesResponse.data.data || [];
-      const stockData = stockResponse.data.data || [];
+      // console.log("API Responses:", {
+      //   users: usersResponse.data,
+      //   products: productsResponse.data,
+      //   bookings: bookingsResponse.data,
+      //   messages: messagesResponse.data
+      // });
+
+      // Transform actual API data - adjust these based on your actual API response structure
+      const usersData = usersResponse.data?.data?.users || usersResponse.data?.users || [];
+      const productsData = productsResponse.data?.data?.products || productsResponse.data?.products || [];
+      const bookingsData = bookingsResponse.data?.data?.bookings || bookingsResponse.data?.bookings || [];
+      const messagesData = messagesResponse.data?.data?.contacts || messagesResponse.data?.contacts || [];
+
+      console.log("Transformed Data:", {
+        usersData,
+        productsData,
+        bookingsData,
+        messagesData
+      });
 
       // Set users data for use in components
       setUsersData(usersData);
 
       // Calculate stats from actual API data
       const totalUsers = usersData.length;
-      // const verifiedUsers = usersData.filter(user => user.isVerified).length;
-      // const activeUsers = usersData.filter(user => user.isActive).length;
-      // const totalLoginCount = usersData.reduce((sum, user) => sum + (user.loginCount || 0), 0);
+      const totalProducts = productsData.length;
+      const totalBookings = bookingsData.length;
+      const totalMessages = messagesData.length;
+
+      // Calculate financial data from products and bookings
+      const totalRevenue = productsData.reduce((sum, product) => sum + (product.price || 0), 0) + 
+                          bookingsData.reduce((sum, booking) => sum + (booking.totalPrice || booking.price || 0), 0);
+      
+      const estimatedProfit = totalRevenue * 0.3; // Assuming 30% profit margin
+      const estimatedLoss = totalRevenue * 0.05; // Assuming 5% loss
+
+      // Calculate stock levels from products
+      const totalStock = productsData.reduce((sum, product) => sum + (product.quantity || product.stock || 0), 0);
 
       // Update stats with actual data
       setStats({
         users: totalUsers,
-        products: productsData.length || 0,
-        balance: financialData.balance || 0,
-        stock: stockData.length || 0,
-        messages: activitiesData.filter(act => act.type === 'message').length || 0,
-        bookings: activitiesData.filter(act => act.type === 'booking').length || 0,
-        profit: financialData.profit || 0,
-        loss: financialData.loss || 0,
+        products: totalProducts,
+        balance: totalRevenue,
+        stock: totalStock,
+        messages: totalMessages,
+        bookings: totalBookings,
+        profit: estimatedProfit,
+        loss: estimatedLoss,
       });
 
-      // Transform activities data from API
-      const transformedActivities = activitiesData.slice(0, 5).map((activity, index) => ({
-        id: activity._id || activity.id,
-        type: activity.type || ["message", "order", "user", "alert", "notification"][index],
-        title: activity.title || `Activity ${index + 1}`,
-        description: activity.description || `Description for activity ${index + 1}`,
-        time: activity.createdAt ? new Date(activity.createdAt).toLocaleTimeString() : `${index * 5 + 2} min ago`,
-        icon: getActivityIcon(activity.type || ["message", "order", "user", "alert", "notification"][index]),
-        status: activity.status || "new",
-      }));
-      setActivities(transformedActivities);
+      // Transform activities data from API - combine recent activities from all sources
+      const recentActivities = [
+        ...usersData.slice(0, 2).map(user => ({
+          id: user._id || user.id || `user-${Math.random()}`,
+          type: 'user',
+          title: 'New User Registration',
+          description: `${user.name || user.email || user.username || 'User'} joined the platform`,
+          time: user.createdAt ? new Date(user.createdAt).toLocaleTimeString() : 'Recently',
+          icon: <PersonAdd className="text-purple-600" />,
+          status: 'new',
+        })),
+        ...bookingsData.slice(0, 2).map(booking => ({
+          id: booking._id || booking.id || `booking-${Math.random()}`,
+          type: 'order',
+          title: 'New Booking',
+          description: `Booking for ${booking.serviceType || booking.service || 'service'} created`,
+          time: booking.createdAt ? new Date(booking.createdAt).toLocaleTimeString() : 'Recently',
+          icon: <ShoppingCart className="text-green-600" />,
+          status: 'new',
+        })),
+        ...messagesData.slice(0, 1).map(message => ({
+          id: message._id || message.id || `message-${Math.random()}`,
+          type: 'message',
+          title: 'New Message',
+          description: `Message from ${message.name || message.email || 'Customer'}`,
+          time: message.createdAt ? new Date(message.createdAt).toLocaleTimeString() : 'Recently',
+          icon: <Message className="text-blue-600" />,
+          status: 'new',
+        })),
+      ].slice(0, 5); // Take only first 5 activities
 
-      // Transform stock items from API
-      const transformedStockItems = stockData.slice(0, 5).map((item, index) => ({
-        id: item._id || item.id,
-        name: item.name || `Product ${index + 1}`,
-        category: item.category || "Electronics",
-        stock: item.quantity || item.stock || 0,
-        price: item.price || 0,
-        status: (item.quantity || item.stock) > 15 ? "in-stock" : "low",
-        trend: getStockTrend(item),
-        icon: getProductIcon(item.category || "Electronics"),
+      setActivities(recentActivities);
+
+      // Transform products into stock items
+      const transformedStockItems = productsData.slice(0, 5).map((product, index) => ({
+        id: product._id || product.id || `product-${index}`,
+        name: product.name || product.title || `Product ${index + 1}`,
+        category: product.category || "Electronics",
+        stock: product.quantity || product.stock || 0,
+        price: product.price || 0,
+        status: (product.quantity || product.stock || 0) > 15 ? "in-stock" : "low",
+        trend: getStockTrend(product),
+        icon: getProductIcon(product.category || "Electronics"),
       }));
       setStockItems(transformedStockItems);
 
@@ -168,8 +210,8 @@ export const DashboardChart = () => {
       const generatedChartData = generateChartDataFromAPI(
         usersData, 
         productsData, 
-        financialData, 
-        stockData,
+        bookingsData,
+        messagesData,
         timeRange
       );
       setChartData(generatedChartData);
@@ -177,13 +219,122 @@ export const DashboardChart = () => {
       toast.success("Dashboard data loaded successfully! 🚀");
     } catch (error) {
       console.error("Error loading data:", error);
-      toast.error("Failed to load dashboard data. Please check your API endpoints.");
       
-
-
+      // Fallback to mock data if API fails
+      loadMockData();
+      toast.warning("Using mock data - API endpoints might be unavailable");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Fallback to mock data if APIs are not available
+  const loadMockData = () => {
+    const mockUsers = Array.from({ length: 50 }, (_, i) => ({
+      _id: `user-${i}`,
+      name: `User ${i + 1}`,
+      email: `user${i + 1}@example.com`,
+      createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+      isVerified: Math.random() > 0.3,
+      isActive: Math.random() > 0.2,
+      loginCount: Math.floor(Math.random() * 100)
+    }));
+
+    const mockProducts = Array.from({ length: 20 }, (_, i) => ({
+      _id: `product-${i}`,
+      name: `Product ${i + 1}`,
+      category: ["Laptops", "Smartphones", "Tablets", "Accessories", "Wearables"][i % 5],
+      price: Math.floor(Math.random() * 1000) + 100,
+      quantity: Math.floor(Math.random() * 50),
+      stock: Math.floor(Math.random() * 50),
+      createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString()
+    }));
+
+    const mockBookings = Array.from({ length: 15 }, (_, i) => ({
+      _id: `booking-${i}`,
+      serviceType: ["Repair", "Consultation", "Installation", "Maintenance"][i % 4],
+      totalPrice: Math.floor(Math.random() * 500) + 50,
+      createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString()
+    }));
+
+    const mockMessages = Array.from({ length: 25 }, (_, i) => ({
+      _id: `message-${i}`,
+      name: `Customer ${i + 1}`,
+      email: `customer${i + 1}@example.com`,
+      message: `Inquiry about services ${i + 1}`,
+      createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString()
+    }));
+
+    setUsersData(mockUsers);
+
+    const totalRevenue = mockProducts.reduce((sum, product) => sum + product.price, 0) + 
+                        mockBookings.reduce((sum, booking) => sum + booking.totalPrice, 0);
+
+    setStats({
+      users: mockUsers.length,
+      products: mockProducts.length,
+      balance: totalRevenue,
+      stock: mockProducts.reduce((sum, product) => sum + product.quantity, 0),
+      messages: mockMessages.length,
+      bookings: mockBookings.length,
+      profit: totalRevenue * 0.3,
+      loss: totalRevenue * 0.05,
+    });
+
+    // Set mock activities
+    const mockActivities = [
+      ...mockUsers.slice(0, 2).map(user => ({
+        id: user._id,
+        type: 'user',
+        title: 'New User Registration',
+        description: `${user.name} joined the platform`,
+        time: new Date(user.createdAt).toLocaleTimeString(),
+        icon: <PersonAdd className="text-purple-600" />,
+        status: 'new',
+      })),
+      ...mockBookings.slice(0, 2).map(booking => ({
+        id: booking._id,
+        type: 'order',
+        title: 'New Booking',
+        description: `Booking for ${booking.serviceType} created`,
+        time: new Date(booking.createdAt).toLocaleTimeString(),
+        icon: <ShoppingCart className="text-green-600" />,
+        status: 'new',
+      })),
+      ...mockMessages.slice(0, 1).map(message => ({
+        id: message._id,
+        type: 'message',
+        title: 'New Message',
+        description: `Message from ${message.name}`,
+        time: new Date(message.createdAt).toLocaleTimeString(),
+        icon: <Message className="text-blue-600" />,
+        status: 'new',
+      })),
+    ].slice(0, 5);
+
+    setActivities(mockActivities);
+
+    const mockStockItems = mockProducts.slice(0, 5).map((product, index) => ({
+      id: product._id,
+      name: product.name,
+      category: product.category,
+      stock: product.quantity,
+      price: product.price,
+      status: product.quantity > 15 ? "in-stock" : "low",
+      trend: getStockTrend(product),
+      icon: getProductIcon(product.category),
+    }));
+
+    setStockItems(mockStockItems);
+
+    const generatedChartData = generateChartDataFromAPI(
+      mockUsers, 
+      mockProducts, 
+      mockBookings,
+      mockMessages,
+      timeRange
+    );
+    setChartData(generatedChartData);
   };
 
   // Helper functions for data transformation
@@ -217,26 +368,58 @@ export const DashboardChart = () => {
     return "stable";
   };
 
-  const generateChartDataFromAPI = (users, products, financial, stock, timeRange) => {
-    // Generate realistic chart data based on actual API data
-    const userGrowth = users.map((user, index) => ({
-      month: new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short' }),
+  const generateChartDataFromAPI = (users, products, bookings, messages, timeRange) => {
+    // Generate user growth data
+    const sortedUsers = [...users].sort((a, b) => new Date(a.createdAt || Date.now()) - new Date(b.createdAt || Date.now()));
+    const userGrowth = sortedUsers.map((user, index) => ({
+      month: new Date(user.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short' }),
       count: index + 1
     }));
 
+    // Generate product distribution
     const productDistribution = products.reduce((acc, product) => {
       const category = product.category || 'Other';
       acc[category] = (acc[category] || 0) + 1;
       return acc;
     }, {});
 
+    // Generate revenue data from products and bookings
+    const monthlyRevenue = Array.from({ length: 6 }, (_, i) => {
+      const month = new Date();
+      month.setMonth(month.getMonth() - (5 - i));
+      const monthKey = month.toLocaleDateString('en-US', { month: 'short' });
+      
+      const productRevenue = products
+        .filter(product => {
+          const productDate = new Date(product.createdAt || Date.now());
+          return productDate.getMonth() === month.getMonth() && productDate.getFullYear() === month.getFullYear();
+        })
+        .reduce((sum, product) => sum + (product.price || 0), 0);
+      
+      const bookingRevenue = bookings
+        .filter(booking => {
+          const bookingDate = new Date(booking.createdAt || Date.now());
+          return bookingDate.getMonth() === month.getMonth() && bookingDate.getFullYear() === month.getFullYear();
+        })
+        .reduce((sum, booking) => sum + (booking.totalPrice || booking.price || 0), 0);
+      
+      return productRevenue + bookingRevenue;
+    });
+
+    // Generate months for labels
+    const months = Array.from({ length: 6 }, (_, i) => {
+      const date = new Date();
+      date.setMonth(date.getMonth() - (5 - i));
+      return date.toLocaleDateString('en-US', { month: 'short' });
+    });
+
     return {
       users: {
-        labels: userGrowth.map(item => item.month),
+        labels: userGrowth.map(item => item.month).slice(-6),
         datasets: [
           {
             label: "Active Users",
-            data: userGrowth.map(item => item.count * 100), // Scale for demonstration
+            data: userGrowth.map(item => item.count).slice(-6),
             borderColor: "rgb(59, 130, 246)",
             backgroundColor: "rgba(59, 130, 246, 0.1)",
             tension: 0.4,
@@ -255,6 +438,7 @@ export const DashboardChart = () => {
               "rgb(16, 185, 129)",
               "rgb(245, 158, 11)",
               "rgb(139, 92, 246)",
+              "rgb(236, 72, 153)",
             ],
             borderWidth: 3,
             borderColor: "#fff",
@@ -263,19 +447,19 @@ export const DashboardChart = () => {
         ],
       },
       revenue: {
-        labels: ["Q1", "Q2", "Q3", "Q4"],
+        labels: months,
         datasets: [
           {
             label: "Revenue",
-            data: [financial.revenueQ1 || 120000, financial.revenueQ2 || 135000, financial.revenueQ3 || 142000, financial.revenueQ4 || 155000],
+            data: monthlyRevenue,
             backgroundColor: "rgba(16, 185, 129, 0.8)",
             borderColor: "rgb(16, 185, 129)",
             borderWidth: 2,
             borderRadius: 8,
           },
           {
-            label: "Loss",
-            data: [financial.lossQ1 || 8000, financial.lossQ2 || 6500, financial.lossQ3 || 3200, financial.lossQ4 || 4800],
+            label: "Expenses",
+            data: monthlyRevenue.map(revenue => revenue * 0.3), // 30% as expenses
             backgroundColor: "rgba(239, 68, 68, 0.8)",
             borderColor: "rgb(239, 68, 68)",
             borderWidth: 2,
@@ -284,10 +468,10 @@ export const DashboardChart = () => {
         ],
       },
       stock: {
-        labels: stock.map(item => item.category || item.name).slice(0, 5),
+        labels: products.slice(0, 5).map(item => item.category || item.name),
         datasets: [
           {
-            data: stock.map(item => item.quantity || item.stock).slice(0, 5),
+            data: products.slice(0, 5).map(item => item.quantity || item.stock || 0),
             backgroundColor: [
               "rgba(59, 130, 246, 0.7)",
               "rgba(16, 185, 129, 0.7)",
@@ -301,11 +485,13 @@ export const DashboardChart = () => {
         ],
       },
       balance: {
-        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        labels: months,
         datasets: [
           {
             label: "Balance Amount",
-            data: [85000, 92000, 105000, 112000, 118000, financial.balance || 125430],
+            data: monthlyRevenue.map((revenue, index) => 
+              monthlyRevenue.slice(0, index + 1).reduce((sum, val) => sum + val, 0)
+            ),
             borderColor: "rgb(245, 158, 11)",
             backgroundColor: "rgba(245, 158, 11, 0.1)",
             tension: 0.4,
@@ -315,11 +501,11 @@ export const DashboardChart = () => {
         ],
       },
       profitLoss: {
-        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        labels: months,
         datasets: [
           {
             label: "Profit",
-            data: [38000, 42000, 39500, 45200, 48500, financial.profit || 51000],
+            data: monthlyRevenue.map(revenue => revenue * 0.7), // 70% as profit
             backgroundColor: "rgba(16, 185, 129, 0.8)",
             borderColor: "rgb(16, 185, 129)",
             borderWidth: 2,
@@ -327,7 +513,7 @@ export const DashboardChart = () => {
           },
           {
             label: "Loss",
-            data: [2800, 3200, 2500, 3100, 2900, financial.loss || 3200],
+            data: monthlyRevenue.map(revenue => revenue * 0.05), // 5% as loss
             backgroundColor: "rgba(239, 68, 68, 0.8)",
             borderColor: "rgb(239, 68, 68)",
             borderWidth: 2,
