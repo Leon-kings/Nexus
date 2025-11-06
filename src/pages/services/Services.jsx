@@ -4,7 +4,7 @@
 // import { Link } from "react-router-dom";
 // import axios from "axios";
 // import { toast } from "react-toastify";
-// import { services } from "../../assets/images/images"; // Assuming this path is correct
+// import { services } from "../../assets/images/images";
 
 // // API Base URL
 // const API_BASE_URL = "https://nexusbackend-hdyk.onrender.com";
@@ -13,6 +13,7 @@
 //   const [activeService, setActiveService] = useState(null);
 //   const [bookingModal, setBookingModal] = useState(null);
 //   const [paymentStatus, setPaymentStatus] = useState(null);
+//   const [bookingStatus, setBookingStatus] = useState(null);
 //   const [isSubmitting, setIsSubmitting] = useState(false);
 //   const [paymentMethod, setPaymentMethod] = useState("card");
 //   const [hoveredService, setHoveredService] = useState(null);
@@ -39,8 +40,6 @@
 //     mobileNumber: "",
 //     provider: "mtn",
 //   });
-
-//   // Enhanced services data with graphics
 
 //   const stats = [
 //     {
@@ -75,11 +74,20 @@
 //       try {
 //         setLoadingTestimonials(true);
 //         const response = await axios.get(`${API_BASE_URL}/testimonials`);
-//         setTestimonials(response.data);
+
+//         if (
+//           response.data &&
+//           response.data.success &&
+//           response.data.testimonials
+//         ) {
+//           setTestimonials(response.data.testimonials);
+//         } else {
+//           console.warn("Unexpected API response structure:", response.data);
+//           setTestimonials([]);
+//         }
 //       } catch (error) {
 //         console.error("Error fetching testimonials:", error);
 //         toast.error("Failed to load testimonials");
-//         // Fallback to empty array if API fails
 //         setTestimonials([]);
 //       } finally {
 //         setLoadingTestimonials(false);
@@ -92,7 +100,7 @@
 //   // Auto-rotate testimonials
 //   useEffect(() => {
 //     if (testimonials.length === 0) return;
-    
+
 //     const interval = setInterval(() => {
 //       setCurrentTestimonial((prev) =>
 //         prev === testimonials.length - 1 ? 0 : prev + 1
@@ -151,32 +159,36 @@
 //         service: bookingModal?.title,
 //         serviceId: bookingModal?.id,
 //         timestamp: new Date().toISOString(),
+//         status: "pending",
 //       };
 
-//       // Simulate API call
-//       await new Promise((resolve) => setTimeout(resolve, 2000));
-
-//       // In real implementation, use:
-
-//       const response = await axios.post(`${API_BASE_URL}/bookings`, bookingData);
-
-//       // For demo, simulate success
-      
-//       // const response = {
-//       //    data: { success: true, bookingId: `BK${Date.now()}` },
-//       // };
+//       // Real API call
+//       const response = await axios.post(
+//         `${API_BASE_URL}/bookings`,
+//         bookingData
+//       );
 
 //       if (response.data.success) {
-//         setBookingModal({
-//           ...bookingModal,
-//           step: "payment",
-//           bookingId: response.data.bookingId,
-//         });
-//         toast.success("Booking request submitted! Proceed to payment.");
+//         setBookingStatus("success");
+//         const bookingId = response.data.bookingId || `BK${Date.now()}`;
+
+//         toast.success("Booking request submitted successfully!");
+
+//         // Auto-proceed to payment after 2 seconds
+//         setTimeout(() => {
+//           setBookingModal({
+//             ...bookingModal,
+//             step: "payment",
+//             bookingId: bookingId,
+//           });
+//           setBookingStatus(null);
+//         }, 2000);
 //       } else {
+//         setBookingStatus("failed");
 //         toast.error("Failed to submit booking. Please try again.");
 //       }
 //     } catch (error) {
+//       setBookingStatus("failed");
 //       toast.error("Failed to submit booking. Please try again.");
 //       console.error("Booking error:", error);
 //     } finally {
@@ -196,20 +208,14 @@
 //         amount: bookingModal?.price,
 //         method: paymentMethod,
 //         bookingId: bookingModal?.bookingId || Date.now().toString(),
+//         status: "completed",
 //       };
 
-//       // Simulate payment processing
-//       await new Promise((resolve) => setTimeout(resolve, 3000));
-
-//       // In real implementation, use:
-//       const response = await axios.post(`${API_BASE_URL}/payments`, paymentData);
-
-//       // For demo, simulate 80% success rate
-
-//       // const isSuccess = Math.random() > 0.2;
-//       // const response = {
-//       //    data: { success: isSuccess, transactionId: `TXN${Date.now()}` },
-//       // };
+//       // Real API call
+//       const response = await axios.post(
+//         `${API_BASE_URL}/payments`,
+//         paymentData
+//       );
 
 //       if (response.data.success) {
 //         setPaymentStatus("success");
@@ -234,6 +240,7 @@
 //   const resetModals = () => {
 //     setBookingModal(null);
 //     setPaymentStatus(null);
+//     setBookingStatus(null);
 //     setActiveService(null);
 //     setBookingForm({
 //       name: "",
@@ -253,6 +260,23 @@
 //       mobileNumber: "",
 //       provider: "mtn",
 //     });
+//   };
+
+//   // Close specific modal only
+//   const closeActiveServiceModal = () => {
+//     setActiveService(null);
+//   };
+
+//   const closeBookingModal = () => {
+//     setBookingModal(null);
+//     setBookingStatus(null);
+//   };
+
+//   const closePaymentModal = () => {
+//     setPaymentStatus(null);
+//     if (bookingModal?.step === "payment") {
+//       setBookingModal(null);
+//     }
 //   };
 
 //   // Open booking modal
@@ -294,42 +318,108 @@
 //     );
 //   };
 
-//   // Testimonial Card Component
-//   const TestimonialCard = ({ testimonial }) => (
+//   // Updated Testimonial Card Component with dark mode support
+// const TestimonialCard = ({ testimonial }) => (
+//   <motion.div
+//     key={testimonial._id}
+//     initial={{ opacity: 0, y: 20 }}
+//     animate={{ opacity: 1, y: 0 }}
+//     exit={{ opacity: 0, y: -20 }}
+//     transition={{ duration: 0.5 }}
+//     className="bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-lg dark:shadow-gray-800/20 border border-gray-200 dark:border-gray-700 relative max-w-2xl mx-auto"
+//   >
+//     <div className="absolute top-0 left-0 text-9xl font-serif text-blue-100 dark:text-blue-800/30 opacity-80">
+//       &ldquo;
+//     </div>
+//     <p className="text-xl italic text-gray-700 dark:text-gray-200 mb-6 relative z-10 leading-relaxed">
+//       &quot;{testimonial.quote}&quot;
+//     </p>
+//     <div className="flex items-center space-x-4">
+//       <img
+//         src={testimonial.image?.url}
+//         alt={testimonial.name || 'Testimonial author'}
+//         className="w-16 h-16 rounded-full object-cover border-4 border-blue-500/30 dark:border-blue-400/30 shadow-md"
+//       />
+//       <div>
+//         <p className="font-bold text-gray-800 dark:text-white text-lg">
+//           {testimonial.name}
+//         </p>
+//         <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">
+//           {testimonial.position}
+//         </p>
+//       </div>
+//     </div>
+//   </motion.div>
+// );
+
+//   // Booking Status Modal Component
+//   const BookingStatusModal = ({ status, onClose, onRetry }) => (
 //     <motion.div
-//       key={testimonial.client}
-//       initial={{ opacity: 0, y: 20 }}
-//       animate={{ opacity: 1, y: 0 }}
-//       exit={{ opacity: 0, y: -20 }}
-//       transition={{ duration: 0.5 }}
-//       className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 relative max-w-2xl mx-auto"
+//       initial={{ opacity: 0, scale: 0.9 }}
+//       animate={{ opacity: 1, scale: 1 }}
+//       exit={{ opacity: 0, scale: 0.9 }}
+//       className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+//       onClick={onClose}
 //     >
-//       <div className="absolute top-0 left-0 text-9xl font-serif text-blue-100 opacity-5">
-//         &ldquo;
-//       </div>
-//       <p className="text-xl italic text-gray-700 mb-6 relative z-10">
-//         &quot;{testimonial.quote}&quot;
-//       </p>
-//       <div className="flex items-center space-x-4">
-//         <img
-//           src={testimonial.avatar}
-//           alt={testimonial.client}
-//           className="w-16 h-16 rounded-full object-cover border-4 border-blue-500/50"
-//         />
-//         <div>
-//           <p className="font-bold text-gray-900 text-lg">
-//             {testimonial.client}
-//           </p>
-//           <p className="text-sm text-blue-600 font-medium">
-//             {testimonial.position}
-//           </p>
-//         </div>
-//       </div>
+//       <motion.div
+//         className="bg-white dark:bg-gray-800 rounded-3xl max-w-md w-full p-8 text-center"
+//         onClick={(e) => e.stopPropagation()}
+//       >
+//         <button
+//           onClick={onClose}
+//           className="absolute top-4 right-4 w-8 h-8 bg-red-500 text-white rounded-full text-lg hover:bg-red-600 transition-all duration-300 flex items-center justify-center"
+//         >
+//           ✕
+//         </button>
+//         {status === "success" ? (
+//           <>
+//             <div className="text-6xl mb-4">🎉</div>
+//             <h3 className="text-2xl font-bold text-green-700 dark:text-green-400 mb-2">
+//               Booking Submitted!
+//             </h3>
+//             <p className="text-gray-600 dark:text-gray-300 mb-6">
+//               Your booking request has been received successfully. Proceeding to
+//               payment...
+//             </p>
+//             <div className="flex justify-center">
+//               <LoadingSpinner size="medium" />
+//             </div>
+//           </>
+//         ) : (
+//           <>
+//             <div className="text-6xl mb-4">❌</div>
+//             <h3 className="text-2xl font-bold text-red-700 dark:text-red-400 mb-2">
+//               Booking Failed
+//             </h3>
+//             <p className="text-gray-600 dark:text-gray-300 mb-6">
+//               There was an issue submitting your booking. Please try again.
+//             </p>
+//             <div className="flex space-x-3 justify-center">
+//               <motion.button
+//                 onClick={onRetry}
+//                 whileHover={{ scale: 1.05 }}
+//                 whileTap={{ scale: 0.95 }}
+//                 className="bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 transition-colors duration-300"
+//               >
+//                 Try Again
+//               </motion.button>
+//               <motion.button
+//                 onClick={onClose}
+//                 whileHover={{ scale: 1.05 }}
+//                 whileTap={{ scale: 0.95 }}
+//                 className="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-3 px-6 rounded-xl font-semibold hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors duration-300"
+//               >
+//                 Close
+//               </motion.button>
+//             </div>
+//           </>
+//         )}
+//       </motion.div>
 //     </motion.div>
 //   );
 
 //   return (
-//     <div className="min-h-screen bg-gradient-to-br mt-2 mb-1 rounded-2xl from-slate-50 via-blue-50 to-cyan-50 overflow-hidden">
+//     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 mt-2 mb-1 rounded-2xl overflow-hidden">
 //       {/* Hero Section */}
 //       <section className="relative py-24 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white overflow-hidden">
 //         <div className="absolute inset-0 bg-black/40"></div>
@@ -387,10 +477,8 @@
 //         </div>
 //       </section>
 
-//       ---
-
 //       {/* Stats Section */}
-//       <section className="relative py-20 bg-white/80 backdrop-blur-sm">
+//       <section className="relative py-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
 //         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 //           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
 //             {stats.map((stat, index) => (
@@ -419,8 +507,6 @@
 //         </div>
 //       </section>
 
-//       ---
-
 //       {/* Services Grid */}
 //       <section className="relative py-24">
 //         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -438,10 +524,10 @@
 //             >
 //               <div className="text-4xl">⭐</div>
 //             </motion.div>
-//             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+//             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
 //               Our Expert Services
 //             </h2>
-//             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+//             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
 //               Discover our comprehensive range of technology services designed
 //               to meet your every need with precision and excellence.
 //             </p>
@@ -457,37 +543,13 @@
 //                 whileHover={{ y: -8, scale: 1.02 }}
 //                 onHoverStart={() => setHoveredService(service.id)}
 //                 onHoverEnd={() => setHoveredService(null)}
-//                 className={`${service.bgColor} rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 cursor-pointer group relative`}
+//                 className={`${service.bgColor} rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700 cursor-pointer group relative`}
 //                 onClick={() =>
 //                   setActiveService(
 //                     activeService?.id === service.id ? null : service
 //                   )
 //                 }
 //               >
-//                 {/* Animated Background */}
-//                 <motion.div
-//                   className={`absolute inset-0 bg-gradient-to-r ${service.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
-//                   animate={{
-//                     background:
-//                       hoveredService === service.id
-//                         ? [
-//                             `linear-gradient(135deg, ${
-//                               service.color.split(" ")[1]
-//                             } 0%, ${service.color.split(" ")[3]} 100%)`,
-//                             `linear-gradient(135deg, ${
-//                               service.color.split(" ")[3]
-//                             } 0%, ${service.color.split(" ")[1]} 100%)`,
-//                             `linear-gradient(135deg, ${
-//                               service.color.split(" ")[1]
-//                             } 0%, ${service.color.split(" ")[3]} 100%)`,
-//                           ]
-//                         : `linear-gradient(135deg, ${
-//                             service.color.split(" ")[1]
-//                           } 0%, ${service.color.split(" ")[3]} 100%)`,
-//                   }}
-//                   transition={{ duration: 3, repeat: Infinity }}
-//                 />
-
 //                 {/* Service Header */}
 //                 <div
 //                   className={`bg-gradient-to-r ${service.color} p-6 text-white relative overflow-hidden`}
@@ -515,61 +577,32 @@
 //                 </div>
 
 //                 {/* Service Content */}
-//                 <div className="p-6 relative z-10">
+//                 <div className="p-6 relative z-10 bg-white dark:bg-gray-800">
 //                   <div className="flex justify-between items-center mb-4">
-//                     <span className="text-2xl font-bold text-gray-900">
+//                     <span className="text-2xl font-bold text-gray-900 dark:text-white">
 //                       {service.price}
 //                     </span>
-//                     <span className="text-gray-600 bg-white/80 px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+//                     <span className="text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-gray-700/80 px-3 py-1 rounded-full text-sm backdrop-blur-sm">
 //                       {service.duration}
 //                     </span>
 //                   </div>
 
-//                   {/* Mini Stats */}
-//                   <div className="flex justify-between mb-4 text-xs text-gray-600">
-//                     <div className="text-center">
-//                       <div className="font-bold">
-//                         {service.stats.successRate}
-//                       </div>
-//                       <div>Success</div>
-//                     </div>
-//                     <div className="text-center">
-//                       <div className="font-bold">{service.stats.clients}</div>
-//                       <div>Clients</div>
-//                     </div>
-//                     <div className="text-center">
-//                       <div className="font-bold">
-//                         {service.stats.satisfaction}
-//                       </div>
-//                       <div>Rating</div>
-//                     </div>
-//                   </div>
-
 //                   <ul className="space-y-2 mb-6">
 //                     {service.features.slice(0, 3).map((feature, idx) => (
-//                       <motion.li
+//                       <motion.h5
 //                         key={idx}
 //                         initial={{ opacity: 0, x: -20 }}
 //                         whileInView={{ opacity: 1, x: 0 }}
 //                         transition={{ delay: idx * 0.1 }}
-//                         className="flex items-center text-gray-700"
+//                         className="flex items-center text-gray-900 dark:text-gray-300"
 //                       >
 //                         <motion.div
 //                           className="w-2 h-2 bg-green-400 rounded-full mr-3"
 //                           whileHover={{ scale: 1.5 }}
 //                         />
 //                         {feature}
-//                       </motion.li>
+//                       </motion.h5>
 //                     ))}
-//                     {service.features.length > 3 && (
-//                       <motion.li
-//                         initial={{ opacity: 0 }}
-//                         whileInView={{ opacity: 1 }}
-//                         className="text-blue-600 font-medium text-sm"
-//                       >
-//                         +{service.features.length - 3} more features
-//                       </motion.li>
-//                     )}
 //                   </ul>
 
 //                   <div className="flex space-x-3">
@@ -580,7 +613,7 @@
 //                         e.stopPropagation();
 //                         setActiveService(service);
 //                       }}
-//                       className="flex-1 bg-gradient-to-tr from-blue-400 to-indigo-400 text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center space-x-2"
+//                       className="flex-1 bg-gradient-to-tr from-blue-400 to-indigo-400 text-white py-3 rounded-xl font-semibold hover:from-blue-500 hover:to-indigo-500 transition-colors duration-300 flex items-center justify-center space-x-2"
 //                     >
 //                       <span>Learn More</span>
 //                       <span>🔍</span>
@@ -592,42 +625,36 @@
 //                         e.stopPropagation();
 //                         openBookingModal(service);
 //                       }}
-//                       className="px-4 text-white bg-gradient-to-br from-blue-600 to-violet-600 rounded-xl font-semibold transition-colors duration-300 flex items-center justify-center"
+//                       className="px-4 text-white bg-gradient-to-br from-blue-600 to-violet-600 rounded-xl font-semibold hover:from-blue-700 hover:to-violet-700 transition-colors duration-300 flex items-center justify-center"
 //                     >
 //                       <span>⚡</span>
 //                     </motion.button>
 //                   </div>
 //                 </div>
-
-//                 {/* Hover Effect */}
-//                 <motion.div
-//                   className="absolute inset-0 border-2 border-transparent group-hover:border-white/20 rounded-2xl transition-all duration-300"
-//                   whileHover={{ scale: 1.02 }}
-//                 />
 //               </motion.div>
 //             ))}
 //           </div>
 //         </div>
 //       </section>
 
-//       ---
-
 //       {/* Testimonials Section */}
-//       <section className="relative py-24 bg-gray-50">
+//       <section className="relative py-24 bg-gray-50 text-black dark:bg-gray-900">
 //         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 //           <div className="text-center mb-12">
-//             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+//             <h2 className="text-4xl md:text-5xl font-bold text-blue-400 mb-4">
 //               What Our Clients Say
 //             </h2>
-//             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+//             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
 //               Trusted by industry leaders and satisfied customers worldwide.
 //             </p>
 //           </div>
 
 //           {loadingTestimonials ? (
 //             <div className="flex justify-center items-center h-64">
-//               <LoadingSpinner size="large" />
-//               <span className="ml-3 text-gray-600">Loading testimonials...</span>
+//               <LoadingSpinner
+//                 size="large"
+//                 className="text-blue-700 font-bold"
+//               />
 //             </div>
 //           ) : testimonials.length > 0 ? (
 //             <>
@@ -636,7 +663,10 @@
 //                   <div className="absolute w-full">
 //                     {testimonials.map((testimonial, index) =>
 //                       index === currentTestimonial ? (
-//                         <TestimonialCard key={index} testimonial={testimonial} />
+//                         <TestimonialCard
+//                           key={testimonial._id}
+//                           testimonial={testimonial}
+//                         />
 //                       ) : null
 //                     )}
 //                   </div>
@@ -651,7 +681,7 @@
 //                     className={`w-3 h-3 rounded-full transition-colors duration-300 ${
 //                       index === currentTestimonial
 //                         ? "bg-blue-600 w-8"
-//                         : "bg-gray-300"
+//                         : "bg-gray-300 dark:bg-gray-600"
 //                     }`}
 //                     whileHover={{ scale: 1.2 }}
 //                     whileTap={{ scale: 0.9 }}
@@ -662,10 +692,10 @@
 //           ) : (
 //             <div className="text-center py-12">
 //               <div className="text-6xl mb-4">😊</div>
-//               <h3 className="text-2xl font-bold text-gray-700 mb-2">
+//               <h3 className="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-2">
 //                 No Testimonials Yet
 //               </h3>
-//               <p className="text-gray-600">
+//               <p className="text-gray-600 dark:text-gray-400">
 //                 Be the first to share your experience with our services!
 //               </p>
 //             </div>
@@ -673,7 +703,17 @@
 //         </div>
 //       </section>
 
-      
+//       {/* Booking Status Modal */}
+//       <AnimatePresence>
+//         {bookingStatus && (
+//           <BookingStatusModal
+//             status={bookingStatus}
+//             onClose={closeBookingModal}
+//             onRetry={handleBookingSubmit}
+//           />
+//         )}
+//       </AnimatePresence>
+
 //       {/* Service Detail Modal */}
 //       <AnimatePresence>
 //         {activeService && (
@@ -682,31 +722,20 @@
 //             animate={{ opacity: 1 }}
 //             exit={{ opacity: 0 }}
 //             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-//             onClick={resetModals} // Click outside to close
+//             onClick={closeActiveServiceModal}
 //           >
 //             <motion.div
 //               initial={{ scale: 0.9, opacity: 0 }}
 //               animate={{ scale: 1, opacity: 1 }}
 //               exit={{ scale: 0.9, opacity: 0 }}
-//               className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+//               className="bg-white dark:bg-gray-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
 //               onClick={(e) => e.stopPropagation()}
 //             >
 //               <div
 //                 className={`bg-gradient-to-r ${activeService.color} p-8 text-white relative overflow-hidden`}
 //               >
-//                 <motion.div
-//                   className="absolute -top-8 -right-8 text-9xl opacity-20"
-//                   animate={{ rotate: 360 }}
-//                   transition={{
-//                     duration: 20,
-//                     repeat: Infinity,
-//                     ease: "linear",
-//                   }}
-//                 >
-//                   {activeService.graphic}
-//                 </motion.div>
 //                 <button
-//                   onClick={resetModals} // Close button implementation
+//                   onClick={closeActiveServiceModal}
 //                   className="absolute top-6 right-6 w-10 h-10 bg-gradient-to-tr from-red-500 to-red-700 text-white rounded-full text-2xl z-10 shadow-lg hover:from-red-600 hover:to-red-800 transition-all duration-300 flex items-center justify-center"
 //                 >
 //                   ✕
@@ -733,20 +762,20 @@
 //               <div className="p-8">
 //                 <div className="grid lg:grid-cols-2 gap-8">
 //                   <div>
-//                     <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+//                     <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
 //                       <span className="mr-2">📋</span>
 //                       Service Overview
 //                     </h3>
-//                     <p className="text-gray-700 leading-relaxed mb-6">
+//                     <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
 //                       {activeService.fullDescription}
 //                     </p>
 
-//                     <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 mb-6 shadow-lg border border-gray-100">
+//                     <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-700 dark:to-gray-800 rounded-2xl p-6 mb-6 shadow-lg border border-gray-100 dark:border-gray-600">
 //                       <div className="flex justify-between items-center mb-4">
-//                         <span className="text-2xl font-bold text-gray-900">
+//                         <span className="text-2xl font-bold text-gray-900 dark:text-white">
 //                           {activeService.price}
 //                         </span>
-//                         <span className="text-gray-600 bg-white px-4 py-2 rounded-xl font-semibold shadow-sm">
+//                         <span className="text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-600 px-4 py-2 rounded-xl font-semibold shadow-sm">
 //                           ⏱️ {activeService.duration}
 //                         </span>
 //                       </div>
@@ -763,7 +792,7 @@
 //                   </div>
 
 //                   <div>
-//                     <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+//                     <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
 //                       <span className="mr-2">✨</span>
 //                       Key Features
 //                     </h3>
@@ -774,7 +803,7 @@
 //                           initial={{ opacity: 0, x: 20 }}
 //                           animate={{ opacity: 1, x: 0 }}
 //                           transition={{ delay: index * 0.1 }}
-//                           className="flex items-center text-gray-700 bg-gray-50 rounded-xl p-3"
+//                           className="flex items-center text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 rounded-xl p-3"
 //                         >
 //                           <motion.div
 //                             className="w-2 h-2 bg-green-400 rounded-full mr-3 flex-shrink-0"
@@ -784,27 +813,6 @@
 //                         </motion.li>
 //                       ))}
 //                     </ul>
-
-//                     <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-//                       <span className="mr-2">🔄</span>
-//                       Our Process
-//                     </h3>
-//                     <div className="space-y-3">
-//                       {activeService.process.map((step, index) => (
-//                         <motion.div
-//                           key={index}
-//                           initial={{ opacity: 0, y: 20 }}
-//                           animate={{ opacity: 1, y: 0 }}
-//                           transition={{ delay: index * 0.1 }}
-//                           className="flex items-center space-x-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100"
-//                         >
-//                           <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold text-sm shadow-sm">
-//                             {index + 1}
-//                           </div>
-//                           <span className="text-gray-700">{step}</span>
-//                         </motion.div>
-//                       ))}
-//                     </div>
 //                   </div>
 //                 </div>
 //               </div>
@@ -821,31 +829,20 @@
 //             animate={{ opacity: 1 }}
 //             exit={{ opacity: 0 }}
 //             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-//             onClick={resetModals} // Click outside to close
+//             onClick={closeBookingModal}
 //           >
 //             <motion.div
 //               initial={{ scale: 0.9, opacity: 0 }}
 //               animate={{ scale: 1, opacity: 1 }}
 //               exit={{ scale: 0.9, opacity: 0 }}
-//               className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+//               className="bg-white dark:bg-gray-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
 //               onClick={(e) => e.stopPropagation()}
 //             >
 //               <div
 //                 className={`bg-gradient-to-r ${bookingModal.color} p-6 text-white relative overflow-hidden`}
 //               >
-//                 <motion.div
-//                   className="absolute -top-4 -right-4 text-6xl opacity-20"
-//                   animate={{ rotate: 360 }}
-//                   transition={{
-//                     duration: 20,
-//                     repeat: Infinity,
-//                     ease: "linear",
-//                   }}
-//                 >
-//                   {bookingModal.graphic}
-//                 </motion.div>
 //                 <button
-//                   onClick={resetModals} // Close button implementation
+//                   onClick={closeBookingModal}
 //                   className="absolute top-4 right-4 w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-full text-2xl z-10 shadow-lg hover:from-red-600 hover:to-red-800 transition-all duration-300 flex items-center justify-center"
 //                 >
 //                   ✕
@@ -863,10 +860,13 @@
 //                 </div>
 //               </div>
 
-//               <form onSubmit={handleBookingSubmit} className="p-6 text-black">
+//               <form
+//                 onSubmit={handleBookingSubmit}
+//                 className="p-6 text-black dark:text-white"
+//               >
 //                 <div className="grid md:grid-cols-2 gap-4 mb-6">
 //                   <div>
-//                     <label className="block text-sm font-medium text-gray-700 mb-2">
+//                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 //                       Full Name *
 //                     </label>
 //                     <input
@@ -875,12 +875,12 @@
 //                       value={bookingForm.name}
 //                       onChange={handleBookingInputChange}
 //                       required
-//                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+//                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 //                       placeholder="Enter your full name"
 //                     />
 //                   </div>
 //                   <div>
-//                     <label className="block text-sm font-medium text-gray-700 mb-2">
+//                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 //                       Email Address *
 //                     </label>
 //                     <input
@@ -889,12 +889,12 @@
 //                       value={bookingForm.email}
 //                       onChange={handleBookingInputChange}
 //                       required
-//                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+//                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 //                       placeholder="Enter your email"
 //                     />
 //                   </div>
 //                   <div>
-//                     <label className="block text-sm font-medium text-gray-700 mb-2">
+//                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 //                       Phone Number *
 //                     </label>
 //                     <input
@@ -903,12 +903,12 @@
 //                       value={bookingForm.phone}
 //                       onChange={handleBookingInputChange}
 //                       required
-//                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+//                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 //                       placeholder="Enter your phone number"
 //                     />
 //                   </div>
 //                   <div>
-//                     <label className="block text-sm font-medium text-gray-700 mb-2">
+//                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 //                       Company
 //                     </label>
 //                     <input
@@ -916,7 +916,7 @@
 //                       name="company"
 //                       value={bookingForm.company}
 //                       onChange={handleBookingInputChange}
-//                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+//                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 //                       placeholder="Your company name"
 //                     />
 //                   </div>
@@ -924,7 +924,7 @@
 
 //                 <div className="grid md:grid-cols-2 gap-4 mb-6">
 //                   <div>
-//                     <label className="block text-sm font-medium text-gray-700 mb-2">
+//                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 //                       Service Type
 //                     </label>
 //                     <input
@@ -932,18 +932,18 @@
 //                       name="serviceType"
 //                       value={bookingForm.serviceType}
 //                       readOnly
-//                       className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-600"
+//                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-600 text-gray-600 dark:text-gray-300"
 //                     />
 //                   </div>
 //                   <div>
-//                     <label className="block text-sm font-medium text-gray-700 mb-2">
+//                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 //                       Budget Range
 //                     </label>
 //                     <select
 //                       name="budget"
 //                       value={bookingForm.budget}
 //                       onChange={handleBookingInputChange}
-//                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+//                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 //                     >
 //                       <option value="">Select budget range</option>
 //                       <option value="$100 - $500">$100 - $500</option>
@@ -954,14 +954,14 @@
 //                     </select>
 //                   </div>
 //                   <div>
-//                     <label className="block text-sm font-medium text-gray-700 mb-2">
+//                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 //                       Target Timeline
 //                     </label>
 //                     <select
 //                       name="timeline"
 //                       value={bookingForm.timeline}
 //                       onChange={handleBookingInputChange}
-//                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+//                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 //                     >
 //                       <option value="">Select timeline</option>
 //                       <option value="1-2 Weeks">1-2 Weeks</option>
@@ -973,7 +973,7 @@
 //                 </div>
 
 //                 <div className="mb-6">
-//                   <label className="block text-sm font-medium text-gray-700 mb-2">
+//                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 //                     Project Requirements / Details *
 //                   </label>
 //                   <textarea
@@ -982,7 +982,7 @@
 //                     onChange={handleBookingInputChange}
 //                     required
 //                     rows="4"
-//                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+//                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 //                     placeholder="Describe your project, specific needs, or any initial questions..."
 //                   ></textarea>
 //                 </div>
@@ -1024,31 +1024,20 @@
 //             animate={{ opacity: 1 }}
 //             exit={{ opacity: 0 }}
 //             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-//             onClick={resetModals} // Click outside to close
+//             onClick={closePaymentModal}
 //           >
 //             <motion.div
 //               initial={{ scale: 0.9, opacity: 0 }}
 //               animate={{ scale: 1, opacity: 1 }}
 //               exit={{ scale: 0.9, opacity: 0 }}
-//               className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+//               className="bg-white dark:bg-gray-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
 //               onClick={(e) => e.stopPropagation()}
 //             >
 //               <div
 //                 className={`bg-gradient-to-r ${bookingModal.color} p-6 text-white relative overflow-hidden`}
 //               >
-//                 <motion.div
-//                   className="absolute -top-4 -right-4 text-6xl opacity-20"
-//                   animate={{ rotate: 360 }}
-//                   transition={{
-//                     duration: 20,
-//                     repeat: Infinity,
-//                     ease: "linear",
-//                   }}
-//                 >
-//                   {bookingModal.graphic}
-//                 </motion.div>
 //                 <button
-//                   onClick={resetModals} // Close button implementation
+//                   onClick={closePaymentModal}
 //                   className="absolute top-4 right-4 w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-full text-2xl z-10 shadow-lg hover:from-red-600 hover:to-red-800 transition-all duration-300 flex items-center justify-center"
 //                 >
 //                   ✕
@@ -1073,13 +1062,13 @@
 //                 <motion.div
 //                   initial={{ opacity: 0, y: 20 }}
 //                   animate={{ opacity: 1, y: 0 }}
-//                   className="p-6 text-center bg-green-50 rounded-b-3xl"
+//                   className="p-6 text-center bg-green-50 dark:bg-green-900/20 rounded-b-3xl"
 //                 >
 //                   <div className="text-6xl mb-4">🎉</div>
-//                   <h3 className="text-2xl font-bold text-green-700 mb-2">
+//                   <h3 className="text-2xl font-bold text-green-700 dark:text-green-400 mb-2">
 //                     Payment Confirmed!
 //                   </h3>
-//                   <p className="text-gray-600 mb-4">
+//                   <p className="text-gray-600 dark:text-gray-300 mb-4">
 //                     Your service has been successfully booked. We've sent a
 //                     confirmation email to **{bookingForm.email}**.
 //                   </p>
@@ -1098,40 +1087,51 @@
 //                 <motion.div
 //                   initial={{ opacity: 0, y: 20 }}
 //                   animate={{ opacity: 1, y: 0 }}
-//                   className="p-6 text-center bg-red-50 rounded-b-3xl"
+//                   className="p-6 text-center bg-red-50 dark:bg-red-900/20 rounded-b-3xl"
 //                 >
+//                   <button
+//                     onClick={closePaymentModal}
+//                     className="absolute top-4 right-4 w-8 h-8 bg-red-500 text-white rounded-full text-lg hover:bg-red-600 transition-all duration-300 flex items-center justify-center"
+//                   >
+//                     ✕
+//                   </button>
 //                   <div className="text-6xl mb-4">❌</div>
-//                   <h3 className="text-2xl font-bold text-red-700 mb-2">
+//                   <h3 className="text-2xl font-bold text-red-700 dark:text-red-400 mb-2">
 //                     Payment Failed
 //                   </h3>
-//                   <p className="text-gray-600 mb-4">
-//                     There was an issue processing your payment. Please check your
-//                     details or try a different method.
+//                   <p className="text-gray-600 dark:text-gray-300 mb-4">
+//                     There was an issue processing your payment. Please check
+//                     your details or try a different method.
 //                   </p>
-//                   <motion.button
-//                     onClick={() => setPaymentStatus(null)}
-//                     whileHover={{ scale: 1.05 }}
-//                     whileTap={{ scale: 0.95 }}
-//                     className="bg-red-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-red-700 transition-colors duration-300 mr-3"
-//                   >
-//                     Try Again
-//                   </motion.button>
-//                   <motion.button
-//                     onClick={resetModals}
-//                     whileHover={{ scale: 1.05 }}
-//                     whileTap={{ scale: 0.95 }}
-//                     className="bg-gray-200 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-300 transition-colors duration-300"
-//                   >
-//                     Cancel Booking
-//                   </motion.button>
+//                   <div className="flex space-x-3 justify-center">
+//                     <motion.button
+//                       onClick={() => setPaymentStatus(null)}
+//                       whileHover={{ scale: 1.05 }}
+//                       whileTap={{ scale: 0.95 }}
+//                       className="bg-red-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-red-700 transition-colors duration-300"
+//                     >
+//                       Try Again
+//                     </motion.button>
+//                     <motion.button
+//                       onClick={resetModals}
+//                       whileHover={{ scale: 1.05 }}
+//                       whileTap={{ scale: 0.95 }}
+//                       className="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-3 px-6 rounded-xl font-semibold hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors duration-300"
+//                     >
+//                       Cancel Booking
+//                     </motion.button>
+//                   </div>
 //                 </motion.div>
 //               )}
 
 //               {paymentStatus === null && (
-//                 <form onSubmit={handlePaymentSubmit} className="p-6 text-black">
+//                 <form
+//                   onSubmit={handlePaymentSubmit}
+//                   className="p-6 text-black dark:text-white"
+//                 >
 //                   {/* Payment Method Selector */}
 //                   <div className="mb-6">
-//                     <h3 className="text-lg font-bold text-gray-800 mb-3">
+//                     <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3">
 //                       Choose Payment Method
 //                     </h3>
 //                     <div className="flex space-x-4">
@@ -1141,7 +1141,7 @@
 //                         className={`flex-1 p-4 rounded-xl font-semibold border-2 transition-all duration-300 ${
 //                           paymentMethod === "card"
 //                             ? "bg-blue-500 text-white border-blue-600 shadow-md"
-//                             : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+//                             : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
 //                         }`}
 //                         whileHover={{ y: -2 }}
 //                       >
@@ -1153,7 +1153,7 @@
 //                         className={`flex-1 p-4 rounded-xl font-semibold border-2 transition-all duration-300 ${
 //                           paymentMethod === "mobile"
 //                             ? "bg-purple-500 text-white border-purple-600 shadow-md"
-//                             : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+//                             : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
 //                         }`}
 //                         whileHover={{ y: -2 }}
 //                       >
@@ -1174,7 +1174,7 @@
 //                       >
 //                         <div className="grid md:grid-cols-2 gap-4 mb-6">
 //                           <div className="md:col-span-2">
-//                             <label className="block text-sm font-medium text-gray-700 mb-2">
+//                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 //                               Card Number *
 //                             </label>
 //                             <input
@@ -1184,12 +1184,12 @@
 //                               onChange={handlePaymentInputChange}
 //                               maxLength="19"
 //                               required
-//                               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+//                               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 //                               placeholder="XXXX XXXX XXXX XXXX"
 //                             />
 //                           </div>
 //                           <div>
-//                             <label className="block text-sm font-medium text-gray-700 mb-2">
+//                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 //                               Expiry Date (MM/YY) *
 //                             </label>
 //                             <input
@@ -1199,12 +1199,12 @@
 //                               onChange={handlePaymentInputChange}
 //                               maxLength="5"
 //                               required
-//                               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+//                               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 //                               placeholder="MM/YY"
 //                             />
 //                           </div>
 //                           <div>
-//                             <label className="block text-sm font-medium text-gray-700 mb-2">
+//                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 //                               CVV *
 //                             </label>
 //                             <input
@@ -1214,12 +1214,12 @@
 //                               onChange={handlePaymentInputChange}
 //                               maxLength="4"
 //                               required
-//                               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+//                               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 //                               placeholder="CVV"
 //                             />
 //                           </div>
 //                           <div className="md:col-span-2">
-//                             <label className="block text-sm font-medium text-gray-700 mb-2">
+//                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 //                               Card Holder Name *
 //                             </label>
 //                             <input
@@ -1228,7 +1228,7 @@
 //                               value={paymentForm.cardHolder}
 //                               onChange={handlePaymentInputChange}
 //                               required
-//                               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+//                               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 //                               placeholder="Card Holder Name"
 //                             />
 //                           </div>
@@ -1249,7 +1249,7 @@
 //                       >
 //                         <div className="grid md:grid-cols-2 gap-4 mb-6">
 //                           <div>
-//                             <label className="block text-sm font-medium text-gray-700 mb-2">
+//                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 //                               Mobile Number *
 //                             </label>
 //                             <input
@@ -1258,12 +1258,12 @@
 //                               value={paymentForm.mobileNumber}
 //                               onChange={handlePaymentInputChange}
 //                               required
-//                               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+//                               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 //                               placeholder="e.g., +250 788 XXX XXX"
 //                             />
 //                           </div>
 //                           <div>
-//                             <label className="block text-sm font-medium text-gray-700 mb-2">
+//                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 //                               Provider *
 //                             </label>
 //                             <select
@@ -1271,7 +1271,7 @@
 //                               value={paymentForm.provider}
 //                               onChange={handlePaymentInputChange}
 //                               required
-//                               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+//                               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 //                             >
 //                               <option value="mtn">MTN Mobile Money</option>
 //                               <option value="airtel">Airtel Money</option>
@@ -1279,9 +1279,9 @@
 //                             </select>
 //                           </div>
 //                         </div>
-//                         <p className="text-sm text-purple-600 bg-purple-50 p-3 rounded-xl mb-4 border border-purple-100">
-//                           Note: You will receive a prompt on your phone to confirm
-//                           the payment after submission.
+//                         <p className="text-sm text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 p-3 rounded-xl mb-4 border border-purple-100 dark:border-purple-800">
+//                           Note: You will receive a prompt on your phone to
+//                           confirm the payment after submission.
 //                         </p>
 //                       </motion.div>
 //                     )}
@@ -1327,7 +1327,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { services } from "../../assets/images/images"; // Assuming this path is correct
+import { services } from "../../assets/images/images";
+import { Close } from "@mui/icons-material";
 
 // API Base URL
 const API_BASE_URL = "https://nexusbackend-hdyk.onrender.com";
@@ -1336,6 +1337,7 @@ export const Services = () => {
   const [activeService, setActiveService] = useState(null);
   const [bookingModal, setBookingModal] = useState(null);
   const [paymentStatus, setPaymentStatus] = useState(null);
+  const [bookingStatus, setBookingStatus] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [hoveredService, setHoveredService] = useState(null);
@@ -1362,8 +1364,6 @@ export const Services = () => {
     mobileNumber: "",
     provider: "mtn",
   });
-
-  // Enhanced services data with graphics
 
   const stats = [
     {
@@ -1399,10 +1399,8 @@ export const Services = () => {
         setLoadingTestimonials(true);
         const response = await axios.get(`${API_BASE_URL}/testimonials`);
         
-        // Check if the response has the expected structure
         if (response.data && response.data.success && response.data.testimonials) {
           setTestimonials(response.data.testimonials);
-          console.log(response.data.testimonials);
         } else {
           console.warn("Unexpected API response structure:", response.data);
           setTestimonials([]);
@@ -1410,7 +1408,6 @@ export const Services = () => {
       } catch (error) {
         console.error("Error fetching testimonials:", error);
         toast.error("Failed to load testimonials");
-        // Fallback to empty array if API fails
         setTestimonials([]);
       } finally {
         setLoadingTestimonials(false);
@@ -1482,32 +1479,33 @@ export const Services = () => {
         service: bookingModal?.title,
         serviceId: bookingModal?.id,
         timestamp: new Date().toISOString(),
+        status: "pending"
       };
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // In real implementation, use:
-
+      // Real API call
       const response = await axios.post(`${API_BASE_URL}/bookings`, bookingData);
-
-      // For demo, simulate success
       
-      // const response = {
-      //    data: { success: true, bookingId: `BK${Date.now()}` },
-      // };
-
       if (response.data.success) {
-        setBookingModal({
-          ...bookingModal,
-          step: "payment",
-          bookingId: response.data.bookingId,
-        });
-        toast.success("Booking request submitted! Proceed to payment.");
+        setBookingStatus("success");
+        const bookingId = response.data.bookingId || `BK${Date.now()}`;
+        
+        toast.success("Booking request submitted successfully!");
+        
+        // Auto-proceed to payment after 2 seconds
+        setTimeout(() => {
+          setBookingModal({
+            ...bookingModal,
+            step: "payment",
+            bookingId: bookingId,
+          });
+          setBookingStatus(null);
+        }, 2000);
       } else {
+        setBookingStatus("failed");
         toast.error("Failed to submit booking. Please try again.");
       }
     } catch (error) {
+      setBookingStatus("failed");
       toast.error("Failed to submit booking. Please try again.");
       console.error("Booking error:", error);
     } finally {
@@ -1527,21 +1525,12 @@ export const Services = () => {
         amount: bookingModal?.price,
         method: paymentMethod,
         bookingId: bookingModal?.bookingId || Date.now().toString(),
+        status: "completed"
       };
 
-      // Simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-
-      // In real implementation, use:
+      // Real API call
       const response = await axios.post(`${API_BASE_URL}/payments`, paymentData);
-
-      // For demo, simulate 80% success rate
-
-      // const isSuccess = Math.random() > 0.2;
-      // const response = {
-      //    data: { success: isSuccess, transactionId: `TXN${Date.now()}` },
-      // };
-
+      
       if (response.data.success) {
         setPaymentStatus("success");
         toast.success("Payment successful! Your service has been booked.");
@@ -1565,6 +1554,7 @@ export const Services = () => {
   const resetModals = () => {
     setBookingModal(null);
     setPaymentStatus(null);
+    setBookingStatus(null);
     setActiveService(null);
     setBookingForm({
       name: "",
@@ -1584,6 +1574,23 @@ export const Services = () => {
       mobileNumber: "",
       provider: "mtn",
     });
+  };
+
+  // Close specific modal only
+  const closeActiveServiceModal = () => {
+    setActiveService(null);
+  };
+
+  const closeBookingModal = () => {
+    setBookingModal(null);
+    setBookingStatus(null);
+  };
+
+  const closePaymentModal = () => {
+    setPaymentStatus(null);
+    if (bookingModal?.step === "payment") {
+      setBookingModal(null);
+    }
   };
 
   // Open booking modal
@@ -1625,7 +1632,7 @@ export const Services = () => {
     );
   };
 
-  // Updated Testimonial Card Component to use API data structure
+  // Updated Testimonial Card Component with dark mode support
   const TestimonialCard = ({ testimonial }) => (
     <motion.div
       key={testimonial._id}
@@ -1633,25 +1640,25 @@ export const Services = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.5 }}
-      className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 relative max-w-2xl mx-auto"
+      className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 relative max-w-2xl mx-auto"
     >
-      <div className="absolute top-0 left-0 text-9xl font-serif text-blue-100 opacity-5">
+      <div className="absolute top-0 left-0 text-9xl font-serif text-blue-100 dark:text-blue-900 opacity-5">
         &ldquo;
       </div>
-      <p className="text-xl italic text-gray-700 mb-6 relative z-10">
+      <p className="text-xl italic text-gray-700 dark:text-gray-300 mb-6 relative z-10">
         &quot;{testimonial.quote}&quot;
       </p>
       <div className="flex items-center space-x-4">
         <img
-          src={testimonial.image?.url || "/default-avatar.png"} // Fallback image if no image from API
+          src={testimonial.image?.url || "/default-avatar.png"}
           alt={testimonial.name}
-          className="w-16 h-16 rounded-full object-cover border-4 border-blue-500/50"
+          className="w-16 h-16 rounded-full object-cover border-4 border-blue-500/50 dark:border-blue-400/50"
         />
         <div>
-          <p className="font-bold text-gray-900 text-lg">
+          <p className="font-bold text-gray-900 dark:text-white text-lg">
             {testimonial.name}
           </p>
-          <p className="text-sm text-blue-600 font-medium">
+          <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
             {testimonial.position}
           </p>
         </div>
@@ -1659,8 +1666,70 @@ export const Services = () => {
     </motion.div>
   );
 
+  // Booking Status Modal Component
+  const BookingStatusModal = ({ status, onClose, onRetry }) => (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        className="bg-white dark:bg-gray-800 rounded-3xl max-w-md w-full p-8 text-center relative"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-8 h-8 bg-gradient-to-b from-red-500 to-red-700 text-white rounded-full flex items-center justify-center transition-all duration-300 font-bold"
+        >
+          {/* × */}
+          <Close className='text-red-500' />
+        </button>
+        {status === "success" ? (
+          <>
+            <div className="text-6xl mb-4">🎉</div>
+            <h3 className="text-2xl font-bold text-green-700 dark:text-green-400 mb-2">
+              Booking Submitted!
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              Your booking request has been received successfully. Proceeding to payment...
+            </p>
+            <div className="flex justify-center">
+              <LoadingSpinner size="medium" className='text-blue-500'/>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="text-6xl mb-4">❌</div>
+            <h3 className="text-2xl font-bold text-red-700 dark:text-red-400 mb-2">
+              Booking Failed
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              There was an issue submitting your booking. Please try again.
+            </p>
+            <div className="flex space-x-3 justify-center">
+              <button
+                onClick={onRetry}
+                className="bg-gradient-to-r from-blue-300 to-indigo-400 py-3 px-6 rounded-xl font-semibold transition-colors duration-300"
+              >
+                Try Again
+              </button>
+              <button
+                onClick={onClose}
+                className="bg-gradient-to-l dark:from-red-600 dark:to-red-800 from-red-500 to-red-700 py-3 px-6 rounded-xl font-semibold transition-colors duration-300"
+              >
+                Close
+              </button>
+            </div>
+          </>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br mt-2 mb-1 rounded-2xl from-slate-50 via-blue-50 to-cyan-50 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 mt-2 mb-1 rounded-2xl overflow-hidden">
       {/* Hero Section */}
       <section className="relative py-24 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/40"></div>
@@ -1718,10 +1787,8 @@ export const Services = () => {
         </div>
       </section>
 
-      ---
-
       {/* Stats Section */}
-      <section className="relative py-20 bg-white/80 backdrop-blur-sm">
+      <section className="relative py-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
@@ -1750,8 +1817,6 @@ export const Services = () => {
         </div>
       </section>
 
-      ---
-
       {/* Services Grid */}
       <section className="relative py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1769,10 +1834,10 @@ export const Services = () => {
             >
               <div className="text-4xl">⭐</div>
             </motion.div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-blue-500 dark:text-white mb-4">
               Our Expert Services
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Discover our comprehensive range of technology services designed
               to meet your every need with precision and excellence.
             </p>
@@ -1788,37 +1853,13 @@ export const Services = () => {
                 whileHover={{ y: -8, scale: 1.02 }}
                 onHoverStart={() => setHoveredService(service.id)}
                 onHoverEnd={() => setHoveredService(null)}
-                className={`${service.bgColor} rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 cursor-pointer group relative`}
+                className={`${service.bgColor} rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700 cursor-pointer group relative`}
                 onClick={() =>
                   setActiveService(
                     activeService?.id === service.id ? null : service
                   )
                 }
               >
-                {/* Animated Background */}
-                <motion.div
-                  className={`absolute inset-0 bg-gradient-to-r ${service.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
-                  animate={{
-                    background:
-                      hoveredService === service.id
-                        ? [
-                            `linear-gradient(135deg, ${
-                              service.color.split(" ")[1]
-                            } 0%, ${service.color.split(" ")[3]} 100%)`,
-                            `linear-gradient(135deg, ${
-                              service.color.split(" ")[3]
-                            } 0%, ${service.color.split(" ")[1]} 100%)`,
-                            `linear-gradient(135deg, ${
-                              service.color.split(" ")[1]
-                            } 0%, ${service.color.split(" ")[3]} 100%)`,
-                          ]
-                        : `linear-gradient(135deg, ${
-                            service.color.split(" ")[1]
-                          } 0%, ${service.color.split(" ")[3]} 100%)`,
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                />
-
                 {/* Service Header */}
                 <div
                   className={`bg-gradient-to-r ${service.color} p-6 text-white relative overflow-hidden`}
@@ -1846,34 +1887,14 @@ export const Services = () => {
                 </div>
 
                 {/* Service Content */}
-                <div className="p-6 relative z-10">
+                <div className="p-6 relative z-10 bg-white dark:bg-gray-800">
                   <div className="flex justify-between items-center mb-4">
-                    <span className="text-2xl font-bold text-gray-900">
+                    <span className="text-2xl font-bold text-gray-900 dark:text-white">
                       {service.price}
                     </span>
-                    <span className="text-gray-600 bg-white/80 px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                    <span className="text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-gray-700/80 px-3 py-1 rounded-full text-sm backdrop-blur-sm">
                       {service.duration}
                     </span>
-                  </div>
-
-                  {/* Mini Stats */}
-                  <div className="flex justify-between mb-4 text-xs text-gray-600">
-                    <div className="text-center">
-                      <div className="font-bold">
-                        {service.stats.successRate}
-                      </div>
-                      <div>Success</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-bold">{service.stats.clients}</div>
-                      <div>Clients</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-bold">
-                        {service.stats.satisfaction}
-                      </div>
-                      <div>Rating</div>
-                    </div>
                   </div>
 
                   <ul className="space-y-2 mb-6">
@@ -1883,7 +1904,7 @@ export const Services = () => {
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.1 }}
-                        className="flex items-center text-gray-700"
+                        className="flex items-center text-gray-700 dark:text-gray-300"
                       >
                         <motion.div
                           className="w-2 h-2 bg-green-400 rounded-full mr-3"
@@ -1892,15 +1913,6 @@ export const Services = () => {
                         {feature}
                       </motion.li>
                     ))}
-                    {service.features.length > 3 && (
-                      <motion.li
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        className="text-blue-600 font-medium text-sm"
-                      >
-                        +{service.features.length - 3} more features
-                      </motion.li>
-                    )}
                   </ul>
 
                   <div className="flex space-x-3">
@@ -1911,7 +1923,7 @@ export const Services = () => {
                         e.stopPropagation();
                         setActiveService(service);
                       }}
-                      className="flex-1 bg-gradient-to-tr from-blue-400 to-indigo-400 text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center space-x-2"
+                      className="flex-1 bg-gradient-to-tr from-blue-400 to-indigo-400 text-white py-3 rounded-xl font-semibold hover:from-blue-500 hover:to-indigo-500 transition-colors duration-300 flex items-center justify-center space-x-2"
                     >
                       <span>Learn More</span>
                       <span>🔍</span>
@@ -1923,34 +1935,26 @@ export const Services = () => {
                         e.stopPropagation();
                         openBookingModal(service);
                       }}
-                      className="px-4 text-white bg-gradient-to-br from-blue-600 to-violet-600 rounded-xl font-semibold transition-colors duration-300 flex items-center justify-center"
+                      className="px-4 text-white bg-gradient-to-br from-blue-600 to-violet-600 rounded-xl font-semibold hover:from-blue-700 hover:to-violet-700 transition-colors duration-300 flex items-center justify-center"
                     >
                       <span>⚡</span>
                     </motion.button>
                   </div>
                 </div>
-
-                {/* Hover Effect */}
-                <motion.div
-                  className="absolute inset-0 border-2 border-transparent group-hover:border-white/20 rounded-2xl transition-all duration-300"
-                  whileHover={{ scale: 1.02 }}
-                />
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      ---
-
       {/* Testimonials Section */}
-      <section className="relative py-24 bg-gray-50">
+      <section className="relative py-24 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
               What Our Clients Say
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Trusted by industry leaders and satisfied customers worldwide.
             </p>
           </div>
@@ -1958,7 +1962,7 @@ export const Services = () => {
           {loadingTestimonials ? (
             <div className="flex justify-center items-center h-64">
               <LoadingSpinner size="large" />
-              <span className="ml-3 text-gray-600">Loading testimonials...</span>
+              <span className="ml-3 text-gray-600 dark:text-gray-300">Loading testimonials...</span>
             </div>
           ) : testimonials.length > 0 ? (
             <>
@@ -1982,7 +1986,7 @@ export const Services = () => {
                     className={`w-3 h-3 rounded-full transition-colors duration-300 ${
                       index === currentTestimonial
                         ? "bg-blue-600 w-8"
-                        : "bg-gray-300"
+                        : "bg-gray-300 dark:bg-gray-600"
                     }`}
                     whileHover={{ scale: 1.2 }}
                     whileTap={{ scale: 0.9 }}
@@ -1993,10 +1997,10 @@ export const Services = () => {
           ) : (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">😊</div>
-              <h3 className="text-2xl font-bold text-gray-700 mb-2">
+              <h3 className="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-2">
                 No Testimonials Yet
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-400">
                 Be the first to share your experience with our services!
               </p>
             </div>
@@ -2004,7 +2008,17 @@ export const Services = () => {
         </div>
       </section>
 
-      
+      {/* Booking Status Modal */}
+      <AnimatePresence>
+        {bookingStatus && (
+          <BookingStatusModal
+            status={bookingStatus}
+            onClose={closeBookingModal}
+            onRetry={handleBookingSubmit}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Service Detail Modal */}
       <AnimatePresence>
         {activeService && (
@@ -2013,15 +2027,21 @@ export const Services = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={resetModals} // Click outside to close
+            onClick={closeActiveServiceModal}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white dark:bg-gray-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative"
               onClick={(e) => e.stopPropagation()}
             >
+              <button
+                onClick={closeActiveServiceModal}
+                className="absolute top-4 right-4 w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center z-50 transition-all duration-300 font-bold text-lg"
+              >
+                ×
+              </button>
               <div
                 className={`bg-gradient-to-r ${activeService.color} p-8 text-white relative overflow-hidden`}
               >
@@ -2036,12 +2056,6 @@ export const Services = () => {
                 >
                   {activeService.graphic}
                 </motion.div>
-                <button
-                  onClick={resetModals} // Close button implementation
-                  className="absolute top-6 right-6 w-10 h-10 bg-gradient-to-tr from-red-500 to-red-700 text-white rounded-full text-2xl z-10 shadow-lg hover:from-red-600 hover:to-red-800 transition-all duration-300 flex items-center justify-center"
-                >
-                  ✕
-                </button>
                 <div className="flex items-center space-x-4 mb-4 relative z-10">
                   <motion.div
                     className="text-5xl"
@@ -2064,20 +2078,20 @@ export const Services = () => {
               <div className="p-8">
                 <div className="grid lg:grid-cols-2 gap-8">
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
                       <span className="mr-2">📋</span>
                       Service Overview
                     </h3>
-                    <p className="text-gray-700 leading-relaxed mb-6">
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
                       {activeService.fullDescription}
                     </p>
 
-                    <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 mb-6 shadow-lg border border-gray-100">
+                    <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-700 dark:to-gray-800 rounded-2xl p-6 mb-6 shadow-lg border border-gray-100 dark:border-gray-600">
                       <div className="flex justify-between items-center mb-4">
-                        <span className="text-2xl font-bold text-gray-900">
+                        <span className="text-2xl font-bold text-gray-900 dark:text-white">
                           {activeService.price}
                         </span>
-                        <span className="text-gray-600 bg-white px-4 py-2 rounded-xl font-semibold shadow-sm">
+                        <span className="text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-600 px-4 py-2 rounded-xl font-semibold shadow-sm">
                           ⏱️ {activeService.duration}
                         </span>
                       </div>
@@ -2094,7 +2108,7 @@ export const Services = () => {
                   </div>
 
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
                       <span className="mr-2">✨</span>
                       Key Features
                     </h3>
@@ -2105,7 +2119,7 @@ export const Services = () => {
                           initial={{ opacity: 0, x: 20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.1 }}
-                          className="flex items-center text-gray-700 bg-gray-50 rounded-xl p-3"
+                          className="flex items-center text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 rounded-xl p-3"
                         >
                           <motion.div
                             className="w-2 h-2 bg-green-400 rounded-full mr-3 flex-shrink-0"
@@ -2115,27 +2129,6 @@ export const Services = () => {
                         </motion.li>
                       ))}
                     </ul>
-
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-                      <span className="mr-2">🔄</span>
-                      Our Process
-                    </h3>
-                    <div className="space-y-3">
-                      {activeService.process.map((step, index) => (
-                        <motion.div
-                          key={index}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          className="flex items-center space-x-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100"
-                        >
-                          <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold text-sm shadow-sm">
-                            {index + 1}
-                          </div>
-                          <span className="text-gray-700">{step}</span>
-                        </motion.div>
-                      ))}
-                    </div>
                   </div>
                 </div>
               </div>
@@ -2152,15 +2145,21 @@ export const Services = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={resetModals} // Click outside to close
+            onClick={closeBookingModal}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white dark:bg-gray-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
               onClick={(e) => e.stopPropagation()}
             >
+              <button
+                onClick={closeBookingModal}
+                className="absolute top-4 right-4 w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center z-50 transition-all duration-300 font-bold text-lg"
+              >
+                ×
+              </button>
               <div
                 className={`bg-gradient-to-r ${bookingModal.color} p-6 text-white relative overflow-hidden`}
               >
@@ -2175,12 +2174,6 @@ export const Services = () => {
                 >
                   {bookingModal.graphic}
                 </motion.div>
-                <button
-                  onClick={resetModals} // Close button implementation
-                  className="absolute top-4 right-4 w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-full text-2xl z-10 shadow-lg hover:from-red-600 hover:to-red-800 transition-all duration-300 flex items-center justify-center"
-                >
-                  ✕
-                </button>
                 <div className="flex items-center space-x-4 relative z-10">
                   <div className="text-4xl">{bookingModal.icon}</div>
                   <div>
@@ -2194,10 +2187,10 @@ export const Services = () => {
                 </div>
               </div>
 
-              <form onSubmit={handleBookingSubmit} className="p-6 text-black">
+              <form onSubmit={handleBookingSubmit} className="p-6 text-black dark:text-white">
                 <div className="grid md:grid-cols-2 gap-4 mb-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Full Name *
                     </label>
                     <input
@@ -2206,12 +2199,12 @@ export const Services = () => {
                       value={bookingForm.name}
                       onChange={handleBookingInputChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       placeholder="Enter your full name"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Email Address *
                     </label>
                     <input
@@ -2220,12 +2213,12 @@ export const Services = () => {
                       value={bookingForm.email}
                       onChange={handleBookingInputChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       placeholder="Enter your email"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Phone Number *
                     </label>
                     <input
@@ -2234,12 +2227,12 @@ export const Services = () => {
                       value={bookingForm.phone}
                       onChange={handleBookingInputChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       placeholder="Enter your phone number"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Company
                     </label>
                     <input
@@ -2247,7 +2240,7 @@ export const Services = () => {
                       name="company"
                       value={bookingForm.company}
                       onChange={handleBookingInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       placeholder="Your company name"
                     />
                   </div>
@@ -2255,7 +2248,7 @@ export const Services = () => {
 
                 <div className="grid md:grid-cols-2 gap-4 mb-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Service Type
                     </label>
                     <input
@@ -2263,18 +2256,18 @@ export const Services = () => {
                       name="serviceType"
                       value={bookingForm.serviceType}
                       readOnly
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-600"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-600 text-gray-600 dark:text-gray-300"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Budget Range
                     </label>
                     <select
                       name="budget"
                       value={bookingForm.budget}
                       onChange={handleBookingInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                       <option value="">Select budget range</option>
                       <option value="$100 - $500">$100 - $500</option>
@@ -2285,14 +2278,14 @@ export const Services = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Target Timeline
                     </label>
                     <select
                       name="timeline"
                       value={bookingForm.timeline}
                       onChange={handleBookingInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                       <option value="">Select timeline</option>
                       <option value="1-2 Weeks">1-2 Weeks</option>
@@ -2304,7 +2297,7 @@ export const Services = () => {
                 </div>
 
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Project Requirements / Details *
                   </label>
                   <textarea
@@ -2313,7 +2306,7 @@ export const Services = () => {
                     onChange={handleBookingInputChange}
                     required
                     rows="4"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     placeholder="Describe your project, specific needs, or any initial questions..."
                   ></textarea>
                 </div>
@@ -2355,15 +2348,21 @@ export const Services = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={resetModals} // Click outside to close
+            onClick={closePaymentModal}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white dark:bg-gray-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
               onClick={(e) => e.stopPropagation()}
             >
+              <button
+                onClick={closePaymentModal}
+                className="absolute top-4 right-4 w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center z-50 transition-all duration-300 font-bold text-lg"
+              >
+                ×
+              </button>
               <div
                 className={`bg-gradient-to-r ${bookingModal.color} p-6 text-white relative overflow-hidden`}
               >
@@ -2378,12 +2377,6 @@ export const Services = () => {
                 >
                   {bookingModal.graphic}
                 </motion.div>
-                <button
-                  onClick={resetModals} // Close button implementation
-                  className="absolute top-4 right-4 w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-full text-2xl z-10 shadow-lg hover:from-red-600 hover:to-red-800 transition-all duration-300 flex items-center justify-center"
-                >
-                  ✕
-                </button>
                 <div className="flex items-center justify-between relative z-10">
                   <div className="flex items-center space-x-4">
                     <div className="text-4xl">💳</div>
@@ -2404,24 +2397,22 @@ export const Services = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="p-6 text-center bg-green-50 rounded-b-3xl"
+                  className="p-6 text-center bg-green-50 dark:bg-green-900/20 rounded-b-3xl"
                 >
                   <div className="text-6xl mb-4">🎉</div>
-                  <h3 className="text-2xl font-bold text-green-700 mb-2">
+                  <h3 className="text-2xl font-bold text-green-700 dark:text-green-400 mb-2">
                     Payment Confirmed!
                   </h3>
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-gray-600 dark:text-gray-300 mb-4">
                     Your service has been successfully booked. We've sent a
                     confirmation email to **{bookingForm.email}**.
                   </p>
-                  <motion.button
+                  <button
                     onClick={resetModals}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-green-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-green-700 transition-colors duration-300"
+                    className="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-xl font-semibold transition-colors duration-300"
                   >
                     Close & Go to Dashboard
-                  </motion.button>
+                  </button>
                 </motion.div>
               )}
 
@@ -2429,67 +2420,69 @@ export const Services = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="p-6 text-center bg-red-50 rounded-b-3xl"
+                  className="p-6 text-center bg-red-50 dark:bg-red-900/20 rounded-b-3xl relative"
                 >
+                  <button
+                    onClick={closePaymentModal}
+                    className="absolute top-4 right-4 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-300 font-bold"
+                  >
+                    ×
+                  </button>
                   <div className="text-6xl mb-4">❌</div>
-                  <h3 className="text-2xl font-bold text-red-700 mb-2">
+                  <h3 className="text-2xl font-bold text-red-700 dark:text-red-400 mb-2">
                     Payment Failed
                   </h3>
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-gray-600 dark:text-gray-300 mb-4">
                     There was an issue processing your payment. Please check your
                     details or try a different method.
                   </p>
-                  <motion.button
-                    onClick={() => setPaymentStatus(null)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-red-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-red-700 transition-colors duration-300 mr-3"
-                  >
-                    Try Again
-                  </motion.button>
-                  <motion.button
-                    onClick={resetModals}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-gray-200 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-300 transition-colors duration-300"
-                  >
-                    Cancel Booking
-                  </motion.button>
+                  <div className="flex space-x-3 justify-center">
+                    <button
+                      onClick={() => setPaymentStatus(null)}
+                      className="bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-xl font-semibold transition-colors duration-300"
+                    >
+                      Try Again
+                    </button>
+                    <button
+                      onClick={resetModals}
+                      className="bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300 py-3 px-6 rounded-xl font-semibold transition-colors duration-300"
+                    >
+                      Cancel Booking
+                    </button>
+                  </div>
                 </motion.div>
               )}
 
               {paymentStatus === null && (
-                <form onSubmit={handlePaymentSubmit} className="p-6 text-black">
+                <form onSubmit={handlePaymentSubmit} className="p-6 text-black dark:text-white">
                   {/* Payment Method Selector */}
                   <div className="mb-6">
-                    <h3 className="text-lg font-bold text-gray-800 mb-3">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3">
                       Choose Payment Method
                     </h3>
                     <div className="flex space-x-4">
-                      <motion.button
+                      <button
                         type="button"
                         onClick={() => setPaymentMethod("card")}
                         className={`flex-1 p-4 rounded-xl font-semibold border-2 transition-all duration-300 ${
                           paymentMethod === "card"
                             ? "bg-blue-500 text-white border-blue-600 shadow-md"
-                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                            : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
                         }`}
-                        whileHover={{ y: -2 }}
                       >
                         💳 Credit/Debit Card
-                      </motion.button>
-                      <motion.button
+                      </button>
+                      <button
                         type="button"
                         onClick={() => setPaymentMethod("mobile")}
                         className={`flex-1 p-4 rounded-xl font-semibold border-2 transition-all duration-300 ${
                           paymentMethod === "mobile"
                             ? "bg-purple-500 text-white border-purple-600 shadow-md"
-                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                            : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
                         }`}
-                        whileHover={{ y: -2 }}
                       >
                         📱 Mobile Money
-                      </motion.button>
+                      </button>
                     </div>
                   </div>
 
@@ -2505,7 +2498,7 @@ export const Services = () => {
                       >
                         <div className="grid md:grid-cols-2 gap-4 mb-6">
                           <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                               Card Number *
                             </label>
                             <input
@@ -2515,12 +2508,12 @@ export const Services = () => {
                               onChange={handlePaymentInputChange}
                               maxLength="19"
                               required
-                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                               placeholder="XXXX XXXX XXXX XXXX"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                               Expiry Date (MM/YY) *
                             </label>
                             <input
@@ -2530,12 +2523,12 @@ export const Services = () => {
                               onChange={handlePaymentInputChange}
                               maxLength="5"
                               required
-                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                               placeholder="MM/YY"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                               CVV *
                             </label>
                             <input
@@ -2545,12 +2538,12 @@ export const Services = () => {
                               onChange={handlePaymentInputChange}
                               maxLength="4"
                               required
-                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                               placeholder="CVV"
                             />
                           </div>
                           <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                               Card Holder Name *
                             </label>
                             <input
@@ -2559,7 +2552,7 @@ export const Services = () => {
                               value={paymentForm.cardHolder}
                               onChange={handlePaymentInputChange}
                               required
-                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                               placeholder="Card Holder Name"
                             />
                           </div>
@@ -2580,7 +2573,7 @@ export const Services = () => {
                       >
                         <div className="grid md:grid-cols-2 gap-4 mb-6">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                               Mobile Number *
                             </label>
                             <input
@@ -2589,12 +2582,12 @@ export const Services = () => {
                               value={paymentForm.mobileNumber}
                               onChange={handlePaymentInputChange}
                               required
-                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                               placeholder="e.g., +250 788 XXX XXX"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                               Provider *
                             </label>
                             <select
@@ -2602,7 +2595,7 @@ export const Services = () => {
                               value={paymentForm.provider}
                               onChange={handlePaymentInputChange}
                               required
-                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             >
                               <option value="mtn">MTN Mobile Money</option>
                               <option value="airtel">Airtel Money</option>
@@ -2610,7 +2603,7 @@ export const Services = () => {
                             </select>
                           </div>
                         </div>
-                        <p className="text-sm text-purple-600 bg-purple-50 p-3 rounded-xl mb-4 border border-purple-100">
+                        <p className="text-sm text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 p-3 rounded-xl mb-4 border border-purple-100 dark:border-purple-800">
                           Note: You will receive a prompt on your phone to confirm
                           the payment after submission.
                         </p>
@@ -2618,11 +2611,9 @@ export const Services = () => {
                     )}
                   </AnimatePresence>
 
-                  <motion.button
+                  <button
                     type="submit"
                     disabled={isSubmitting}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
                     className={`w-full py-3 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center space-x-3 ${
                       isSubmitting
                         ? "bg-gray-400 cursor-not-allowed"
@@ -2640,7 +2631,7 @@ export const Services = () => {
                         <span>💸</span>
                       </>
                     )}
-                  </motion.button>
+                  </button>
                 </form>
               )}
             </motion.div>
