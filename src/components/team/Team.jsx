@@ -211,7 +211,7 @@ export const Team = () => {
             >
               <Diversity3 className="w-10 h-10 text-white" />
             </motion.div>
-            <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            <h1 className="text-5xl font-bold text-blue-500 mb-4">
               Meet Our Team
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
@@ -321,13 +321,13 @@ export const Team = () => {
 
                 {/* Member Info */}
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                  <h3 className="text-xl font-bold text-indigo-500 mb-1">
                     {member.name}
                   </h3>
                   <p className="text-blue-600 dark:text-blue-400 font-medium mb-2">
                     {member.role}
                   </p>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
+                  <p className="text-gray-600 dark:text-gray-500 text-sm mb-4 line-clamp-2">
                     {member.bio}
                   </p>
 
@@ -336,7 +336,7 @@ export const Team = () => {
                     {member.skills.slice(0, 3).map((skill, index) => (
                       <span
                         key={index}
-                        className="px-2 py-1 bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 text-xs rounded-full border border-gray-300 dark:border-gray-500"
+                        className="px-2 py-1 bg-gradient-to-b from-gray-100 to-gray-200  text-black  text-xs rounded-full border border-gray-300 dark:border-gray-500"
                       >
                         {skill}
                       </span>
@@ -345,11 +345,11 @@ export const Team = () => {
 
                   {/* Location & Experience */}
                   <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center space-x-1">
+                    <div className="flex text-blue-500 items-center space-x-1">
                       <LocationOn className="w-4 h-4" />
                       <span>{member.location}</span>
                     </div>
-                    <div className="flex items-center space-x-1">
+                    <div className="flex text-green-500 items-center space-x-1">
                       <Star className="w-4 h-4" />
                       <span>{member.experience}</span>
                     </div>
@@ -377,7 +377,7 @@ export const Team = () => {
               <div className="relative">
                 <img
                   src={selectedMember.image}
-                  alt={selectedMember.name}
+                  alt=''
                   className="w-full h-64 object-cover"
                 />
                 <button
@@ -389,13 +389,13 @@ export const Team = () => {
               </div>
 
               <div className="p-6">
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                <h2 className="text-3xl font-bold text-indigo-500  mb-2">
                   {selectedMember.name}
                 </h2>
-                <p className="text-blue-600 dark:text-blue-400 text-xl font-medium mb-4">
+                <p className="text-blue-600 text-xl font-medium mb-4">
                   {selectedMember.role}
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 mb-6">
+                <p className="text-black mb-6">
                   {selectedMember.bio}
                 </p>
 
@@ -421,17 +421,17 @@ export const Team = () => {
                       Details
                     </h4>
                     <div className="space-y-2 text-gray-700 dark:text-gray-300">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex text-blue-300 items-center space-x-2">
                         <LocationOn className="w-4 h-4" />
                         <span>{selectedMember.location}</span>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex text-blue-200 items-center space-x-2">
                         <Business className="w-4 h-4" />
                         <span className="capitalize">
                           {selectedMember.department}
                         </span>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex text-blue-300 items-center space-x-2">
                         <Star className="w-4 h-4" />
                         <span>{selectedMember.experience} experience</span>
                       </div>
