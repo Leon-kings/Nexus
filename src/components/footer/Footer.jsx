@@ -43,7 +43,7 @@ export const Footer = () => {
     try {
       // Replace with your actual API endpoint
       const response = await axios.post(
-        "https://your-api-endpoint.com/newsletter",
+        "https://nexusbackend-hdyk.onrender.com/subscription/subscribe",
         {
           email: email,
           subscribedAt: new Date().toISOString(),

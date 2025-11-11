@@ -46,7 +46,6 @@ import { UserCheckoutManagement } from "./components/dashboards/users/components
 import { TestimonyDashboard } from "./components/dashboards/admins/components/managements/testimony/TestimonyManagement";
 import { UserTestimonyDashboard } from "./components/dashboards/users/components/management/testimony/UserManagementTestimony";
 
-
 // Create DarkMode Context
 const DarkModeContext = createContext();
 
@@ -293,11 +292,11 @@ export default function App() {
               <Route
                 path="/dashboard"
                 element={
-                  // <PrivateRoute>
-                  <DashboardLayout>
-                    <Dashboard />
-                  </DashboardLayout>
-                  // </PrivateRoute>
+                  <PrivateRoute>
+                    <DashboardLayout>
+                      <Dashboard />
+                    </DashboardLayout>
+                  </PrivateRoute>
                 }
               />
               <Route
@@ -340,14 +339,14 @@ export default function App() {
                   </PrivateRoute>
                 }
               />
-                            <Route
+              <Route
                 path="/23833/testimony/managements"
                 element={
-                  // <PrivateRoute>
+                  <PrivateRoute>
                     <DashboardLayout>
                       <TestimonyDashboard />
                     </DashboardLayout>
-                  // </PrivateRoute>
+                  </PrivateRoute>
                 }
               />
               <Route
@@ -393,11 +392,11 @@ export default function App() {
               <Route
                 path="/729ns/jo7392j/messages/managements"
                 element={
-                  // <PrivateRoute>
-                  <DashboardLayout>
-                    <MessagesManagement />
-                  </DashboardLayout>
-                  // </PrivateRoute>
+                  <PrivateRoute>
+                    <DashboardLayout>
+                      <MessagesManagement />
+                    </DashboardLayout>
+                  </PrivateRoute>
                 }
               />
               <Route
@@ -413,11 +412,11 @@ export default function App() {
               <Route
                 path="/729ns/jojkbjo/question/managements"
                 element={
-                  // <PrivateRoute>
-                  <DashboardLayout>
-                    <QuestionAdmin />
-                  </DashboardLayout>
-                  // </PrivateRoute>
+                  <PrivateRoute>
+                    <DashboardLayout>
+                      <QuestionAdmin />
+                    </DashboardLayout>
+                  </PrivateRoute>
                 }
               />
               <Route
@@ -430,14 +429,14 @@ export default function App() {
                   </PrivateRoute>
                 }
               />{" "}
-              {/* </PrivateRoute> */}
               <Route
                 path="/900u/syock/managements"
                 element={
-                  // <PrivateRoute>
-                  <DashboardLayout>
-                    <StockManagement />
-                  </DashboardLayout>
+                  <PrivateRoute>
+                    <DashboardLayout>
+                      <StockManagement />
+                    </DashboardLayout>
+                  </PrivateRoute>
                 }
               />
               {/* ************************************* */}
@@ -454,61 +453,61 @@ export default function App() {
               <Route
                 path="/838929/user/dashboard"
                 element={
-                  // <PrivateRoute>
-                  <UserDashboardLayout>
-                    <UserDashboardManagement />
-                  </UserDashboardLayout>
-                  // </PrivateRoute>
+                  <PrivateRoute>
+                    <UserDashboardLayout>
+                      <UserDashboardManagement />
+                    </UserDashboardLayout>
+                  </PrivateRoute>
                 }
               />
-                                          <Route
+              <Route
                 path="/2fh797/testimony/dashboard"
                 element={
-                  // <PrivateRoute>
+                  <PrivateRoute>
                     <DashboardLayout>
                       <UserTestimonyDashboard />
                     </DashboardLayout>
-                  // </PrivateRoute>
+                  </PrivateRoute>
                 }
               />
               <Route
                 path="/898920/user/messages/dashboard"
                 element={
-                  // <PrivateRoute>
-                  <UserDashboardLayout>
-                    <UserMessagesManagement />
-                  </UserDashboardLayout>
-                  // </PrivateRoute>
+                  <PrivateRoute>
+                    <UserDashboardLayout>
+                      <UserMessagesManagement />
+                    </UserDashboardLayout>
+                  </PrivateRoute>
                 }
               />
               <Route
                 path="/898920/user/contacts/dashboard"
                 element={
-                  // <PrivateRoute>
-                  <UserDashboardLayout>
-                    <UserContactManagement />
-                  </UserDashboardLayout>
-                  // </PrivateRoute>
+                  <PrivateRoute>
+                    <UserDashboardLayout>
+                      <UserContactManagement />
+                    </UserDashboardLayout>
+                  </PrivateRoute>
                 }
               />
               <Route
                 path="/898920/user/bookings/dashboard"
                 element={
-                  // <PrivateRoute>
-                  <UserDashboardLayout>
-                    <UserBookingManagement />
-                  </UserDashboardLayout>
-                  // </PrivateRoute>
+                  <PrivateRoute>
+                    <UserDashboardLayout>
+                      <UserBookingManagement />
+                    </UserDashboardLayout>
+                  </PrivateRoute>
                 }
               />
               <Route
                 path="/898920/user/checkout/dashboard"
                 element={
-                  // <PrivateRoute>
-                  <UserDashboardLayout>
-                    <UserCheckoutManagement />
-                  </UserDashboardLayout>
-                  // </PrivateRoute>
+                  <PrivateRoute>
+                    <UserDashboardLayout>
+                      <UserCheckoutManagement />
+                    </UserDashboardLayout>
+                  </PrivateRoute>
                 }
               />
               {/* 404 route - should be last */}

@@ -1328,7 +1328,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { services } from "../../assets/images/images";
-import { Close } from "@mui/icons-material";
+import { Cancel, Close } from "@mui/icons-material";
 
 // API Base URL
 const API_BASE_URL = "https://nexusbackend-hdyk.onrender.com";
@@ -1892,7 +1892,7 @@ export const Services = () => {
                     <span className="text-2xl font-bold text-gray-900 dark:text-white">
                       {service.price}
                     </span>
-                    <span className="text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-gray-700/80 px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                    <span className="text-blue-600 font-bold bg-white/80 dark:bg-gray-700/80 px-3 py-1 rounded-full text-sm backdrop-blur-sm">
                       {service.duration}
                     </span>
                   </div>
@@ -2038,9 +2038,10 @@ export const Services = () => {
             >
               <button
                 onClick={closeActiveServiceModal}
-                className="absolute top-4 right-4 w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center z-50 transition-all duration-300 font-bold text-lg"
+                className="absolute top-4 right-4  bg-gradient-to-b from-red-500 to-red-700  rounded-full flex items-center justify-center z-50 transition-all duration-300 font-bold text-lg"
               >
-                ×
+                {/* × */}
+                <Cancel className="size-6"/>
               </button>
               <div
                 className={`bg-gradient-to-r ${activeService.color} p-8 text-white relative overflow-hidden`}

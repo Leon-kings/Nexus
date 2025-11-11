@@ -1583,7 +1583,8 @@ import {
   Watch,
   Tablet,
   SportsEsports,
-  Refresh
+  Refresh,
+  Settings
 } from '@mui/icons-material';
 
 export const ElectronicOrdersManagement = () => {

@@ -75,7 +75,7 @@ export const PrivacyPolicy = () => {
             >
               <PrivacyTip className="w-8 h-8 text-blue-600" />
             </motion.div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-blue-500 mb-4">
               Privacy Policy
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -179,12 +179,12 @@ export const PrivacyPolicy = () => {
                 <p className="text-gray-700">
                   If you have any questions about this Privacy Policy, please
                   contact us at:{" "}
-                  <a
-                    href="mailto:privacy@nexus.com"
-                    className="text-blue-600 hover:text-blue-700"
+                <button
+                   
+                    className="bg-gradient-to-b from-blue-400 to-indigo-400"
                   >
-                    privacy@nexus.com
-                  </a>
+                    leon@nexuselectronics.com
+                  </button>
                 </p>
               </div>
             </div>

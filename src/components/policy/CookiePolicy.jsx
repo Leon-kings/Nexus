@@ -74,7 +74,7 @@ export const CookiePolicy = () => {
             >
               <Cookie className="w-8 h-8 text-green-600" />
             </motion.div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-blue-500 mb-4">
               Cookie Policy
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -220,13 +220,6 @@ export const CookiePolicy = () => {
                   cookies as described in this policy. You can withdraw your
                   consent at any time by managing your cookie preferences.
                 </p>
-                <motion.button
-                  className="bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors duration-300"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Manage Cookie Preferences
-                </motion.button>
               </div>
             </div>
           </motion.div>
@@ -242,12 +235,12 @@ export const CookiePolicy = () => {
             <p className="text-gray-700">
               If you have any questions about how we use cookies, please contact
               us at:{" "}
-              <a
+              <button
                 href="mailto:cookies@nexus.com"
-                className="text-green-600 hover:text-green-700"
+                className="bg-gradient-to-b from-blue-500 to-indigo-400"
               >
-                cookies@nexus.com
-              </a>
+                leon@nexuselectronics.com
+              </button>
             </p>
           </motion.div>
         </motion.div>
