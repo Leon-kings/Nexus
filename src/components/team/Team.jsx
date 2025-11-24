@@ -102,16 +102,13 @@ export const Team = () => {
       role: "CEO & Founder",
       department: "leadership",
       image:
-        "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
+        "https://warburgpincus.com/wp-content/uploads/2019/10/Sarah-Chen-web-1024x991.jpg",
       bio: "Visionary leader with 10+ years of experience in tech entrepreneurship. Passionate about innovation and team growth.",
       skills: ["Leadership", "Strategy", "Product Development"],
-      location: "San Francisco, CA",
-      experience: "12 years",
+      location: "Kigali, Rwanda",
+      experience: "2 years",
       social: {
-        linkedin: "#",
-        twitter: "#",
         email: "sarah@nexus.com",
-        github: "#",
       },
     },
     {
@@ -120,16 +117,16 @@ export const Team = () => {
       role: "CTO",
       department: "leadership",
       image:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
+        "https://cms.nar.realtor/sites/default/files/assets/images/MarcusRodriguez.jpg",
       bio: "Technology expert specializing in scalable architecture and cutting-edge development practices.",
       skills: ["System Architecture", "Cloud Computing", "DevOps"],
       location: "New York, NY",
       experience: "15 years",
       social: {
-        linkedin: "#",
-        twitter: "#",
+        linkedin: "",
+        twitter: "",
         email: "marcus@nexus.com",
-        github: "#",
+        github: "",
       },
     },
     {
@@ -144,10 +141,10 @@ export const Team = () => {
       location: "Austin, TX",
       experience: "8 years",
       social: {
-        linkedin: "#",
-        twitter: "#",
+        linkedin: "",
+        twitter: "",
         email: "emily@nexus.com",
-        github: "#",
+        github: "",
       },
     },
     {
@@ -156,16 +153,16 @@ export const Team = () => {
       role: "Lead Designer",
       department: "design",
       image:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
+        "https://images.mubicdn.net/images/cast_member/2881/cache-1163-1427637945/image-w856.jpg",
       bio: "Creative designer with a passion for user-centered design and beautiful, functional interfaces.",
       skills: ["UI/UX Design", "Design Systems", "User Research"],
       location: "Austin, TX",
       experience: "8 years",
       social: {
-        linkedin: "#",
-        twitter: "#",
+        linkedin: "",
+        twitter: "",
         email: "emily@nexus.com",
-        github: "#",
+        github: "",
       },
     },
   ];
@@ -377,7 +374,7 @@ export const Team = () => {
               <div className="relative">
                 <img
                   src={selectedMember.image}
-                  alt=''
+                  alt=""
                   className="w-full h-64 object-cover"
                 />
                 <button
@@ -395,9 +392,7 @@ export const Team = () => {
                 <p className="text-blue-600 text-xl font-medium mb-4">
                   {selectedMember.role}
                 </p>
-                <p className="text-black mb-6">
-                  {selectedMember.bio}
-                </p>
+                <p className="text-black mb-6">{selectedMember.bio}</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>

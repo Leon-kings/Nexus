@@ -31,6 +31,7 @@ import {
   Security,
   Language,
   Palette,
+  SubscriptRounded,
 } from "@mui/icons-material";
 
 // Settings Modal Component
@@ -159,7 +160,7 @@ const sidebarMenu = {
       label: "Analytics",
       icon: <Analytics />,
       path: "/analytics",
-      badge: null,
+      badge: "+",
     },
   ],
   store: [
@@ -168,7 +169,7 @@ const sidebarMenu = {
       label: "Products",
       icon: <Inventory />,
       path: "/7833/8303i/products/managements",
-      badge: "156",
+      badge: "+",
     },
 
     {
@@ -176,14 +177,14 @@ const sidebarMenu = {
       label: "Orders",
       icon: <ShoppingCart />,
       path: "/23833/8038i/orders/managements",
-      badge: "45",
+      badge: "+",
     },
     {
       id: "customers",
       label: "Customers",
       icon: <People />,
       path: "/08393/8303i/users/managements",
-      badge: "8.4K",
+      badge: "+",
     },
   ],
   financial: [
@@ -192,21 +193,28 @@ const sidebarMenu = {
       label: "Revenue",
       icon: <AttachMoney />,
       path: "/20000/3hd903/checkout/managements",
-      badge: null,
+      badge: "+",
     },
     {
       id: "transactions",
       label: "Transactions",
       icon: <Receipt />,
       path: "/637is9393/3hd903/transaction/managements",
-      badge: null,
+      badge: "+",
     },
     {
       id: "reports",
       label: "Reports",
       icon: <BarChart />,
       path: "/h92978/hsj8292/reports/managements",
-      badge: null,
+      badge: "+",
+    },
+    {
+      id: "subscription",
+      label: "Subscription",
+      icon: <SubscriptRounded />,
+      path: "/0ncjknda/8303i/subscription/managements",
+      badge: "+",
     },
   ],
   operations: [
