@@ -45,6 +45,7 @@ import { UserBookingManagement } from "./components/dashboards/users/components/
 import { UserCheckoutManagement } from "./components/dashboards/users/components/management/revenue/UserRevenueManagement";
 import { TestimonyDashboard } from "./components/dashboards/admins/components/managements/testimony/TestimonyManagement";
 import { UserTestimonyDashboard } from "./components/dashboards/users/components/management/testimony/UserManagementTestimony";
+import { SubscriptionManagement } from "./components/dashboards/admins/components/managements/subscription/SubscriptionManagement";
 
 // Create DarkMode Context
 const DarkModeContext = createContext();
@@ -307,6 +308,16 @@ export default function App() {
                       <UserManagement />
                     </DashboardLayout>
                   </PrivateRoute>
+                }
+              />
+                            <Route
+                path="/0ncjknda/8303i/subscription/managements"
+                element={
+                  // <PrivateRoute>
+                    <DashboardLayout>
+                      <SubscriptionManagement />
+                    </DashboardLayout>
+                  // </PrivateRoute>
                 }
               />
               <Route
